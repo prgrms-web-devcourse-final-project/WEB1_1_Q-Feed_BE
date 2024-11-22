@@ -1,0 +1,8 @@
+rootProject.name = 'WEB1_1_Q-Feed_BE'
+
+include 'module-common'
+include 'module-domain'
+include 'module-application'
+include 'module-infra'
+include 'module-api'
+include 'module-external-api'
