@@ -1,6 +1,7 @@
 dependencies {
 	implementation project(':module-application')
 	implementation project(':module-domain')
+	implementation project(':module-infra')
 	implementation project(':module-common')
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
