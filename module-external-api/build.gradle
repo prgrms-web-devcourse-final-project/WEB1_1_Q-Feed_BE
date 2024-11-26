@@ -1,5 +1,15 @@
+ext {
+    springAiVersion = "1.0.0-M4"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.ai:spring-ai-bom:$springAiVersion"
+    }
+}
 dependencies {
     implementation project(':module-common')
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
 
 }
