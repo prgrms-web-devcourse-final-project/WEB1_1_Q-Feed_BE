@@ -1,4 +1,4 @@
-package com.wsws.moduledomain.question;
+package com.wsws.moduledomain.feed.question;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
