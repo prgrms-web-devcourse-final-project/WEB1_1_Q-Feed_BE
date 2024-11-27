@@ -1,1 +1,10 @@
-spring.application.name=module-external-api
+spring:
+  application:
+    name: module-external-api
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-4o-mini
