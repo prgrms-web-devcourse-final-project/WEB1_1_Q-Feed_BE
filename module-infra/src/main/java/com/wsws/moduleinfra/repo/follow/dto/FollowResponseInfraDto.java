@@ -4,11 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
-public class FollowResponseInfraDto {
-    private final String userId;
-    private final String nickname;
-    private final String profileImage;
 
-
+public record FollowResponseInfraDto(String userId, String nickname, String profileImage) {
 }

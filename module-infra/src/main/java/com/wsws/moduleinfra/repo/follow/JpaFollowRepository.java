@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface JpaFollowRepository extends JpaRepository<Follow, Long> {
+public interface JpaFollowRepository extends JpaRepository<Follow, Long>, FollowRepository {
     Optional<Follow> findByFollowerIdAndFolloweeId(String followerId, String followeeId);
 }

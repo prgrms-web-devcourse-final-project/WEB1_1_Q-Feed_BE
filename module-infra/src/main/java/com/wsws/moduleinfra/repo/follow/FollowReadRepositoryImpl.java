@@ -9,6 +9,16 @@ import java.util.List;
 public class FollowReadRepositoryImpl implements FollowReadRepository {
 
 
+    @Override
+    public int countFollowersByUserId(String userId) {
+        return 0;
+    }
+
+    @Override
+    public int countFollowingsByUserId(String userId) {
+        return 0;
+    }
+
     //나를 팔로우 하고 있는 사람 목록
     @Override
     public List<FollowResponseInfraDto> findFollowersWithCursor(String followeeId, String cursor, int size) {
