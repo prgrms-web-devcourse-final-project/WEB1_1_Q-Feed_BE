@@ -4,8 +4,14 @@ dependencies {
 
 	//jpa + querydsl
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
-	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
+//	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
+//	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
+
+	//보안
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation "io.jsonwebtoken:jjwt-api:${jwtVersion}"
+	runtimeOnly "io.jsonwebtoken:jjwt-impl:${jwtVersion}"
+	runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jwtVersion}"
 
 	//mysql
 	runtimeOnly 'com.mysql:mysql-connector-j'
