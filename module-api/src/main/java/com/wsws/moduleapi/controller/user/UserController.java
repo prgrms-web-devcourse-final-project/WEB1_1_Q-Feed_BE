@@ -1,10 +1,10 @@
 package com.wsws.moduleapi.controller.user;
 
+import com.wsws.moduleapi.dto.auth.AuthResponse;
 import com.wsws.moduleapi.dto.user.*;
 import com.wsws.moduleapplication.dto.user.PasswordChangeServiceDto;
 import com.wsws.moduleapplication.dto.user.RegisterUserRequest;
 import com.wsws.moduleapplication.dto.user.UpdateProfileServiceDto;
-import com.wsws.moduleapplication.dto.user.UserProfileResponse;
 import com.wsws.moduleapplication.service.user.UserQueryService;
 import com.wsws.moduleapplication.service.user.UserService;
 import com.wsws.modulesecurity.security.UserPrincipal;
