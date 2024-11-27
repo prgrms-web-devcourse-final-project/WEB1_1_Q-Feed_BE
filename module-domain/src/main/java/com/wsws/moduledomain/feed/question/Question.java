@@ -1,8 +1,7 @@
 package com.wsws.moduledomain.feed.question;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.wsws.moduledomain.feed.Category.Category;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -17,5 +16,8 @@ public class Question {
     private boolean isToday;
     private LocalDateTime createdAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
 }
