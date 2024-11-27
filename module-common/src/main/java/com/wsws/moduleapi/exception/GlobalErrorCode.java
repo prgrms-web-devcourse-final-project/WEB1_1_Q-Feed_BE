@@ -6,6 +6,7 @@ import static com.wsws.moduleapi.constants.ErrorCodeConstants.*;
 
 @RequiredArgsConstructor
 public enum GlobalErrorCode implements BaseErrorCode {
+    VALIDATION_ERROR(400, "VALIDATION_ERROR_400", "잘못된 입력 값입니다."),
     PERMISSION_DENIED(403, "PERMISSION_DENIED_401", "해당 API 권한이 없습니다"),
     FILE_NOT_FOUND(404, "FILE_NOT_FOUND_404", "해당 파일이 존재하지 않습니다"),
     OTHER_SERVER_BAD_REQUEST(BAD_REQUEST, "AUTH_OTHER_400", "Other server bad request"),
