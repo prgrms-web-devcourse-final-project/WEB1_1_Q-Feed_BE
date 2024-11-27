@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 public class Question {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "question_id")
     Long id;
 
     private String content;
