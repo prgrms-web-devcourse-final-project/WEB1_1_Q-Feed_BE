@@ -4,6 +4,8 @@ import com.wsws.moduledomain.auth.TokenProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.util.Date;
 
 @Component
@@ -26,6 +29,12 @@ public class JwtProvider implements TokenProvider {
 
     @Value("${security.jwt.refresh-expiration}")
     private long refreshExpiration;
+
+
+
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
+    }
 
     @Override
     public String createAccessToken(String userId) {
@@ -46,14 +55,14 @@ public class JwtProvider implements TokenProvider {
                 .setSubject(userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     @Override
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
             log.info("토큰 유효성 검증 성공: {}", token);
             return true;
         } catch (Exception e) {
@@ -63,12 +72,15 @@ public class JwtProvider implements TokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
         String userId = claims.getSubject();
+
+        UserPrincipal userPrincipal = new UserPrincipal(userId);
         log.info("Authentication object created for userId: {}", userId);
-        return new UsernamePasswordAuthenticationToken(userId, null, null);
+        return new UsernamePasswordAuthenticationToken(userPrincipal, null, null);
     }
 }

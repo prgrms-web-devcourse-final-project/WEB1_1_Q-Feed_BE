@@ -11,28 +11,28 @@ import java.util.Collections;
 @Getter
 public class UserPrincipal implements UserDetails {
 
-    private final String id;
-    private final String email;
-    private final String password;
+    private final String id; // userId만 포함
 
-    public UserPrincipal(User user) {
-        this.id = user.getId().getValue();
-        this.email = user.getEmail().getValue();
-        this.password = user.getPassword().getValue();
+    public UserPrincipal(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        return Collections.emptyList(); // 권한이 필요하면 추가
     }
 
     @Override
     public String getPassword() {
-        return password;
+        return null;
     }
 
     @Override
     public String getUsername() {
-        return email;
+        return id;
     }
 }
