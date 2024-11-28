@@ -12,14 +12,4 @@ import java.util.Optional;
 @Repository
 public interface JpaUserRepository extends JpaRepository<User, UserId>, UserRepository {
 
-    Optional<User> findByEmail(String email);
-
-    // 도메인 인터페이스 메서드 구현
-    @Override
-    default Optional<User> findByEmail(Email email) {
-        return findByEmail(email.getValue());
-    }
-
-
-
 }
