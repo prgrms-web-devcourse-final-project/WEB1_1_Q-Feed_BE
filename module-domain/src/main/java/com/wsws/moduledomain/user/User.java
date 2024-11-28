@@ -1,11 +1,10 @@
 package com.wsws.moduledomain.user;
 
-import com.wsws.moduledomain.user.exception.PasswordMismatchException;
+import com.wsws.moduledomain.auth.exception.PasswordMismatchException;
 import com.wsws.moduledomain.user.vo.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -64,7 +63,7 @@ public class User {
     public void changePassword(String currentPassword, String newPassword, PasswordEncoder passwordEncoder) {
         // 현재 비밀번호 확인
         if (!this.password.matches(currentPassword, passwordEncoder)) {
-            throw new PasswordMismatchException("현재 비밀번호가 일치하지 않습니다.");
+            throw PasswordMismatchException.EXCEPTION;
         }
         // 새 비밀번호 유효성 검증
         Password.validate(newPassword);
