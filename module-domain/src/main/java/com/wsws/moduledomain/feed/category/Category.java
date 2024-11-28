@@ -1,6 +1,6 @@
 package com.wsws.moduledomain.feed.category;
 
-import com.wsws.moduledomain.follow.vo.CategoryName;
+import com.wsws.moduledomain.feed.category.vo.CategoryName;
 import jakarta.persistence.*;
 
 @Entity
