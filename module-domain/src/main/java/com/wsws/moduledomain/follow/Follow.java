@@ -15,8 +15,10 @@ public class Follow {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String followerId;
 
+    @Column(nullable = false)
     private String followeeId;
 
     public Follow(String followerId, String followeeId) {
