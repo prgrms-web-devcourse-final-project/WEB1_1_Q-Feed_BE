@@ -82,13 +82,13 @@ public class UserService {
 
     // Unique 검사
 
-    public void validateUniqueEmail(Email email) {
+    private void validateUniqueEmail(Email email) {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
         }
     }
 
-    public void validateUniqueNickname(Nickname nickname) {
+    private void validateUniqueNickname(Nickname nickname) {
         if (userRepository.findByNickname(nickname).isPresent()) {
             throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
