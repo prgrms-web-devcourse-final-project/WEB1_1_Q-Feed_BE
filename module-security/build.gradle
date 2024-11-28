@@ -3,6 +3,7 @@ dependencies {
 
     implementation project(':module-domain')
     implementation project(':module-common')
+    implementation project(':module-infra')
     
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
