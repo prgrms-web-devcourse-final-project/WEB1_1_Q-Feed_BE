@@ -1,5 +1,8 @@
 package com.wsws.moduleapplication.util;
 
+import com.wsws.moduleapplication.user.exception.ProfileImageRequiredException;
+import com.wsws.moduleapplication.user.exception.ProfileImageTooLargeException;
+import com.wsws.moduleapplication.user.exception.UnsupportedImageFormatException;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ProfileImageValidator {
@@ -9,16 +12,16 @@ public class ProfileImageValidator {
 
     public static void validate(MultipartFile profileImageFile) {
         if (profileImageFile == null || profileImageFile.isEmpty()) {
-            throw new IllegalArgumentException("프로필 이미지를 업로드해야 합니다.");
+            throw ProfileImageRequiredException.EXCEPTION;
         }
 
         if (profileImageFile.getSize() > MAX_FILE_SIZE) {
-            throw new IllegalArgumentException("이미지 파일 크기는 5MB 이하여야 합니다.");
+            throw ProfileImageTooLargeException.EXCEPTION;
         }
 
         String contentType = profileImageFile.getContentType();
         if (contentType == null || !isAllowedFormat(contentType)) {
-            throw new IllegalArgumentException("지원하지 않는 이미지 포맷입니다. JPEG, PNG, GIF만 허용됩니다.");
+            throw UnsupportedImageFormatException.EXCEPTION;
         }
     }
 

@@ -1,5 +1,7 @@
 package com.wsws.moduleapplication.auth.service;
 
+import com.wsws.moduleapplication.auth.exception.EmailNotFoundException;
+import com.wsws.moduleapplication.auth.exception.RefreshTokenExpiredException;
 import com.wsws.moduleapplication.user.dto.AuthServiceResponse;
 import com.wsws.moduleapplication.auth.dto.LoginServiceRequest;
 import com.wsws.moduleapplication.auth.dto.LoginServiceResponse;
@@ -27,43 +29,43 @@ public class AuthService {
     private final TokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
 
-    //로그인
+    // 로그인
     public LoginServiceResponse login(LoginServiceRequest loginServiceRequest) {
         Email email = Email.from(loginServiceRequest.email());
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 잘못되었습니다."));
+                .orElseThrow(() -> EmailNotFoundException.EXCEPTION);
 
-        if(!passwordEncoder.matches(loginServiceRequest.password(),user.getPassword().getValue())){
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 잘못되었습니다.");
-        }
+        // 비밀번호 검증
+        user.getPassword().matches(loginServiceRequest.password(), passwordEncoder);
 
         // JWT 토큰 생성
         String accessToken = tokenProvider.createAccessToken(user.getId().getValue());
         String refreshToken = tokenProvider.createRefreshToken(user.getId().getValue());
 
-        //refreshToken은 7일
+        // RefreshToken 저장 (7일 유효)
         authRepository.save(RefreshToken.create(refreshToken, LocalDateTime.now().plusDays(7)));
 
         return new LoginServiceResponse(accessToken, refreshToken);
     }
 
-
-    //로그아웃
+    // 로그아웃
     public AuthServiceResponse logout(String refreshToken) {
         authRepository.deleteByToken(refreshToken);
         return new AuthServiceResponse("로그아웃이 완료되었습니다");
     }
 
-
-
-    //토큰 재발급
-    public LoginServiceResponse reissueToken(String refreshToken){
-        //token 있는지 확인
+    // 토큰 재발급
+    public LoginServiceResponse reissueToken(String refreshToken) {
+        // RefreshToken 확인
         RefreshToken rToken = authRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new InvalidRefreshTokenException("유효하지 않은 리프레시 토큰입니다."));
+                .orElseThrow(() -> InvalidRefreshTokenException.EXCEPTION);
 
-        //유효기간 체크
-        rToken.validateExpiry();
+        // 유효기간 체크
+        try {
+            rToken.validateExpiry();
+        } catch (Exception e) {
+            throw RefreshTokenExpiredException.EXCEPTION;
+        }
 
         String newAccessToken = tokenProvider.createAccessToken(rToken.getToken());
         String newRefreshToken = tokenProvider.createRefreshToken(rToken.getToken());

@@ -1,6 +1,7 @@
 package com.wsws.moduleapplication.user.service;
 
 import com.wsws.moduleapplication.user.dto.UserProfileResponse;
+import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.cache.CacheManager;
 import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.UserRepository;
@@ -20,7 +21,7 @@ public class UserQueryService {
 
     public UserProfileResponse getUserProfile(String userId) {
         User user = userRepository.findById(UserId.of(userId))
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
         int followerCount = getFollowerCount(userId);
         int followingCount = getFollowingCount(userId);

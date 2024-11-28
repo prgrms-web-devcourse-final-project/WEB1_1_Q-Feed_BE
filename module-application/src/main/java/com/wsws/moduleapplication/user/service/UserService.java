@@ -7,8 +7,10 @@ import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.user.PasswordEncoder;
 import com.wsws.moduledomain.user.User;
-import com.wsws.moduledomain.user.exception.DuplicateEmailException;
-import com.wsws.moduledomain.user.exception.UserNotFoundException;
+import com.wsws.moduleapplication.user.exception.DuplicateEmailException;
+import com.wsws.moduleapplication.user.exception.DuplicateNicknameException;
+import com.wsws.moduleapplication.user.exception.ProfileImageProcessingException;
+import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.Email;
 import com.wsws.moduledomain.user.vo.Nickname;
@@ -86,20 +88,20 @@ public class UserService {
 
     private void validateUniqueEmail(Email email) {
         if (userRepository.findByEmail(email).isPresent()) {
-            throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
+            throw DuplicateEmailException.EXCEPTION;
         }
     }
 
     private void validateUniqueNickname(Nickname nickname) {
         if (userRepository.findByNickname(nickname).isPresent()) {
-            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+            throw DuplicateNicknameException.EXCEPTION;
         }
     }
 
     // 사용자 조회
     private User findUserByIdOrThrow(String userId) {
         return userRepository.findById(UserId.of(userId))
-                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
     }
 
     //프로필 이미지 처리
@@ -109,7 +111,7 @@ public class UserService {
                 ProfileImageValidator.validate(profileImageFile);
                 return fileStorageService.saveFile(profileImageFile);
             } catch (Exception e) {
-                throw new IllegalStateException("프로필 이미지 처리 중 오류 발생.", e);
+                throw ProfileImageProcessingException.EXCEPTION;
             }
         }
         return null; // 이미지가 없는 경우
