@@ -5,14 +5,17 @@ import com.wsws.moduledomain.notification.vo.NotificationContent;
 import com.wsws.moduledomain.user.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Notification {
 
     @Id
-    private String notificationId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long notificationId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -40,8 +43,7 @@ public class Notification {
         this.isRead = true;
     }
 
-    public Notification(String notificationId, NotificationType type, NotificationContent content, User sender, User recipient) {
-        this.notificationId = notificationId;
+    public Notification(NotificationType type, NotificationContent content, User sender, User recipient) {
         this.type = type;
         this.content = content;
         this.sender = sender;
