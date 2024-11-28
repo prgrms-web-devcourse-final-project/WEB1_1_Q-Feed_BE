@@ -1,7 +1,12 @@
 package com.wsws.modulesecurity.exception;
 
-public class InvalidTokenException extends RuntimeException {
-    public InvalidTokenException(String message) {
-        super(message);
+import com.wsws.moduleapi.exception.ApplicationException;
+import com.wsws.moduleapi.exception.SecurityException;
+
+public class InvalidTokenException extends SecurityException {
+    public static final InvalidTokenException EXCEPTION = new InvalidTokenException();
+
+    private InvalidTokenException() {
+        super(SecurityErrorCode.INVALID_TOKEN);
     }
 }
