@@ -1,4 +1,4 @@
-package com.wsws.moduledomain.feed.Category;
+package com.wsws.moduledomain.feed.category;
 
 import com.wsws.moduledomain.follow.vo.CategoryName;
 import jakarta.persistence.*;
