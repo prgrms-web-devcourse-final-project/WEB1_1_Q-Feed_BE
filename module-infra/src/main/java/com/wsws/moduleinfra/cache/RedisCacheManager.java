@@ -2,6 +2,7 @@ package com.wsws.moduleinfra.cache;
 
 import com.wsws.moduledomain.cache.CacheManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class RedisCacheManager implements CacheManager {
 
+    @Qualifier("redisTemplateInteger")
     private final RedisTemplate<String, Integer> redisTemplate;
 
     @Override

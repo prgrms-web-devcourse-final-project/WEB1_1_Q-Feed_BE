@@ -3,6 +3,7 @@ package com.wsws.moduleinfra.repo.auth;
 import com.wsws.moduledomain.auth.RefreshToken;
 import com.wsws.moduledomain.auth.repo.AuthRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class RedisAuthRepository implements AuthRepository {
 
+    @Qualifier("redisTemplateString")
     private final RedisTemplate<String, String> redisTemplate;
 
 
