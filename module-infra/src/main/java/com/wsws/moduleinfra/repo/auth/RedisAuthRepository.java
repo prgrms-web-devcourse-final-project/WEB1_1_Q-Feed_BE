@@ -18,10 +18,15 @@ public class RedisAuthRepository implements AuthRepository {
     @Qualifier("redisTemplateString")
     private final RedisTemplate<String, String> redisTemplate;
 
+    private String createRedisKey(String token) {
+        return "auth:refreshToken:" + token;
+    }
+
 
     @Override
     public Optional<RefreshToken> findByToken(String token) {
-        String storedToken = redisTemplate.opsForValue().get(token);
+        String key = createRedisKey(token);
+        String storedToken = redisTemplate.opsForValue().get(key);
         if (storedToken == null) {
             return Optional.empty();
         }
@@ -30,11 +35,13 @@ public class RedisAuthRepository implements AuthRepository {
 
     @Override
     public void save(RefreshToken refreshToken) {
-        redisTemplate.opsForValue().set(refreshToken.getToken(), refreshToken.getToken(), 7, TimeUnit.DAYS);
+        String key = createRedisKey(refreshToken.getToken());
+        redisTemplate.opsForValue().set(key, refreshToken.getToken(), 7, TimeUnit.DAYS);
     }
 
     @Override
     public void deleteByToken(String token) {
-        redisTemplate.delete(token);
+        String key = createRedisKey(token);
+        redisTemplate.delete(key);
     }
 }
