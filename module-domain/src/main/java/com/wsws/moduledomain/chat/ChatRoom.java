@@ -18,24 +18,34 @@ public class ChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "value", column = @Column(name = "user_id")))
-    private UserId userId;
+    @Column(nullable = false)
+    private String userId;
 
-    @Embedded
-    @AttributeOverrides( @AttributeOverride(name = "value", column = @Column(name = "user_id2")))
-    private UserId userId2;
+    @Column(nullable = false)
+    private String userId2;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    private LocalDateTime lastMessageTime;
+
     @OneToMany(mappedBy="chatRoom", cascade = CascadeType.ALL, orphanRemoval = true )
     private List<ChatMessage> messages = new ArrayList<>();
 
-    public ChatRoom(UserId userId, UserId userId2) {
+    public ChatRoom(String userId, String userId2) {
         this.userId = userId;
         this.userId2 = userId2;
         this.createdAt = LocalDateTime.now();
     }
 
+    public static ChatRoom create(String userId, String userId2) {
+        if(userId.equals(userId2)) {
+            throw new IllegalArgumentException("자기 자신을 선택할 수 없습니다.");
+        }
+        return new ChatRoom(userId, userId2);
+    }
+
+    public void updateLastMessageTime(LocalDateTime lastMessageTime) {
+        this.lastMessageTime = lastMessageTime;
+    }
 }
