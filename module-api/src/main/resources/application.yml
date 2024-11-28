@@ -1,9 +1,7 @@
 spring:
   config:
-    import: optional:file:.env[.properties]
+    import:
+      - file:/Users/lee/final-project/WEB1_1_Q-Feed_BE/module-infra/src/main/resources/application-infra.yml
+      - file:/Users/lee/final-project/WEB1_1_Q-Feed_BE/module-security/src/main/resources/application-security.yml
 
-spring:
-  datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+
