@@ -1,4 +1,4 @@
-package com.wsws.moduleapi.exception;
+package com.wsws.modulecommon.exception;
 
 public class ApiException extends CustomException{
     public ApiException(BaseErrorCode errorCode, String message) {

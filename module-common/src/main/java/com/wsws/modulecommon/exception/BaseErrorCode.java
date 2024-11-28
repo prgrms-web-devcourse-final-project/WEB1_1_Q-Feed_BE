@@ -1,4 +1,4 @@
-package com.wsws.moduleapi.exception;
+package com.wsws.modulecommon.exception;
 
 public interface BaseErrorCode {
     ErrorInfo getErrorInfo();

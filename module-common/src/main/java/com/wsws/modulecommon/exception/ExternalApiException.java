@@ -1,4 +1,4 @@
-package com.wsws.moduleapi.exception;
+package com.wsws.modulecommon.exception;
 
 public class ExternalApiException extends CustomException{
     public ExternalApiException(BaseErrorCode errorCode, String sourceLayer) {
