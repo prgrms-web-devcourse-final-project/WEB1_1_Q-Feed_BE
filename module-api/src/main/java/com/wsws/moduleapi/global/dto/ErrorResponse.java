@@ -1,4 +1,4 @@
-package com.wsws.modulecommon.global.dto;
+package com.wsws.moduleapi.global.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
