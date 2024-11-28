@@ -21,11 +21,15 @@ public class Nickname {
     @Column(name = "nickname", nullable = false, length = 30)
     private String value;
 
-    public Nickname(final String nickname) {
+    private Nickname(final String nickname) {
         if (!PATTERN.matcher(nickname).matches()) {
             throw new IllegalArgumentException(ERR_MSG);
         }
         this.value = nickname;
+    }
+
+    public static Nickname from(final String nickname) {
+        return new Nickname(nickname);
     }
 }
 

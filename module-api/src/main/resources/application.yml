@@ -1,1 +1,8 @@
-spring.application.name=module-api
+spring:
+  config:
+    import:
+      - file:/Users/lee/final-project/WEB1_1_Q-Feed_BE/module-infra/src/main/resources/application-infra.yml
+      - file:/Users/lee/final-project/WEB1_1_Q-Feed_BE/module-security/src/main/resources/application-security.yml
+
+
+
