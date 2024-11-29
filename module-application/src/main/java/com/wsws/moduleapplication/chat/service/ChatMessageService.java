@@ -1,6 +1,8 @@
 package com.wsws.moduleapplication.chat.service;
 
 import com.wsws.moduleapplication.chat.dto.ChatMessageRequest;
+import com.wsws.moduleapplication.chat.exception.ChatRoomNotFoundException;
+import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduleapplication.util.FileValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.chat.ChatMessage;
@@ -59,12 +61,12 @@ public class ChatMessageService {
 
     private ChatRoom getChatRoomById(Long chatRoomId) {
         return chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new IllegalArgumentException("채팅방이 존재하지 않습니다."));
+                .orElseThrow(() -> ChatRoomNotFoundException.EXCEPTION);
     }
 
     private User getUserById(String senderId) {
         return userRepository.findById(UserId.of(senderId))
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
     }
 
     //이미지 or 음성 처리

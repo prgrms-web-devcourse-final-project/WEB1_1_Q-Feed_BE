@@ -2,6 +2,8 @@ package com.wsws.moduleapplication.chat.service;
 
 import com.wsws.moduleapplication.chat.dto.ChatRoomServiceRequest;
 import com.wsws.moduleapplication.chat.dto.ChatRoomServiceResponse;
+import com.wsws.moduleapplication.chat.exception.AlreadyChatRoomException;
+import com.wsws.moduleapplication.chat.exception.ChatRoomNotFoundException;
 import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.chat.ChatMessage;
 import com.wsws.moduledomain.chat.ChatRoom;
@@ -18,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.wsws.moduleapplication.chat.exception.ChatServiceErrorCode.CHATROOM_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class ChatRoomService {
@@ -28,9 +32,11 @@ public class ChatRoomService {
 
     @Transactional
     public void createChatRoom(ChatRoomServiceRequest req) {
+        System.out.println("aa"+req);
+        System.out.println("userid"+req.userId()+"userid2"+req.userId2());
         // 기존 채팅방이 존재하는지 확인
         if (chatRoomRepository.findChatRoomBetweenUsers(req.userId(), req.userId2()).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 채팅방이 있습니다.");
+            throw AlreadyChatRoomException.EXCEPTION;
         }
         ChatRoom chatRoom = ChatRoom.create(req.userId(), req.userId2());
         chatRoomRepository.save(chatRoom);
@@ -38,8 +44,7 @@ public class ChatRoomService {
 
     @Transactional
     public void deleteChatRoom(Long chatRoomId) {
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new IllegalArgumentException("삭제하려는 채팅방이 존재하지 않습니다."));
+        ChatRoom chatRoom = getChatRoomById(chatRoomId);
         chatRoomRepository.delete(chatRoom);
     }
 
@@ -67,8 +72,7 @@ public class ChatRoomService {
 
     //채팅방 찾기
     public ChatRoomServiceResponse getChatRoomWithOtherUser(String userId, String userId2) {
-        ChatRoom chatRoom = chatRoomRepository.findChatRoomBetweenUsers(userId, userId2)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자와의 채팅방이 존재하지 않습니다."));
+        ChatRoom chatRoom = findChatRoomBetweenUsers(userId, userId2);
 
         User otherUser = getUserById(userId2);
 
@@ -85,9 +89,19 @@ public class ChatRoomService {
 
     }
 
+    private ChatRoom getChatRoomById(Long chatRoomId) {
+        return chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> ChatRoomNotFoundException.EXCEPTION);
+    }
+
+    private ChatRoom findChatRoomBetweenUsers(String userId, String userId2) {
+        return chatRoomRepository.findChatRoomBetweenUsers(userId, userId2)
+                .orElseThrow(() -> ChatRoomNotFoundException.EXCEPTION);
+    }
+
     private User getUserById(String senderId) {
         return userRepository.findById(UserId.of(senderId))
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
     }
 
     // 다른 사용자의 정보 가져오기
