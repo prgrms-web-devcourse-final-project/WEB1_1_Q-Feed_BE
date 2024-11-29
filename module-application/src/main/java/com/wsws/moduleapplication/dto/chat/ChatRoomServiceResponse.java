@@ -1,21 +1,18 @@
 package com.wsws.moduleapplication.dto.chat;
 
+import com.wsws.moduleapplication.dto.user.UserProfileResponse;
 import com.wsws.moduledomain.chat.ChatMessage;
 import com.wsws.moduledomain.chat.ChatRoom;
+import com.wsws.moduledomain.user.vo.Nickname;
 
 import java.time.LocalDateTime;
 
-public record ChatRoomServiceResponse(Long chatRoomId, String user2Nickname, String lastMessage, LocalDateTime lastMessageTime) {
+public record ChatRoomServiceResponse(
+        Long chatRoomId,
+        Nickname otherUserNickname,
+        String otherUserProfile,
+        String lastMessageContent,
+        LocalDateTime lastMessageCreatedAt
+) {
 
-    public static ChatRoomServiceResponse fromEntity(ChatRoom chatRoom, String userId) {
-
-        String otherUserId = chatRoom.getUserId().equals(userId) ? chatRoom.getUserId2() : chatRoom.getUserId();
-
-        return new ChatRoomServiceResponse(
-                chatRoom.getId(),
-                otherUserId,
-               "마지막메세지",
-                chatRoom.getLastMessageTime()
-        );
-    }
 }

@@ -27,8 +27,6 @@ public class ChatRoom {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    private LocalDateTime lastMessageTime;
-
     @OneToMany(mappedBy="chatRoom", cascade = CascadeType.ALL, orphanRemoval = true )
     private List<ChatMessage> messages = new ArrayList<>();
 
@@ -45,7 +43,4 @@ public class ChatRoom {
         return new ChatRoom(userId, userId2);
     }
 
-    public void updateLastMessageTime(LocalDateTime lastMessageTime) {
-        this.lastMessageTime = lastMessageTime;
-    }
 }
