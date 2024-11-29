@@ -1,7 +1,13 @@
 package com.wsws.moduledomain.user.exception;
 
-public class InvalidEmailFormatException extends RuntimeException {
-    public InvalidEmailFormatException(String message) {
-        super(message);
+
+import com.wsws.modulecommon.exception.DomainException;
+
+public class InvalidEmailFormatException extends DomainException {
+    public static final InvalidEmailFormatException EXCEPTION = new InvalidEmailFormatException();
+
+    private InvalidEmailFormatException() {
+        super(UserErrorCode.INVALID_EMAIL_FORMAT);
     }
+
 }

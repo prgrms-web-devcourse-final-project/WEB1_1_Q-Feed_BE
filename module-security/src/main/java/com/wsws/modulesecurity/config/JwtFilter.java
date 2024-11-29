@@ -1,5 +1,7 @@
 package com.wsws.modulesecurity.config;
 
+import com.wsws.modulesecurity.exception.InvalidTokenException;
+import com.wsws.modulesecurity.exception.TokenExpiredException;
 import com.wsws.modulesecurity.security.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,20 +30,20 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             if (token != null && jwtProvider.validateToken(token)) {
                 SecurityContextHolder.getContext().setAuthentication(jwtProvider.getAuthentication(token));
-                log.info("Authentication successful for token: {}", token);
             }
-        } catch (Exception e) {
+        } catch (InvalidTokenException | TokenExpiredException e) {
             log.error("JWT Filter error: {}", e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
+            return;
         }
 
         filterChain.doFilter(request, response);
     }
 
-
     private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization"); //헤더에서 Authorization붙은 것 가져오기
+        String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7); //Bearer 제거
+            return bearerToken.substring(7);
         }
         return null;
     }

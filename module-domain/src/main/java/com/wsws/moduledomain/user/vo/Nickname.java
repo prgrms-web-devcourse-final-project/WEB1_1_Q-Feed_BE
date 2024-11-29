@@ -1,5 +1,6 @@
 package com.wsws.moduledomain.user.vo;
 
+import com.wsws.moduledomain.user.exception.InvalidNicknameFormatException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -23,7 +24,7 @@ public class Nickname {
 
     private Nickname(final String nickname) {
         if (!PATTERN.matcher(nickname).matches()) {
-            throw new IllegalArgumentException(ERR_MSG);
+            throw InvalidNicknameFormatException.EXCEPTION;
         }
         this.value = nickname;
     }

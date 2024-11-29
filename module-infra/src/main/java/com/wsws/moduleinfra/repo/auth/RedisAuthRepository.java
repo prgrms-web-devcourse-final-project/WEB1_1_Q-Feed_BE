@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class RedisAuthRepository implements AuthRepository {
 
-    @Qualifier("redisTemplateString")
+    @Qualifier("redisTemplate")
     private final RedisTemplate<String, String> redisTemplate;
 
     private String createRedisKey(String token) {

@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: module-api
   config:
     import:
       - file:${ABSOLUTE_PATH}/module-infra/src/main/resources/application-infra.yml
