@@ -1,4 +1,4 @@
-package com.wsws.moduleexternalapi.ai.client;
+package com.wsws.moduleexternalapi.feed.client;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.messages.Message;
@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
-public class AIQuestionClient {
+public class QuestionGenerateClient {
     private final ChatModel chatModel;
     private final ChatOptions chatOptions;
 
