@@ -1,6 +1,7 @@
 package com.wsws.moduledomain.auth;
 
 import com.wsws.moduledomain.auth.exception.ExpiredRefreshTokenException;
+import com.wsws.moduledomain.auth.exception.InvalidRefreshTokenException;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -18,21 +19,21 @@ public class RefreshToken {
 
     public static RefreshToken create(String token, LocalDateTime expiryDate) {
         if (token == null || token.isEmpty()) {
-            throw new IllegalArgumentException("Token cannot be null or empty.");
+            throw  InvalidRefreshTokenException.EXCEPTION;
         }
         if (expiryDate == null || expiryDate.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Invalid expiry date.");
+            throw ExpiredRefreshTokenException.EXCEPTION;
         }
         return new RefreshToken(token, expiryDate);
     }
 
-    public boolean isExpired() {
+    private boolean isExpired() {
         return LocalDateTime.now().isAfter(expiryDate);
     }
 
     public void validateExpiry() {
         if (isExpired()) {
-            throw new ExpiredRefreshTokenException("Refresh token has expired.");
+            throw ExpiredRefreshTokenException.EXCEPTION;
         }
     }
 }

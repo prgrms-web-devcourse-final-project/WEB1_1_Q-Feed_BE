@@ -1,6 +1,8 @@
 package com.wsws.modulesecurity.security;
 
 import com.wsws.moduledomain.auth.TokenProvider;
+import com.wsws.modulesecurity.exception.InvalidTokenException;
+import com.wsws.modulesecurity.exception.TokenExpiredException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -30,24 +32,18 @@ public class JwtProvider implements TokenProvider {
     @Value("${security.jwt.refresh-expiration}")
     private long refreshExpiration;
 
-
-
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
     @Override
     public String createAccessToken(String userId) {
-        String token = createToken(userId, accessExpiration);
-        log.info("Access token 생성 userId: {}", userId);
-        return token;
+        return createToken(userId, accessExpiration);
     }
 
     @Override
     public String createRefreshToken(String userId) {
-        String token = createToken(userId, refreshExpiration);
-        log.info("Refresh token 생성 userId: {}", userId);
-        return token;
+        return createToken(userId, refreshExpiration);
     }
 
     private String createToken(String userId, long expiration) {
@@ -63,11 +59,11 @@ public class JwtProvider implements TokenProvider {
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
-            log.info("토큰 유효성 검증 성공: {}", token);
             return true;
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            throw TokenExpiredException.EXCEPTION;
         } catch (Exception e) {
-            log.error("토큰 유효성 검증 실패: {}", e.getMessage());
-            return false;
+            throw InvalidTokenException.EXCEPTION;
         }
     }
 
@@ -79,8 +75,6 @@ public class JwtProvider implements TokenProvider {
                 .getBody();
         String userId = claims.getSubject();
 
-        UserPrincipal userPrincipal = new UserPrincipal(userId);
-        log.info("Authentication object created for userId: {}", userId);
-        return new UsernamePasswordAuthenticationToken(userPrincipal, null, null);
+        return new UsernamePasswordAuthenticationToken(new UserPrincipal(userId), null, null);
     }
 }

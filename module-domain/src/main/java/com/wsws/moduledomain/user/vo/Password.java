@@ -1,6 +1,8 @@
 package com.wsws.moduledomain.user.vo;
 
 import com.wsws.moduledomain.user.PasswordEncoder;
+import com.wsws.moduledomain.user.exception.InvalidPasswordFormatException;
+import com.wsws.moduledomain.auth.exception.PasswordMismatchException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -16,7 +18,6 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Password {
     public static final String REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,20}";
-    public static final String ERR_MSG = "비밀번호는 8~20, 최소 하나의 영어소문자, 영어 대문자, 특수 문자, 숫자 이상 포함되어야 합니다.";
     private static final Pattern PATTERN = Pattern.compile(REGEX); // 정적 필드로 사용 -> 대량 검증시 성능 저하 덜함
 
     @Column(nullable = false, name="password")
@@ -31,13 +32,15 @@ public class Password {
         return new Password(passwordEncoder.encode(rawPassword));
     }
 
-    public boolean matches(final String rawPassword, final PasswordEncoder passwordEncoder) {
-        return passwordEncoder.matches(rawPassword, this.value);
+    public void matches(final String rawPassword, final PasswordEncoder passwordEncoder) {
+        if (!passwordEncoder.matches(rawPassword, this.value)) {
+            throw PasswordMismatchException.EXCEPTION; // 예외 처리
+        }
     }
 
     public static void validate(final String password) {
         if (!PATTERN.matcher(password).matches()) {
-            throw new IllegalArgumentException(ERR_MSG);
+            throw InvalidPasswordFormatException.EXCEPTION;
         }
     }
 

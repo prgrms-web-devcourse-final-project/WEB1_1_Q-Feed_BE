@@ -1,8 +1,13 @@
 package com.wsws.moduledomain.user.exception;
 
-public class InvalidNicknameFormatException extends RuntimeException {
-    public InvalidNicknameFormatException(String message) {
-        super(message);
+import com.wsws.moduleapi.exception.DomainException;
+
+public class InvalidNicknameFormatException extends DomainException {
+    public static final InvalidNicknameFormatException EXCEPTION = new InvalidNicknameFormatException();
+
+    private InvalidNicknameFormatException() {
+        super(UserErrorCode.INVALID_NICKNAME_FORMAT);
     }
+
 }
 
