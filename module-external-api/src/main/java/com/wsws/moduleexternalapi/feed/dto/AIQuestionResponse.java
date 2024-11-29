@@ -1,4 +1,4 @@
-package com.wsws.moduleexternalapi.ai.dto;
+package com.wsws.moduleexternalapi.feed.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 public record AIQuestionResponse(
