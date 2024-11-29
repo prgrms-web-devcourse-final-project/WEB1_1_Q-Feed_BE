@@ -1,7 +1,7 @@
 package com.wsws.modulesecurity.exception;
 
 
-import com.wsws.moduleapi.exception.SecurityException;
+import com.wsws.modulecommon.exception.SecurityException;
 
 public class UserNotFoundException extends SecurityException {
     public static final UserNotFoundException EXCEPTION = new UserNotFoundException();

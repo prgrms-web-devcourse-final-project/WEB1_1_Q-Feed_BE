@@ -1,9 +1,7 @@
 package com.wsws.moduledomain.auth.exception;
 
-import com.wsws.moduleapi.exception.ApplicationException;
-import com.wsws.moduleapi.exception.DomainException;
-import com.wsws.moduledomain.user.exception.UserErrorCode;
 
+import com.wsws.modulecommon.exception.DomainException;
 
 public class PasswordMismatchException extends DomainException {
     public static final PasswordMismatchException EXCEPTION = new PasswordMismatchException();

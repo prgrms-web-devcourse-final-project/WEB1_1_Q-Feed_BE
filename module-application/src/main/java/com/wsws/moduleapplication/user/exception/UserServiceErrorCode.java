@@ -1,10 +1,11 @@
 package com.wsws.moduleapplication.user.exception;
 
-import com.wsws.moduleapi.exception.BaseErrorCode;
-import com.wsws.moduleapi.exception.ErrorInfo;
+import com.wsws.modulecommon.exception.BaseErrorCode;
+import com.wsws.modulecommon.exception.ErrorInfo;
 import lombok.RequiredArgsConstructor;
 
-import static com.wsws.moduleapi.constants.ErrorCodeConstants.*;
+import static com.wsws.modulecommon.constants.ErrorCodeConstants.*;
+
 
 @RequiredArgsConstructor
 public enum UserServiceErrorCode implements BaseErrorCode {
