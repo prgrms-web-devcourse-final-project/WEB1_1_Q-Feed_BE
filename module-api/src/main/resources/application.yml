@@ -3,6 +3,6 @@ spring:
     import:
       - file:${ABSOLUTE_PATH}/module-infra/src/main/resources/application-infra.yml
       - file:${ABSOLUTE_PATH}/module-security/src/main/resources/application-security.yml
-#      - file:${ABSOLUTE_PATH}/module-external-api/src/main/resources/application-external-api.yml
+      - file:${ABSOLUTE_PATH}/module-external-api/src/main/resources/application-external-api.yml
 
 
