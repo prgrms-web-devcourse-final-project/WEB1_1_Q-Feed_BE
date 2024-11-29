@@ -2,7 +2,7 @@ package com.wsws.moduleapi.chat.controller;
 
 import com.wsws.moduleapplication.chat.dto.ChatMessageRequest;
 import com.wsws.moduleapplication.chat.service.ChatMessageService;
-import com.wsws.moduleinfra.repo.chat.MongoChatMessageRepository;
+import com.wsws.moduleinfra.repo.chat.JpaChatMessageRepository;
 import com.wsws.moduleinfra.repo.chat.dto.ChatMessageInfraDTO;
 import com.wsws.modulesecurity.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/chats")
 public class ChatMessageController {
     private final ChatMessageService chatMessageService;
-    private final MongoChatMessageRepository mongoChatMessageRepository;
+    private final JpaChatMessageRepository jpaChatMessageRepository;
 
     @PostMapping("/{chatRoomId}/send")
     public ResponseEntity<String> sendMessage( @PathVariable Long chatRoomId, @RequestBody ChatMessageRequest request,
@@ -37,7 +37,7 @@ public class ChatMessageController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        List<ChatMessageInfraDTO> messages = mongoChatMessageRepository.findMessagesWithUserDetails(chatRoomId, pageable);
+        List<ChatMessageInfraDTO> messages = jpaChatMessageRepository.findMessagesWithUserDetails(chatRoomId, pageable);
         return ResponseEntity.ok(messages);
     }
 

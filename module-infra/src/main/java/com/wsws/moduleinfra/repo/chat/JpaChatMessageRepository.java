@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-public interface MongoChatMessageRepository extends JpaRepository<ChatMessage, String>, ChatMessageRepository {
+public interface JpaChatMessageRepository extends JpaRepository<ChatMessage, String>, ChatMessageRepository {
 
     @Query("SELECT new com.wsws.moduleinfra.repo.chat.dto.ChatMessageInfraDTO(" +
             "m.id, m.content, m.type, m.url, m.isRead, m.createdAt,u.id, u.nickname, u.profileImage) " +
