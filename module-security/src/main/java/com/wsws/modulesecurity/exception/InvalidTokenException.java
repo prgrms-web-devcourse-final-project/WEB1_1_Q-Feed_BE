@@ -1,6 +1,5 @@
 package com.wsws.modulesecurity.exception;
 
-import com.wsws.moduleapi.exception.ApplicationException;
 import com.wsws.moduleapi.exception.SecurityException;
 
 public class InvalidTokenException extends SecurityException {
