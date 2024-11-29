@@ -1,8 +1,8 @@
 package com.wsws.moduleapi.global.exception;
 
-import com.wsws.moduleapi.exception.CustomException;
-import com.wsws.moduleapi.exception.ErrorInfo;
-import com.wsws.moduleapi.exception.GlobalErrorCode;
+import com.wsws.modulecommon.exception.CustomException;
+import com.wsws.modulecommon.exception.ErrorInfo;
+import com.wsws.modulecommon.exception.GlobalErrorCode;
 import com.wsws.moduleapi.global.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;

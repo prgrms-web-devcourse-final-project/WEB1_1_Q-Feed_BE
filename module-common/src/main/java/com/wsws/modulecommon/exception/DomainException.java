@@ -1,4 +1,4 @@
-package com.wsws.moduleapi.exception;
+package com.wsws.modulecommon.exception;
 
 public class DomainException extends CustomException {
     public DomainException(BaseErrorCode errorCode, String message) {

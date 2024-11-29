@@ -1,7 +1,7 @@
 package com.wsws.moduleapplication.follow.exception;
 
 
-import com.wsws.moduleapi.exception.ApplicationException;
+import com.wsws.modulecommon.exception.ApplicationException;
 
 public class AlreadyFollowedException extends ApplicationException {
     public static final AlreadyFollowedException EXCEPTION = new AlreadyFollowedException();

@@ -1,4 +1,4 @@
-package com.wsws.moduleapi.constants;
+package com.wsws.modulecommon.constants;
 
 public class ErrorCodeConstants {
 

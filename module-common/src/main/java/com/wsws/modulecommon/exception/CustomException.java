@@ -1,4 +1,4 @@
-package com.wsws.moduleapi.exception;
+package com.wsws.modulecommon.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

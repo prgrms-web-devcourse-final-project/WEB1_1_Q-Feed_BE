@@ -1,6 +1,7 @@
 package com.wsws.moduledomain.user.exception;
 
-import com.wsws.moduleapi.exception.DomainException;
+
+import com.wsws.modulecommon.exception.DomainException;
 
 public class InvalidPasswordFormatException extends DomainException {
 

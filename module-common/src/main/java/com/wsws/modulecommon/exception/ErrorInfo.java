@@ -1,4 +1,4 @@
-package com.wsws.moduleapi.exception;
+package com.wsws.modulecommon.exception;
 
 public record ErrorInfo(Integer status, String errorCode, String message) {
     public static ErrorInfo of(Integer status, String errorCode, String message) {

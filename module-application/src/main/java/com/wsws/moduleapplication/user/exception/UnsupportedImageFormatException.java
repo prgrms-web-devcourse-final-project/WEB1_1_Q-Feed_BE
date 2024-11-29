@@ -1,8 +1,6 @@
 package com.wsws.moduleapplication.user.exception;
 
-import com.wsws.moduleapi.exception.ApplicationException;
-import com.wsws.moduleapi.exception.DomainException;
-import com.wsws.moduledomain.user.exception.UserErrorCode;
+import com.wsws.modulecommon.exception.ApplicationException;
 
 public class UnsupportedImageFormatException extends ApplicationException {
     public static final UnsupportedImageFormatException EXCEPTION = new UnsupportedImageFormatException();

@@ -1,4 +1,4 @@
-package com.wsws.moduleapi.exception;
+package com.wsws.modulecommon.exception;
 
 public class ApplicationException extends CustomException{
     public ApplicationException(BaseErrorCode errorCode, String message) {

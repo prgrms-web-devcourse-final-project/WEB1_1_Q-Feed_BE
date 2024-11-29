@@ -1,6 +1,7 @@
 package com.wsws.moduleapplication.auth.exception;
 
-import com.wsws.moduleapi.exception.ApplicationException;
+
+import com.wsws.modulecommon.exception.ApplicationException;
 
 public class InvalidRefreshTokenException extends ApplicationException {
     public static final InvalidRefreshTokenException EXCEPTION = new InvalidRefreshTokenException();
