@@ -1,4 +1,4 @@
-package com.wsws.moduleapi.controller.notification;
+package com.wsws.moduleapi.notification.controller;
 
 import com.wsws.moduleapplication.dto.notification.NotificationServiceRequestDto;
 import com.wsws.moduleapplication.service.notification.NotificationService;
