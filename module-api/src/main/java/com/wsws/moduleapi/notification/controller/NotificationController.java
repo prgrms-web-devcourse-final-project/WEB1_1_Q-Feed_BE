@@ -1,7 +1,7 @@
 package com.wsws.moduleapi.notification.controller;
 
-import com.wsws.moduleapplication.dto.notification.NotificationServiceRequestDto;
-import com.wsws.moduleapplication.service.notification.NotificationService;
+import com.wsws.moduleapplication.notification.dto.NotificationServiceRequestDto;
+import com.wsws.moduleapplication.notification.service.NotificationService;
 import com.wsws.moduledomain.user.vo.UserId;
 import com.wsws.moduleinfra.repo.notification.NotificationReadRepository;
 import com.wsws.moduleinfra.repo.notification.dto.NotificationResponseInfraDto;
