@@ -10,7 +10,6 @@ import java.util.Optional;
 @Repository
 public interface NotificationRepository {
     List<Notification> findByRecipientIdAndIsReadFalse(UserId recipientId);
-    List<Notification> findByRecipientId(UserId recipientId);
     Optional<Notification> findById(Long notificationId);
     Notification save(Notification notification);
 }

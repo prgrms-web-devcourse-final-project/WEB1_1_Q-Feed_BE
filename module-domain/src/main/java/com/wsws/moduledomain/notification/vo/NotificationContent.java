@@ -20,9 +20,5 @@ public class NotificationContent {
         }
         this.content = content;
     }
-
-    public String getContent() {
-        return content;
-    }
-
 }
+
