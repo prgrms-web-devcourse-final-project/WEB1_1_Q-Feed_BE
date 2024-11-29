@@ -9,7 +9,6 @@ import com.wsws.moduledomain.chat.MessageType;
 import com.wsws.moduledomain.chat.repo.ChatMessageRepository;
 import com.wsws.moduledomain.chat.repo.ChatRoomRepository;
 import com.wsws.moduledomain.user.User;
-import com.wsws.moduledomain.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.UserId;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +64,7 @@ public class ChatMessageService {
 
     private User getUserById(String senderId) {
         return userRepository.findById(UserId.of(senderId))
-                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
 
     //이미지 or 음성 처리

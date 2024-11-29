@@ -1,7 +1,6 @@
 package com.wsws.moduleapi.chat.dto;
 
 import com.wsws.moduleapplication.chat.dto.ChatRoomServiceResponse;
-import com.wsws.moduleapplication.dto.user.UserProfileResponse;
 import com.wsws.moduledomain.user.vo.Nickname;
 
 import java.time.LocalDateTime;

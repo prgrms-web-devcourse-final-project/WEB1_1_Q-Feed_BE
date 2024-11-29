@@ -2,13 +2,12 @@ package com.wsws.moduleapplication.chat.service;
 
 import com.wsws.moduleapplication.chat.dto.ChatRoomServiceRequest;
 import com.wsws.moduleapplication.chat.dto.ChatRoomServiceResponse;
-import com.wsws.moduleapplication.service.user.UserService;
+import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.chat.ChatMessage;
 import com.wsws.moduledomain.chat.ChatRoom;
 import com.wsws.moduledomain.chat.repo.ChatMessageRepository;
 import com.wsws.moduledomain.chat.repo.ChatRoomRepository;
 import com.wsws.moduledomain.user.User;
-import com.wsws.moduledomain.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.UserId;
 
@@ -88,7 +87,7 @@ public class ChatRoomService {
 
     private User getUserById(String senderId) {
         return userRepository.findById(UserId.of(senderId))
-                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
 
     // 다른 사용자의 정보 가져오기
