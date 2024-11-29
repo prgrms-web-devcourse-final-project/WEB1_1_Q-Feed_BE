@@ -22,7 +22,7 @@ public class ScheduledQuestionUpdateService {
      * 어제 질문들은 isToday: ACTIVATED -> INACTICATED
      * 오늘 질문들은 isToday: CREATED -> ACTIVATED
      */
-    @Scheduled(cron = "*/5 * * * * *") // 매일 00시 00분에 실행되도록 설정
+    @Scheduled(cron = "0 0 0 * * ?") // 매일 00시 00분에 실행되도록 설정
     public void updateQuestions() {
         // 어제 질문들 비활성화
         questionRepository.findByQuestionStatus(QuestionStatus.ACTIVATED)
