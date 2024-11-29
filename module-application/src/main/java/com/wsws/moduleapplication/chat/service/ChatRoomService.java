@@ -1,7 +1,7 @@
-package com.wsws.moduleapplication.service.chat;
+package com.wsws.moduleapplication.chat.service;
 
-import com.wsws.moduleapplication.dto.chat.ChatRoomServiceRequest;
-import com.wsws.moduleapplication.dto.chat.ChatRoomServiceResponse;
+import com.wsws.moduleapplication.chat.dto.ChatRoomServiceRequest;
+import com.wsws.moduleapplication.chat.dto.ChatRoomServiceResponse;
 import com.wsws.moduleapplication.service.user.UserService;
 import com.wsws.moduledomain.chat.ChatMessage;
 import com.wsws.moduledomain.chat.ChatRoom;

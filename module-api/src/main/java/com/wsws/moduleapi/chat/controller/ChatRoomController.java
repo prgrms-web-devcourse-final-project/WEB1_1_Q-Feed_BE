@@ -1,15 +1,12 @@
-package com.wsws.moduleapi.controller.chat;
+package com.wsws.moduleapi.chat.controller;
 
-import com.wsws.moduleapi.dto.chat.ChatRoomApiResponse;
-import com.wsws.moduleapplication.dto.chat.ChatRoomServiceRequest;
-import com.wsws.moduleapplication.dto.chat.ChatRoomServiceResponse;
-import com.wsws.moduleapplication.service.chat.ChatRoomService;
-import com.wsws.moduledomain.chat.ChatRoom;
+import com.wsws.moduleapi.chat.dto.ChatRoomApiResponse;
+import com.wsws.moduleapplication.chat.dto.ChatRoomServiceRequest;
+import com.wsws.moduleapplication.chat.dto.ChatRoomServiceResponse;
+import com.wsws.moduleapplication.chat.service.ChatRoomService;
 import com.wsws.moduleinfra.repo.chat.JpaChatRoomRepository;
-import com.wsws.moduleinfra.repo.chat.dto.ChatRoomInfraDTO;
 import com.wsws.modulesecurity.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

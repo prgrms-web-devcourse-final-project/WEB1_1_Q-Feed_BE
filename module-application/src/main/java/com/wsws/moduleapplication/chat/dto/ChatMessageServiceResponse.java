@@ -1,4 +1,4 @@
-package com.wsws.moduleapplication.dto.chat;
+package com.wsws.moduleapplication.chat.dto;
 
 import com.wsws.moduledomain.chat.MessageType;
 import com.wsws.moduledomain.user.vo.Nickname;

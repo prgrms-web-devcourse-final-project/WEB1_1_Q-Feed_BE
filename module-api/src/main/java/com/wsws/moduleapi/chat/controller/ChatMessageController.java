@@ -1,11 +1,9 @@
-package com.wsws.moduleapi.controller.chat;
+package com.wsws.moduleapi.chat.controller;
 
-import com.wsws.moduleapplication.dto.chat.ChatMessageRequest;
-import com.wsws.moduleapplication.service.chat.ChatMessageService;
-import com.wsws.moduledomain.chat.ChatMessage;
+import com.wsws.moduleapplication.chat.dto.ChatMessageRequest;
+import com.wsws.moduleapplication.chat.service.ChatMessageService;
 import com.wsws.moduleinfra.repo.chat.MongoChatMessageRepository;
 import com.wsws.moduleinfra.repo.chat.dto.ChatMessageInfraDTO;
-import com.wsws.moduleinfra.repo.follow.dto.FollowResponseInfraDto;
 import com.wsws.modulesecurity.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;

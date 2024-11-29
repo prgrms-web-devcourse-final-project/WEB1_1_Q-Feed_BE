@@ -1,8 +1,7 @@
-package com.wsws.moduleapplication.service.chat;
+package com.wsws.moduleapplication.chat.service;
 
-import com.wsws.moduleapplication.dto.chat.ChatMessageRequest;
+import com.wsws.moduleapplication.chat.dto.ChatMessageRequest;
 import com.wsws.moduleapplication.util.FileValidator;
-import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.chat.ChatMessage;
 import com.wsws.moduledomain.chat.ChatRoom;
