@@ -1,4 +1,4 @@
-package com.wsws.moduleapplication.dto.notification;
+package com.wsws.moduleapplication.notification.dto;
 
 import com.wsws.moduledomain.notification.NotificationType;
 import com.wsws.moduledomain.user.vo.UserId;
