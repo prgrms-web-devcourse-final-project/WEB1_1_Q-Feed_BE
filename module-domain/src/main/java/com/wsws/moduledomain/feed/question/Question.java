@@ -4,6 +4,7 @@ import com.wsws.moduledomain.feed.category.Category;
 import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -22,6 +23,16 @@ public class Question {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+
+
+    public static Question create(String content, QuestionStatus questionStatus, LocalDateTime createdAt, Category category) {
+        Question question = new Question();
+        question.content = content;
+        question.questionStatus = questionStatus;
+        question.createdAt = createdAt;
+        question.category = category;
+        return question;
+    }
 
     // 비즈니스 로직 //
 
