@@ -1,4 +1,4 @@
-package com.wsws.moduleapi.dto.notification;
+package com.wsws.moduleapi.notification.dto;
 
 import com.wsws.moduledomain.notification.NotificationType;
 
