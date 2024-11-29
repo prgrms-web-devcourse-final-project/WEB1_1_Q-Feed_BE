@@ -1,4 +1,4 @@
-package com.wsws.moduleapplication.service.notification;
+package com.wsws.moduleapplication.notification.service;
 
 import com.wsws.moduledomain.notification.Notification;
 import com.wsws.moduledomain.notification.NotificationType;
