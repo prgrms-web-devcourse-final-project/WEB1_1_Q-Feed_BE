@@ -14,7 +14,5 @@ public interface JpaNotificationRepository extends JpaRepository<Notification, L
     @Override
     List<Notification> findByRecipientIdAndIsReadFalse(UserId recipientId);
 
-    @Override
-    List<Notification> findByRecipientId(UserId recipientId);
 }
 
