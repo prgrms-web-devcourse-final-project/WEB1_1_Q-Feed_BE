@@ -39,14 +39,21 @@ public class ChatMessage {
     @JoinColumn(name="chatRoom_id", nullable=false)
     private ChatRoom chatRoom;
 
-    public ChatMessage(String content, MessageType type, String url, Boolean isRead, LocalDateTime createdAt, UserId userId, ChatRoom chatRoom) {
+    private ChatMessage(String content, MessageType type, String url, Boolean isRead, LocalDateTime createdAt, UserId userId, ChatRoom chatRoom) {
         this.content = content;
         this.type = type;
         this.url = url;
-        this.isRead = false;
-        this.createdAt = LocalDateTime.now();
+        this.isRead = isRead;
+        this.createdAt = createdAt;
         this.userId = userId;
         this.chatRoom = chatRoom;
+    }
+
+    public static ChatMessage create(String content, MessageType type, String url, UserId userId, ChatRoom chatRoom) {
+        if (type != MessageType.TEXT && (url == null || url.isEmpty())) {
+            throw new IllegalArgumentException("URL이 필요합니다.");
+        }
+        return new ChatMessage(content, type, url, false, LocalDateTime.now(), userId, chatRoom);
     }
 
     public void markAsRead(){
