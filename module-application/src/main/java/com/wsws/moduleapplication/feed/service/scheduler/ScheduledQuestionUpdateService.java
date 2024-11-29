@@ -1,4 +1,4 @@
-package com.wsws.moduleapplication.feed.scheduler;
+package com.wsws.moduleapplication.feed.service.scheduler;
 
 import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
