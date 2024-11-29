@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -24,9 +25,10 @@ public class FollowController {
     @GetMapping("/followers/{userId}")
     public ResponseEntity<List<FollowResponseInfraDto>> getFollowers(
             @PathVariable String userId,
-            @RequestParam(defaultValue = "0") String cursor,
+            @RequestParam(required = false) String cursor,
             @RequestParam(defaultValue = "10") int size) {
-        List<FollowResponseInfraDto> followers = readRepository.findFollowersWithCursor(userId, cursor, size);
+        LocalDateTime parsedCursor = cursor != null ? LocalDateTime.parse(cursor) : null;
+        List<FollowResponseInfraDto> followers = readRepository.findFollowersWithCursor(userId, parsedCursor, size);
         return ResponseEntity.ok(followers);
     }
 
@@ -34,10 +36,11 @@ public class FollowController {
     @GetMapping("/followings/{userId}")
     public ResponseEntity<List<FollowResponseInfraDto>> getFollowings(
             @PathVariable String userId,
-            @RequestParam(defaultValue = "0") String cursor,
+            @RequestParam(required = false) String cursor,
             @RequestParam(defaultValue = "10") int size
     ){
-        List<FollowResponseInfraDto> followings = readRepository.findFollowingsWithCursor(userId, cursor, size);
+        LocalDateTime parsedCursor = cursor != null ? LocalDateTime.parse(cursor) : null;
+        List<FollowResponseInfraDto> followings = readRepository.findFollowingsWithCursor(userId, parsedCursor, size);
         return ResponseEntity.ok(followings);
     }
 
