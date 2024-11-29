@@ -62,9 +62,7 @@ public class User {
     // 비밀번호 변경
     public void changePassword(String currentPassword, String newPassword, PasswordEncoder passwordEncoder) {
         // 현재 비밀번호 확인
-        if (!this.password.matches(currentPassword, passwordEncoder)) {
-            throw PasswordMismatchException.EXCEPTION;
-        }
+        this.password.matches(currentPassword, passwordEncoder);
         // 새 비밀번호 유효성 검증
         Password.validate(newPassword);
         // 새 비밀번호 설정
