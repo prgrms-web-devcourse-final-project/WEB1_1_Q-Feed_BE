@@ -13,8 +13,7 @@ import java.util.Optional;
 @Repository
 public interface JpaChatRoomRepository extends JpaRepository<ChatRoom, Long>,ChatRoomRepository {
 
-    // 1. userId와 userId2가 일치하는 채팅방 찾기 (순서에 상관없이)
-    @Query("SELECT cr FROM ChatRoom cr WHERE (cr.userId = :userId AND cr.userId2 = :userId2) OR (cr.userId = :userId2 AND cr.userId2 = :userId)")
+    @Query("SELECT cr FROM ChatRoom cr WHERE cr.userId = :userId AND cr.userId2 = :userId2")
     Optional<ChatRoom> findChatRoomBetweenUsers(@Param("userId") String userId, @Param("userId2") String userId2);
 
     @Query("SELECT cr FROM ChatRoom cr WHERE cr.userId = :userId OR cr.userId2 = :userId")

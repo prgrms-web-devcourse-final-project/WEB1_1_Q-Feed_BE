@@ -32,8 +32,6 @@ public class ChatRoomService {
 
     @Transactional
     public void createChatRoom(ChatRoomServiceRequest req) {
-        System.out.println("aa"+req);
-        System.out.println("userid"+req.userId()+"userid2"+req.userId2());
         // 기존 채팅방이 존재하는지 확인
         if (chatRoomRepository.findChatRoomBetweenUsers(req.userId(), req.userId2()).isPresent()) {
             throw AlreadyChatRoomException.EXCEPTION;

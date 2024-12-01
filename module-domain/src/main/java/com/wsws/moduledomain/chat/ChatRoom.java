@@ -1,5 +1,6 @@
 package com.wsws.moduledomain.chat;
 
+import com.wsws.moduledomain.chat.exception.SelfSelectionNotAllowedException;
 import com.wsws.moduledomain.user.vo.UserId;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -37,10 +38,18 @@ public class ChatRoom {
     }
 
     public static ChatRoom create(String userId, String userId2) {
-        if(userId.equals(userId2)) {
-            throw new IllegalArgumentException("자기 자신을 선택할 수 없습니다.");
+        if (userId.equals(userId2)) {
+            throw  SelfSelectionNotAllowedException.EXCEPTION;
         }
-        return new ChatRoom(userId, userId2);
+
+        // 항상 userId < userId2 순서로 설정
+        if (userId.compareTo(userId2) > 0) {
+            // userId가 userId2보다 클 경우 순서를 바꿈
+            return new ChatRoom(userId2, userId);
+        } else {
+            // userId가 userId2보다 작거나 같을 경우 그대로 사용
+            return new ChatRoom(userId, userId2);
+        }
     }
 
 }

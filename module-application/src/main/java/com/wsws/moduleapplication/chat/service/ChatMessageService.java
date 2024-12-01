@@ -2,6 +2,7 @@ package com.wsws.moduleapplication.chat.service;
 
 import com.wsws.moduleapplication.chat.dto.ChatMessageRequest;
 import com.wsws.moduleapplication.chat.exception.ChatRoomNotFoundException;
+import com.wsws.moduleapplication.chat.exception.FileProcessingException;
 import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduleapplication.util.FileValidator;
 import com.wsws.modulecommon.service.FileStorageService;
@@ -83,10 +84,9 @@ public class ChatMessageService {
                         FileValidator.validate(file,"audio");
                         return fileStorageService.saveFile(file, "audios");
                     }
-                    default -> throw new IllegalArgumentException("지원하지 않는 파일 타입입니다.");
                 }
             } catch (Exception e) {
-                throw new IllegalStateException("파일 처리 중 오류 발생.", e);
+                throw FileProcessingException.EXCEPTION;
             }
         }
         return null;
