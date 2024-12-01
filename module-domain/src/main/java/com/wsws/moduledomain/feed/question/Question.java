@@ -1,24 +1,16 @@
 package com.wsws.moduledomain.feed.question;
 
-import com.wsws.moduledomain.category.Category;
 import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
-import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Getter
 public class Question {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "question_id")
     Long id;
-
     private String content;
-    @Enumerated(EnumType.STRING)
     private QuestionStatus questionStatus;
     private LocalDateTime createdAt;
-
     private Long categoryId;
 
 
