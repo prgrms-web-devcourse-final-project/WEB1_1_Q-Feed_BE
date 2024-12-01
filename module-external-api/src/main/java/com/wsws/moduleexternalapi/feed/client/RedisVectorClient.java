@@ -29,16 +29,18 @@ public class RedisVectorClient {
     }
 
     /**
-     * 비슷한 텍스트가 있는지
+     * 비슷한 텍스트를 찾아 반환
      */
-    public boolean isSimilarTextExist(String text) {
-        // 유사도가 0.8이상인 텍스트를 하나만 검색
+    public List<String> findSimilarText(String text) {
+        // 유사도가 0.8이상인 텍스트를 모두 검색
         List<Document> documents = vectorStore.similaritySearch(
                 SearchRequest.query(text)
                         .withSimilarityThreshold(0.8)
-                        .withTopK(1)
+                        .withTopK(10000) // 최댓값 10000
         );
 
-        return !documents.isEmpty();
+        return documents.stream()
+                .map(Document::getContent)
+                .collect(Collectors.toList());
     }
 }
