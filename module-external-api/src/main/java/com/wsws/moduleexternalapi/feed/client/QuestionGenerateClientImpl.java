@@ -70,6 +70,33 @@ public class QuestionGenerateClientImpl implements QuestionGenerateClient {
         }
     }
 
+    /**
+     * 누적 입력 토큰
+     */
+    @Override
+    public Long getPromptTokens() {
+        return TokenCalculateUtil.getPromptToken();
+    }
+
+    /**
+     * 누적 출력 토큰
+     */
+    @Override
+    public Long getGenerationTokens() {
+        return TokenCalculateUtil.getGenerationToken();
+    }
+
+    /**
+     * 누적 총합 토큰
+     */
+    @Override
+    public Long getTotalTokens() {
+        return TokenCalculateUtil.getTotalToken();
+    }
+
+    /**
+     * 토큰 누적 시키기
+     */
     private void calculateTokens(ChatResponse response) {
         TokenCalculateUtil.addPromptToken(response.getMetadata().getUsage().getPromptTokens()); // 사용된 입력 토큰 계산
         TokenCalculateUtil.addGenerationToken(response.getMetadata().getUsage().getGenerationTokens()); // 사용된 출력 토큰 계산

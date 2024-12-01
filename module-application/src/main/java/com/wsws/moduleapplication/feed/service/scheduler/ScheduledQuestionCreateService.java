@@ -12,8 +12,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static com.wsws.moduleexternalapi.feed.util.TokenCalculateUtil.*;
-import static com.wsws.moduleexternalapi.feed.util.TokenCalculateUtil.getTotalToken;
 
 @Service
 @RequiredArgsConstructor
@@ -62,7 +60,7 @@ public class ScheduledQuestionCreateService {
                 }
                 log.info("모든 질문 생성완료.");
                 questionAIService.saveQuestions(questionTempStore);
-                log.info(" 사용된 누적 토큰 수: [입력토큰: {}, 출력토큰: {}, 총합: {}]", getPromptToken(), getGenerationToken(), getTotalToken());
+                log.info(" 사용된 누적 토큰 수: [입력토큰: {}, 출력토큰: {}, 총합: {}]", questionGenerateClient.getGenerationTokens(), questionGenerateClient.getPromptTokens(), questionGenerateClient.getTotalTokens());
                 break; // 성공 시 루프 종료
             } catch (Exception e) {
                 log.error("createQuestion 실패. 시도 횟수: {}", attempt, e);
