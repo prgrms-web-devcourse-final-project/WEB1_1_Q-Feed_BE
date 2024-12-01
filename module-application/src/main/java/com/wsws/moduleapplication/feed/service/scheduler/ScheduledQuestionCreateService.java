@@ -40,35 +40,48 @@ public class ScheduledQuestionCreateService {
     /**
      * 매일 23시 30분에 질문을 생성
      */
+
     @Scheduled(cron = "0 30 23 * * ?")
     public void createQuestion() {
-        initList(); // 리스트 초기화
+        int maxRetries = 10; // 최대 재시도 횟수
+        int attempt = 0;
 
-        // 모든 카테고리의 질문들이 생성될 때 까지 반복
-        while (!categories.isEmpty()) {
-            Map<String, String> createdQuestions = questionGenerateClient.createQuestions(categories, questionBlackListMap);
+        while (attempt < maxRetries) {
+            try {
+                attempt++;
+                initList(); // 리스트 초기화
 
-            // 질문 검증 및 저장
-            for (String categoryName : createdQuestions.keySet()) {
-                String question = createdQuestions.get(categoryName);
-                List<String> similarQuestions = redisVectorClient.findSimilarText(question);
+                while (!categories.isEmpty()) {
+                    Map<String, String> createdQuestions = questionGenerateClient.createQuestions(categories, questionBlackListMap);
 
+                    for (String categoryName : createdQuestions.keySet()) {
+                        String question = createdQuestions.get(categoryName);
+                        List<String> similarQuestions = redisVectorClient.findSimilarText(question);
 
-                if (similarQuestions.isEmpty()) { // 중복되지 않는 질문일 때,
-                    log.info("질문 검증 완료: {}: {}", categoryName, question);
-                    questionTempStore.put(categoryName, question); // 질문 리스트에 임시 저장
-                    removeCategoryFromList(categoryName); // 저장한 질문의 카테고리는 리스트에서 제외
-                } else { // 중복된 질문이면
-                    log.info("질문 중복: {}: {}", categoryName, question);
-                    // 중복 질문 블랙 리스트에 추가
-                    addQuestionsToBlackListMap(categoryName, question, similarQuestions);
+                        if (similarQuestions.isEmpty()) {
+                            log.info("질문 검증 완료: {}: {}", categoryName, question);
+                            questionTempStore.put(categoryName, question);
+                            removeCategoryFromList(categoryName);
+                        } else {
+                            log.info("질문 중복: {}: {}", categoryName, question);
+                            addQuestionsToBlackListMap(categoryName, question, similarQuestions);
+                        }
+                    }
+                }
+                log.info("모든 질문 생성완료.");
+                saveQuestion();
+                log.info(" 사용된 누적 토큰 수: [입력토큰: {}, 출력토큰: {}, 총합: {}]", getPromptToken(), getGenerationToken(), getTotalToken());
+                break; // 성공 시 루프 종료
+            } catch (Exception e) {
+                log.error("createQuestion 실패. 시도 횟수: {}", attempt, e);
+                if (attempt >= maxRetries) {
+                    log.error("모든 재시도가 실패했습니다.");
+                    // TODO: 이메일로 알림
                 }
             }
         }
-        log.info("모든 질문 생성완료.");
-        saveQuestion(); // 데이터베이스에 질문 저장.
-        log.info(" 사용된 누적 토큰 수: [입력토큰: {}, 출력토큰: {}, 총합: {}]", getPromptToken(), getGenerationToken(), getTotalToken());
     }
+
 
     private void addQuestionsToBlackListMap(String categoryName, String question, List<String> similarQuestions) {
         questionBlackListMap.computeIfAbsent(categoryName, k -> new HashSet<>()).add(question);
