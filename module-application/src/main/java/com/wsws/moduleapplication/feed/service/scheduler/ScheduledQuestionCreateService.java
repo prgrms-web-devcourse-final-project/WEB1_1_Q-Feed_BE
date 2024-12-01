@@ -1,9 +1,8 @@
 package com.wsws.moduleapplication.feed.service.scheduler;
 
 import com.wsws.moduleapplication.feed.service.QuestionAIService;
-import com.wsws.moduledomain.category.vo.CategoryName;
-import com.wsws.moduleexternalapi.feed.client.QuestionGenerateClient;
-import com.wsws.moduleexternalapi.feed.client.RedisVectorClient;
+import com.wsws.moduledomain.feed.question.ai.QuestionGenerateClient;
+import com.wsws.moduledomain.feed.question.ai.VectorClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,8 +12,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static com.wsws.moduledomain.category.vo.CategoryName.DELICIOUS_RESTAURANT;
-import static com.wsws.moduledomain.category.vo.CategoryName.TRAVEL;
 import static com.wsws.moduleexternalapi.feed.util.TokenCalculateUtil.*;
 import static com.wsws.moduleexternalapi.feed.util.TokenCalculateUtil.getTotalToken;
 
@@ -23,7 +20,7 @@ import static com.wsws.moduleexternalapi.feed.util.TokenCalculateUtil.getTotalTo
 @Slf4j
 public class ScheduledQuestionCreateService {
 
-    private final RedisVectorClient redisVectorClient; // 벡터 데이터베이스
+    private final VectorClient redisVectorClient; // 벡터 데이터베이스
     private final QuestionGenerateClient questionGenerateClient; // 질문 생성 AI
     private final QuestionAIService questionAIService; // 새로 분리된 서비스
 

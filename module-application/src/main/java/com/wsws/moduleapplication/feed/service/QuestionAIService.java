@@ -3,9 +3,10 @@ package com.wsws.moduleapplication.feed.service;
 import com.wsws.moduledomain.category.Category;
 import com.wsws.moduledomain.category.repo.CategoryRepository;
 import com.wsws.moduledomain.feed.question.Question;
+import com.wsws.moduledomain.feed.question.ai.VectorClient;
 import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
 import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
-import com.wsws.moduleexternalapi.feed.client.RedisVectorClient;
+import com.wsws.moduleexternalapi.feed.client.VectorClientImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ import java.util.Map;
 @Slf4j
 public class QuestionAIService {
 
-    private final RedisVectorClient redisVectorClient;
+    private final VectorClient vectorClient;
     private final QuestionRepository questionRepository;
     private final CategoryRepository categoryRepository;
 
@@ -51,7 +52,7 @@ public class QuestionAIService {
         }
 
         // 벡터 데이터베이스에 질문 저장
-        redisVectorClient.store(questionTempStore.values().stream().toList());
+        vectorClient.store(questionTempStore.values().stream().toList());
 
 
     }
