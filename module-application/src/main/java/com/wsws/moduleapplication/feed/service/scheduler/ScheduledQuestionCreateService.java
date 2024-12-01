@@ -53,6 +53,7 @@ public class ScheduledQuestionCreateService {
                 String question = createdQuestions.get(categoryName);
                 List<String> similarQuestions = redisVectorClient.findSimilarText(question);
 
+
                 if (similarQuestions.isEmpty()) { // 중복되지 않는 질문일 때,
                     log.info("질문 검증 완료: {}: {}", categoryName, question);
                     questionTempStore.put(categoryName, question); // 질문 리스트에 임시 저장
@@ -70,11 +71,7 @@ public class ScheduledQuestionCreateService {
     }
 
     private void addQuestionsToBlackListMap(String categoryName, String question, List<String> similarQuestions) {
-        if (questionBlackListMap.containsKey(categoryName)) { // 생성된 질문 블랙리스트에 저장
-            questionBlackListMap.get(categoryName).add(question);
-        } else {
-            questionBlackListMap.put(categoryName, new HashSet<>(Set.of(question)));
-        }
+        questionBlackListMap.computeIfAbsent(categoryName, k -> new HashSet<>()).add(question);
         questionBlackListMap.get(categoryName).addAll(similarQuestions); // 중복된 질문들을 블랙 리스트에 저장
     }
 
