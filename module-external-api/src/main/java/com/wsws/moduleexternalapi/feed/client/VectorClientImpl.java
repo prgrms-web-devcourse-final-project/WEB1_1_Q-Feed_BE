@@ -1,5 +1,6 @@
 package com.wsws.moduleexternalapi.feed.client;
 
+import com.wsws.moduledomain.feed.question.ai.VectorClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class RedisVectorClient {
+public class VectorClientImpl implements VectorClient {
     private final VectorStore vectorStore;
 
     /**

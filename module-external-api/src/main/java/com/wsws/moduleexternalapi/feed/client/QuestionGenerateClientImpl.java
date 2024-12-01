@@ -3,6 +3,7 @@ package com.wsws.moduleexternalapi.feed.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wsws.moduledomain.feed.question.ai.QuestionGenerateClient;
 import com.wsws.moduleexternalapi.feed.util.TokenCalculateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +21,9 @@ import java.util.*;
 @RequiredArgsConstructor
 @Component
 @Slf4j
-public class QuestionGenerateClient {
+public class QuestionGenerateClientImpl implements QuestionGenerateClient {
     private final ChatModel chatModel;
     private final ChatOptions chatOptions;
-
-    private static int TOTAL_TOKEN_COUNT = 0;
 
     // 시스템 프롬프트
     private static final String SYSTEM_PROMPT = """ 
@@ -55,7 +54,7 @@ public class QuestionGenerateClient {
         Prompt prompt = createPrompt(categories, questionBlackListMap);
         ChatResponse response = chatModel.call(prompt);
 
-        calculateTokens(response);
+        calculateTokens(response); // 사용된 토큰 계산하기
 
         String content = response.getResult().getOutput().getContent(); // json 형태의 질문들
         log.info("질문 생성 완료: {}", content);
