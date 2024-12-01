@@ -3,6 +3,8 @@ spring:
     name: module-external-api
 
   ai:
+    retry:
+      on-client-errors: true
     openai:
       api-key: ${OPENAI_API_KEY}
       chat:
