@@ -18,9 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Slf4j
 public class ScheduledQuestionCreateService {
 
-    private final VectorClient redisVectorClient; // 벡터 데이터베이스
-    private final QuestionGenerateClient questionGenerateClient; // 질문 생성 AI
-    private final QuestionAIService questionAIService; // 새로 분리된 서비스
+    private final QuestionAIService questionAIService; // AI 질문 관련 서비스
 
     private List<String> categories;
     private Map<String, Set<String>> questionBlackListMap; // 카테고리 별로 중복된 질문을 담는 블랙 리스트
@@ -42,11 +40,11 @@ public class ScheduledQuestionCreateService {
 
                 // TODO: while문을 빠져나올 조건
                 while (!categories.isEmpty()) {
-                    Map<String, String> createdQuestions = questionGenerateClient.createQuestions(categories, questionBlackListMap);
+                    Map<String, String> createdQuestions = questionAIService.createQuestions(categories, questionBlackListMap);
 
                     for (String categoryName : createdQuestions.keySet()) {
                         String question = createdQuestions.get(categoryName);
-                        List<String> similarQuestions = redisVectorClient.findSimilarText(question);
+                        List<String> similarQuestions = questionAIService.findSimilarText(question);
 
                         if (similarQuestions.isEmpty()) {
                             log.info("질문 검증 완료: {}: {}", categoryName, question);
@@ -60,7 +58,6 @@ public class ScheduledQuestionCreateService {
                 }
                 log.info("모든 질문 생성완료.");
                 questionAIService.saveQuestions(questionTempStore);
-                log.info(" 사용된 누적 토큰 수: [입력토큰: {}, 출력토큰: {}, 총합: {}]", questionGenerateClient.getGenerationTokens(), questionGenerateClient.getPromptTokens(), questionGenerateClient.getTotalTokens());
                 break; // 성공 시 루프 종료
             } catch (Exception e) {
                 log.error("createQuestion 실패. 시도 횟수: {}", attempt, e);

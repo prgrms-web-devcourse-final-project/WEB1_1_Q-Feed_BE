@@ -3,6 +3,7 @@ package com.wsws.moduleapplication.feed.service;
 import com.wsws.moduledomain.category.Category;
 import com.wsws.moduledomain.category.repo.CategoryRepository;
 import com.wsws.moduledomain.feed.question.Question;
+import com.wsws.moduledomain.feed.question.ai.QuestionGenerateClient;
 import com.wsws.moduledomain.feed.question.ai.VectorClient;
 import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
 import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
@@ -14,13 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class QuestionAIService {
 
-    private final VectorClient vectorClient;
+    private final VectorClient vectorClient; // 벡터 데이터베이스
+    private final QuestionGenerateClient questionGenerateClient; // 질문 생성 AI
     private final QuestionRepository questionRepository;
     private final CategoryRepository categoryRepository;
 
@@ -52,8 +55,7 @@ public class QuestionAIService {
 
         // 벡터 데이터베이스에 질문 저장
         vectorClient.store(questionTempStore.values().stream().toList());
-
-
+        log.info(" 사용된 누적 토큰 수: [입력토큰: {}, 출력토큰: {}, 총합: {}]", questionGenerateClient.getGenerationTokens(), questionGenerateClient.getPromptTokens(), questionGenerateClient.getTotalTokens());
     }
 
     @Transactional
@@ -66,4 +68,14 @@ public class QuestionAIService {
         questionRepository.findByQuestionStatus(QuestionStatus.CREATED)
                 .forEach(Question::activateQuestion);
     }
+
+    public List<String> findSimilarText(String question) {
+        return vectorClient.findSimilarText(question);
+    }
+
+    public Map<String, String> createQuestions(List<String> categories, Map<String, Set<String>> questionBlackListMap) {
+        return questionGenerateClient.createQuestions(categories, questionBlackListMap);
+    }
 }
+
+
