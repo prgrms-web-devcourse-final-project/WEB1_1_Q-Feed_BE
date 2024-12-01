@@ -29,7 +29,6 @@ public class RedisVectorStoreConfig {
 
     @Bean
     public JedisPooled jedisPooled() {
-        // Redis 서버의 호스트와 포트를 실제 환경에 맞게 설정하세요.
         return new JedisPooled(redisHost, redisPort);
     }
 
