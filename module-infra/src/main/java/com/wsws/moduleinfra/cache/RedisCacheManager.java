@@ -12,16 +12,27 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class RedisCacheManager implements CacheManager {
 
-    @Qualifier("redisTemplateInteger")
-    private final RedisTemplate<String, Integer> redisTemplate;
+    @Qualifier("redisTemplate")
+    private final RedisTemplate<String, Object> redisTemplate;
+
 
     @Override
-    public Integer get(String key) {
-        return redisTemplate.opsForValue().get(key);
+    public <T> T get(String key, Class<T> type) {
+        Object cachedValue = redisTemplate.opsForValue().get(key);
+        if (cachedValue == null) {
+            return type.cast(cachedValue);
+        }
+
+        return null;
     }
 
     @Override
-    public void set(String key, Integer value, long ttlInMinutes) {
+    public void set(String key, Object value, long ttlInMinutes) {
         redisTemplate.opsForValue().set(key, value, ttlInMinutes, TimeUnit.MINUTES);
+    }
+
+    @Override
+    public void evict(String key) {
+        redisTemplate.delete(key);
     }
 }

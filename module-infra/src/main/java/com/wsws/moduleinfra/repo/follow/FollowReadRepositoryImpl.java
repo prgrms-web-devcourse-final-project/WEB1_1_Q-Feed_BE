@@ -45,6 +45,8 @@ public class FollowReadRepositoryImpl implements FollowReadRepository {
     @Override
     public List<FollowResponseInfraDto> findFollowersWithCursor(String followeeId, LocalDateTime cursor, int size) {
 
+        //캐싱 추가 예정
+
         return queryFactory
                 .select(Projections.constructor(FollowResponseInfraDto.class,
                         follow.followerId.as("userId"),
@@ -67,6 +69,8 @@ public class FollowReadRepositoryImpl implements FollowReadRepository {
     //내가 팔로우하고 있는 사람 목록
     @Override
     public List<FollowResponseInfraDto> findFollowingsWithCursor(String followerId, LocalDateTime cursor, int size) {
+
+        //캐싱 추가 예정
 
         return queryFactory
                 .select(Projections.constructor(FollowResponseInfraDto.class,
