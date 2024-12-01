@@ -32,8 +32,8 @@ public class ScheduledQuestionCreateService {
     private final CategoryRepository categoryRepository;
 
     private List<String> categories;
-    private Map<String, List<String>> questionBlackList;
-    private Map<String, String> questionTempStore; // 검증이 끝난 질문 임시 저장소
+    private Map<String, Set<String>> questionBlackListMap; // 카테고리 별로 중복된 질문을 담는 블랙 리스트
+    private Map<String, String> questionTempStore; // 카테고리 별로 검증이 끝난 질문 임시 저장소
 
     /**
      * 매일 23시 30분에 질문을 생성
@@ -44,7 +44,7 @@ public class ScheduledQuestionCreateService {
 
         // 모든 카테고리의 질문들이 생성될 때 까지 반복
         while (!categories.isEmpty()) {
-            Map<String, String> createdQuestions = questionGenerateClient.createQuestions(categories, questionBlackList);
+            Map<String, String> createdQuestions = questionGenerateClient.createQuestions(categories, questionBlackListMap);
 
             // 질문 검증 및 저장
             for (String categoryName : createdQuestions.keySet()) {
@@ -56,14 +56,9 @@ public class ScheduledQuestionCreateService {
                     questionTempStore.put(categoryName, question); // 질문 리스트에 임시 저장
                     removeCategoryFromList(categoryName); // 저장한 질문의 카테고리는 리스트에서 제외
                 } else { // 중복된 질문이면
-                    // 질문 블랙 리스트에 추가
                     log.info("질문 중복: {}: {}", categoryName, question);
-                    if (questionBlackList.containsKey(categoryName)) { // 생성된 질문 블랙리스트에 저장
-                        questionBlackList.get(categoryName).add(question);
-                    } else {
-                        questionBlackList.put(categoryName, new ArrayList<>(List.of(question)));
-                    }
-                    questionBlackList.get(categoryName).addAll(similarQuestions); // 중복된 질문들을 블랙 리스트에 저장
+                    // 중복 질문 블랙 리스트에 추가
+                    addQuestionsToBlackListMap(categoryName, question, similarQuestions);
                 }
             }
         }
@@ -72,13 +67,22 @@ public class ScheduledQuestionCreateService {
         log.info(" 사용된 누적 토큰 수: [입력토큰: {}, 출력토큰: {}, 총합: {}]", getPromptToken(), getGenerationToken(), getTotalToken());
     }
 
+    private void addQuestionsToBlackListMap(String categoryName, String question, List<String> similarQuestions) {
+        if (questionBlackListMap.containsKey(categoryName)) { // 생성된 질문 블랙리스트에 저장
+            questionBlackListMap.get(categoryName).add(question);
+        } else {
+            questionBlackListMap.put(categoryName, new HashSet<>(Set.of(question)));
+        }
+        questionBlackListMap.get(categoryName).addAll(similarQuestions); // 중복된 질문들을 블랙 리스트에 저장
+    }
+
 
     /**
      * 카테고리 리스트 초기화
      */
     private void initList() {
         categories = new ArrayList<>(List.of(TRAVEL.name(), DELICIOUS_RESTAURANT.name(), MOVIE.name(), MUSIC.name(), READING.name(), SPORTS.name()));
-        questionBlackList = new HashMap<>();
+        questionBlackListMap = new HashMap<>();
         questionTempStore = new HashMap<>();
     }
 
@@ -105,7 +109,7 @@ public class ScheduledQuestionCreateService {
      */
     private void removeCategoryFromList(String categoryName) {
         categories.remove(categoryName);
-        questionBlackList.remove(categoryName);
+        questionBlackListMap.remove(categoryName);
     }
 
 

@@ -15,10 +15,7 @@ import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Component
@@ -52,10 +49,10 @@ public class QuestionGenerateClient {
     /**
      * 생성해야하는 카테고리 목록들을 받아 프롬프트를 작성해 질문 생성
      */
-    public Map<String, String> createQuestions(List<String> categories, Map<String, List<String>> questionBlackList) {
+    public Map<String, String> createQuestions(List<String> categories, Map<String, Set<String>> questionBlackListMap) {
         log.info("질문 생성 시도");
-        log.info("질문 블랙리스트: {}", questionBlackList);
-        Prompt prompt = createPrompt(categories, questionBlackList);
+        log.info("질문 블랙리스트: {}", questionBlackListMap);
+        Prompt prompt = createPrompt(categories, questionBlackListMap);
         ChatResponse response = chatModel.call(prompt);
 
         calculateTokens(response);
@@ -84,7 +81,7 @@ public class QuestionGenerateClient {
     /**
      * 프롬프트 생성
      */
-    private Prompt createPrompt(List<String> categories, Map<String, List<String>> questionBlackList) {
+    private Prompt createPrompt(List<String> categories, Map<String, Set<String>> questionBlackList) {
 
         List<Message> promptMessageList = new ArrayList<>();
 
