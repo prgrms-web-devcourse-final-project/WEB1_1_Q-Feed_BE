@@ -97,10 +97,17 @@ public class ScheduledQuestionCreateService {
         // 벡터 데이터베이스에 질문 저장
         redisVectorClient.store(questionTempStore.values().stream().toList());
 
+        List<Category> categoryList = categoryRepository.findAll(); // 카테고리를 전부 받아옴.
+
         // RDBMS에 질문 저장
-        for (String c : questionTempStore.keySet()) {
-            Category category = categoryRepository.findByCategoryName(CategoryName.valueOf(c)); // 카테고리에 ID를 받아옴.
-            questionRepository.save(Question.create(questionTempStore.get(c), QuestionStatus.CREATED, LocalDateTime.now(), category.getId())); // Question 엔티티 RDBMS에 저장
+        for (String categoryName : questionTempStore.keySet()) {
+
+            Category category = categoryList.stream()
+                    .filter(c -> categoryName.equals(c.getCategoryName().name()))
+                    .findFirst().orElseThrow(RuntimeException::new); // 해당 카테고리이름의 카테고리 객체를 찾음
+
+            questionRepository.save(
+                    Question.create(questionTempStore.get(categoryName), QuestionStatus.CREATED, LocalDateTime.now(), category.getId())); // Question 엔티티 RDBMS에 저장
         }
     }
 
