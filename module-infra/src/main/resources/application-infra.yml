@@ -6,8 +6,12 @@ spring:
     driver-class-name: ${DATABASE_DRIVER}
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
 redis:
   host: ${REDIS_HOST}
   port: ${REDIS_PORT}
+
+logging.level:
+  org.hibernate.SQL: debug
+  org.hibernate.orm.jdbc.bind: trace
