@@ -6,7 +6,7 @@ spring:
     driver-class-name: ${DATABASE_DRIVER}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
 
 redis:
   host: ${REDIS_HOST}
