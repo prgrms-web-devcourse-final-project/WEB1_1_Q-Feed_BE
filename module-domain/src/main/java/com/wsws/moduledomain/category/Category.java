@@ -13,4 +13,10 @@ public class Category {
 
     @Enumerated(EnumType.STRING)
     private CategoryName categoryName;
+
+    public static Category create(CategoryName categoryName) {
+        Category category = new Category();
+        category.categoryName = categoryName;
+        return category;
+    }
 }
