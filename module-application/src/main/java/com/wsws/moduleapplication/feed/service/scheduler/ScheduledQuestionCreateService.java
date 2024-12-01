@@ -16,6 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static com.wsws.moduledomain.category.vo.CategoryName.DELICIOUS_RESTAURANT;
 import static com.wsws.moduledomain.category.vo.CategoryName.TRAVEL;
 import static com.wsws.moduleexternalapi.feed.util.TokenCalculateUtil.*;
+import static com.wsws.moduleexternalapi.feed.util.TokenCalculateUtil.getTotalToken;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +45,7 @@ public class ScheduledQuestionCreateService {
                 attempt++;
                 initList(); // 리스트 초기화
 
+                // TODO: while문을 빠져나올 조건
                 while (!categories.isEmpty()) {
                     Map<String, String> createdQuestions = questionGenerateClient.createQuestions(categories, questionBlackListMap);
 
