@@ -1,5 +1,6 @@
 package com.wsws.moduleapplication.feed.service.scheduler;
 
+import com.wsws.moduleapplication.feed.service.QuestionAIService;
 import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
 import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
@@ -12,10 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class ScheduledQuestionUpdateService {
-    private final QuestionRepository questionRepository;
+    private final QuestionAIService questionAIService;
 
     /**
      * 매일 자정에 Question 테이블의 Question Status 컬럼 변경
@@ -24,14 +24,8 @@ public class ScheduledQuestionUpdateService {
      */
     @Scheduled(cron = "0 0 0 * * ?") // 매일 00시 00분에 실행되도록 설정
     public void updateQuestions() {
-        // 어제 질문들 비활성화
-        questionRepository.findByQuestionStatus(QuestionStatus.ACTIVATED)
-                .forEach(Question::inactivateQuestion);
 
-        // 오늘 질문들 활성화
-        questionRepository.findByQuestionStatus(QuestionStatus.CREATED)
-                .forEach(Question::activateQuestion);
-
+        questionAIService.updateQuestions();
         log.info("스케줄링 작업 완료");
     }
 }
