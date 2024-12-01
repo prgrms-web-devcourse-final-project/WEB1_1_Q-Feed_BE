@@ -1,5 +1,7 @@
 package com.wsws.moduledomain.chat;
 
+import com.wsws.moduledomain.chat.exception.UrlRequiredException;
+import com.wsws.moduledomain.chat.vo.Content;
 import com.wsws.moduledomain.user.vo.UserId;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -17,8 +19,8 @@ public class ChatMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String content;
+    @Embedded
+    private Content content;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -39,7 +41,7 @@ public class ChatMessage {
     @JoinColumn(name="chatRoom_id", nullable=false)
     private ChatRoom chatRoom;
 
-    private ChatMessage(String content, MessageType type, String url, Boolean isRead, LocalDateTime createdAt, UserId userId, ChatRoom chatRoom) {
+    private ChatMessage(Content content, MessageType type, String url, Boolean isRead, LocalDateTime createdAt, UserId userId, ChatRoom chatRoom) {
         this.content = content;
         this.type = type;
         this.url = url;
@@ -51,9 +53,11 @@ public class ChatMessage {
 
     public static ChatMessage create(String content, MessageType type, String url, UserId userId, ChatRoom chatRoom) {
         if (type != MessageType.TEXT && (url == null || url.isEmpty())) {
-            throw new IllegalArgumentException("URL이 필요합니다.");
+            throw UrlRequiredException.EXCEPTION;
         }
-        return new ChatMessage(content, type, url, false, LocalDateTime.now(), userId, chatRoom);
+        Content chatContent = Content.from(content);
+
+        return new ChatMessage(chatContent, type, url, false, LocalDateTime.now(), userId, chatRoom);
     }
 
     public void markAsRead(){
