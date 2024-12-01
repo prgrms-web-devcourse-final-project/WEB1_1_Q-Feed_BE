@@ -1,37 +1,30 @@
 package com.wsws.moduleapplication.feed.service.scheduler;
 
-import com.wsws.moduledomain.category.Category;
-import com.wsws.moduledomain.category.repo.CategoryRepository;
+import com.wsws.moduleapplication.feed.service.QuestionAIService;
 import com.wsws.moduledomain.category.vo.CategoryName;
-import com.wsws.moduledomain.feed.question.Question;
-import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
-import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
 import com.wsws.moduleexternalapi.feed.client.QuestionGenerateClient;
 import com.wsws.moduleexternalapi.feed.client.RedisVectorClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static com.wsws.moduledomain.category.vo.CategoryName.*;
+import static com.wsws.moduledomain.category.vo.CategoryName.DELICIOUS_RESTAURANT;
+import static com.wsws.moduledomain.category.vo.CategoryName.TRAVEL;
 import static com.wsws.moduleexternalapi.feed.util.TokenCalculateUtil.*;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class ScheduledQuestionCreateService {
 
     private final RedisVectorClient redisVectorClient; // 벡터 데이터베이스
     private final QuestionGenerateClient questionGenerateClient; // 질문 생성 AI
-    private final QuestionRepository questionRepository;
-    private final CategoryRepository categoryRepository;
+    private final QuestionAIService questionAIService; // 새로 분리된 서비스
 
     private List<String> categories;
     private Map<String, Set<String>> questionBlackListMap; // 카테고리 별로 중복된 질문을 담는 블랙 리스트
@@ -69,7 +62,7 @@ public class ScheduledQuestionCreateService {
                     }
                 }
                 log.info("모든 질문 생성완료.");
-                saveQuestion();
+                questionAIService.saveQuestions(questionTempStore);
                 log.info(" 사용된 누적 토큰 수: [입력토큰: {}, 출력토큰: {}, 총합: {}]", getPromptToken(), getGenerationToken(), getTotalToken());
                 break; // 성공 시 루프 종료
             } catch (Exception e) {
@@ -93,34 +86,9 @@ public class ScheduledQuestionCreateService {
      * 카테고리 리스트 초기화
      */
     private void initList() {
-        categories = new CopyOnWriteArrayList<>(List.of());
+        categories = new CopyOnWriteArrayList<>(List.of("TRAVEL", "DELICIOUS_RESTAURANT",  "MOVIE", "MUSIC", "READING", "SPORTS"));
         questionBlackListMap = new ConcurrentHashMap<>();
         questionTempStore = new ConcurrentHashMap<>();
-    }
-
-    /**
-     * 데이터베이스에 질문 저장
-     * 질문 저장은 모든 질문들의 검증이 끝난 후에 이루어진다.
-     * -> 저장해야하는 데이터베이스가 두 개이기 때문에 데이터 불일치를 방지하기 위함.
-     */
-    private void saveQuestion() {
-        log.info("데이터베이스에 질문을 저장");
-
-        // 벡터 데이터베이스에 질문 저장
-        redisVectorClient.store(questionTempStore.values().stream().toList());
-
-        List<Category> categoryList = categoryRepository.findAll(); // 카테고리를 전부 받아옴.
-
-        // RDBMS에 질문 저장
-        for (String categoryName : questionTempStore.keySet()) {
-
-            Category category = categoryList.stream()
-                    .filter(c -> categoryName.equals(c.getCategoryName().name()))
-                    .findFirst().orElseThrow(RuntimeException::new); // 해당 카테고리이름의 카테고리 객체를 찾음
-
-            questionRepository.save(
-                    Question.create(questionTempStore.get(categoryName), QuestionStatus.CREATED, LocalDateTime.now(), category.getId())); // Question 엔티티 RDBMS에 저장
-        }
     }
 
     /**
