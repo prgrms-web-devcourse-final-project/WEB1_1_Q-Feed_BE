@@ -6,7 +6,6 @@ import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduledomain.feed.question.ai.VectorClient;
 import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
 import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
-import com.wsws.moduleexternalapi.feed.client.VectorClientImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
