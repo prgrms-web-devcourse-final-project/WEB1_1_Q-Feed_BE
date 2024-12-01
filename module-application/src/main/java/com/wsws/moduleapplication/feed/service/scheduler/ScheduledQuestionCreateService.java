@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.wsws.moduledomain.category.vo.CategoryName.*;
 import static com.wsws.moduleexternalapi.feed.util.TokenCalculateUtil.*;
@@ -81,9 +83,9 @@ public class ScheduledQuestionCreateService {
      * 카테고리 리스트 초기화
      */
     private void initList() {
-        categories = new ArrayList<>(List.of(TRAVEL.name(), DELICIOUS_RESTAURANT.name(), MOVIE.name(), MUSIC.name(), READING.name(), SPORTS.name()));
-        questionBlackListMap = new HashMap<>();
-        questionTempStore = new HashMap<>();
+        categories = new CopyOnWriteArrayList<>(List.of());
+        questionBlackListMap = new ConcurrentHashMap<>();
+        questionTempStore = new ConcurrentHashMap<>();
     }
 
     /**
