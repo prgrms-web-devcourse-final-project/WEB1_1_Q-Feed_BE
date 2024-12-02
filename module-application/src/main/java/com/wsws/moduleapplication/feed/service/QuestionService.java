@@ -17,7 +17,8 @@ public class QuestionService {
      * 카테고리로 질문 조회
      */
     public QuestionServiceResponse findQuestionByCategoryId(Long id) {
-        Question question = questionRepository.findByCategoryId(id).orElseThrow(() -> QuestionNotFoundException.EXCEPTION);
+        Question question = questionRepository.findDailyQuestionByCategoryId(id)
+                .orElseThrow(() -> QuestionNotFoundException.EXCEPTION);
         return new QuestionServiceResponse(question);
     }
 
