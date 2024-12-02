@@ -58,8 +58,11 @@ public class ChatRoomService {
             // 마지막 메시지 가져오기
             ChatMessage lastMessage = getLastMessage(chatRoom);
 
+            // 읽지 않은 메시지 개수 가져오기
+            long unreadCount = chatMessageRepository.countUnreadMessages(chatRoom.getId(), otherUser.getId().getValue());
+
             return new ChatRoomServiceResponse(
-                    chatRoom, otherUser, lastMessage
+                    chatRoom, otherUser, lastMessage, unreadCount
             );
         }).collect(Collectors.toList());
     }
@@ -73,8 +76,11 @@ public class ChatRoomService {
         // 마지막 메시지 가져오기
         ChatMessage lastMessage = getLastMessage(chatRoom);
 
+        // 읽지 않은 메시지 개수 가져오기
+        long unreadCount = chatMessageRepository.countUnreadMessages(chatRoom.getId(), otherUser.getId().getValue());
+
         return new ChatRoomServiceResponse(
-                chatRoom, otherUser, lastMessage
+                chatRoom, otherUser, lastMessage, unreadCount
         );
     }
 

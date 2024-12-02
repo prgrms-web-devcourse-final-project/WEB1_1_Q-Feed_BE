@@ -9,7 +9,8 @@ public record ChatRoomApiResponse(
         String otherUserNickname,
         String otherUserProfile,
         String lastMessageContent,
-        LocalDateTime lastMessageCreatedAt
+        LocalDateTime lastMessageCreatedAt,
+        Long unreadMessageCount
 ) {
     //serviceresponse->apiresponseResponse
     public ChatRoomApiResponse(ChatRoomServiceResponse serviceResponse) {
@@ -18,7 +19,8 @@ public record ChatRoomApiResponse(
                 serviceResponse.otherUserNickname(),
                 serviceResponse.otherUserProfile(),
                 serviceResponse.lastMessageContent(),
-                serviceResponse.lastMessageCreatedAt()
+                serviceResponse.lastMessageCreatedAt(),
+                serviceResponse.unreadMessageCount()
         );
     }
 }

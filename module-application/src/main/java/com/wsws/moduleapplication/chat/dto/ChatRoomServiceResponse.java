@@ -11,15 +11,17 @@ public record ChatRoomServiceResponse(
         String otherUserNickname,
         String otherUserProfile,
         String lastMessageContent,
-        LocalDateTime lastMessageCreatedAt
+        LocalDateTime lastMessageCreatedAt,
+        Long unreadMessageCount
 ) {
-    public ChatRoomServiceResponse(ChatRoom chatRoom, User otherUser, ChatMessage lastMessage) {
+    public ChatRoomServiceResponse(ChatRoom chatRoom, User otherUser, ChatMessage lastMessage, Long unreadMessageCount) {
         this(
                 chatRoom.getId(),
                 otherUser.getNickname().getValue(),
                 otherUser.getProfileImage(),
                 lastMessage != null ? lastMessage.getContent().getValue() : null,
-                lastMessage != null ? lastMessage.getCreatedAt() : null
+                lastMessage != null ? lastMessage.getCreatedAt() : null,
+                unreadMessageCount
         );
     }
 }
