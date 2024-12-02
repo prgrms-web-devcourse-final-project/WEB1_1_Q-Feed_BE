@@ -19,7 +19,7 @@ public class UserId implements Serializable {
     @Column(name = "user_id")
     private String value;
 
-    private UserId(String value) {
+    public UserId(String value) {
         this.value = value;
     }
 

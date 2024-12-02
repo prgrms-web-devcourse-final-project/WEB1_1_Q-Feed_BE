@@ -12,15 +12,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface JpaChatRoomRepository extends JpaRepository<ChatRoomEntity, Long>, ChatRoomRepository {
+public interface JpaChatRoomRepository extends JpaRepository<ChatRoomEntity, Long> {
 
     @Query("SELECT cr FROM ChatRoomEntity cr WHERE cr.userId = :userId AND cr.userId2 = :userId2")
-    Optional<ChatRoom> findChatRoomBetweenUsers(@Param("userId") String userId, @Param("userId2") String userId2);
+    Optional<ChatRoomEntity> findChatRoomBetweenUsers(@Param("userId") String userId, @Param("userId2") String userId2);
 
     @Query("SELECT cr FROM ChatRoomEntity cr WHERE cr.userId = :userId OR cr.userId2 = :userId")
-    List<ChatRoom> findChatRooms(@Param("userId") String userId);
+    List<ChatRoomEntity> findChatRooms(@Param("userId") String userId);
 
-    Optional<ChatRoom> findChatRoomById(Long chatRoomId);
+    Optional<ChatRoomEntity> findChatRoomById(Long chatRoomId);
 
 
 
