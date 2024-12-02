@@ -1,9 +1,8 @@
-package com.wsws.moduleapplication.chat.dto;
+package com.wsws.moduledomain.chat;
 
-import com.wsws.moduledomain.chat.ChatMessage;
 import com.wsws.moduledomain.user.User;
 
-public record ChatMessageServiceResponse(
+public record ChatMessageDomainResponse(
         Long messageId,
         Long chatRoomId,
         String senderId,
@@ -14,8 +13,8 @@ public record ChatMessageServiceResponse(
         String url
 
 ) {
-    public static ChatMessageServiceResponse createFrom(ChatMessage chatMessage, User sender) {
-        return new ChatMessageServiceResponse(
+    public static ChatMessageDomainResponse createFrom(ChatMessage chatMessage, User sender) {
+        return new ChatMessageDomainResponse(
                 chatMessage.getId(),
                 chatMessage.getChatRoom().getId(),
                 sender.getId().getValue(),

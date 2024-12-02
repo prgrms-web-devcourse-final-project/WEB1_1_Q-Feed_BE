@@ -7,6 +7,7 @@ import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduleapplication.util.FileValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.chat.ChatMessage;
+import com.wsws.moduledomain.chat.ChatMessageDomainResponse;
 import com.wsws.moduledomain.chat.ChatRoom;
 import com.wsws.moduledomain.chat.MessageType;
 import com.wsws.moduledomain.chat.repo.ChatMessageRepository;
@@ -15,6 +16,7 @@ import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.UserId;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +29,7 @@ public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Transactional
     public void sendMessage(Long chatRoomId, String senderId, ChatMessageRequest request ) {
@@ -47,6 +50,10 @@ public class ChatMessageService {
                 chatRoom
         );
         chatMessageRepository.save(chatMessage);
+
+        // Redis 발행
+        ChatMessageDomainResponse response = ChatMessageDomainResponse.createFrom(chatMessage, user);
+        redisTemplate.convertAndSend("chatroom:" + chatRoomId, response);
     }
 
     // 채팅방의 메세지 조회
