@@ -1,13 +1,12 @@
 package com.wsws.modulesecurity.security;
 
-import com.wsws.moduledomain.auth.TokenProvider;
+import com.wsws.moduledomain.auth.repo.TokenProvider;
 import com.wsws.modulesecurity.exception.InvalidTokenException;
 import com.wsws.modulesecurity.exception.TokenExpiredException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
