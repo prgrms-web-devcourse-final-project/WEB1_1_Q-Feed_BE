@@ -1,6 +1,6 @@
 package com.wsws.moduleapplication.auth.exception;
 
-import com.wsws.moduleapi.exception.ApplicationException;
+import com.wsws.modulecommon.exception.ApplicationException;
 
 public class InvalidVerificationCodeException extends ApplicationException {
     public static final InvalidVerificationCodeException EXCEPTION = new InvalidVerificationCodeException();
