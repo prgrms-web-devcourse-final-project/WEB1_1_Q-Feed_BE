@@ -2,7 +2,7 @@ package com.wsws.moduledomain.chat.repo;
 
 import com.wsws.moduledomain.chat.ChatMessage;
 import com.wsws.moduledomain.chat.ChatRoom;
-import com.wsws.moduledomain.chat.vo.ChatMessageDTO;
+import com.wsws.moduledomain.chat.dto.ChatMessageDTO;
 import java.util.List;
 import java.util.Optional;
 

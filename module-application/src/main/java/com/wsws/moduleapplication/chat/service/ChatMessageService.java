@@ -12,7 +12,7 @@ import com.wsws.moduledomain.chat.ChatRoom;
 import com.wsws.moduledomain.chat.MessageType;
 import com.wsws.moduledomain.chat.repo.ChatMessageRepository;
 import com.wsws.moduledomain.chat.repo.ChatRoomRepository;
-import com.wsws.moduledomain.chat.vo.ChatMessageDTO;
+import com.wsws.moduledomain.chat.dto.ChatMessageDTO;
 import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.UserId;
