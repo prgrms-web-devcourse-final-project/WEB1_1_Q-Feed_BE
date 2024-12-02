@@ -1,15 +1,16 @@
 package com.wsws.moduleapi.notification.controller;
 
-import com.wsws.moduleapplication.notification.dto.NotificationServiceRequestDto;
+import com.wsws.moduleapi.notification.dto.NotificationApiResponse;
+import com.wsws.moduleapplication.notification.dto.NotificationServiceResponse;
 import com.wsws.moduleapplication.notification.service.NotificationService;
-import com.wsws.moduledomain.user.vo.UserId;
-import com.wsws.moduleinfra.repo.notification.NotificationReadRepository;
-import com.wsws.moduleinfra.repo.notification.dto.NotificationResponseInfraDto;
+import com.wsws.modulesecurity.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/notifications")
@@ -17,41 +18,31 @@ import java.util.List;
 public class NotificationController {
 
     private final NotificationService notificationService;
-    private final NotificationReadRepository readRepository;
 
-    // 알림 생성
-    @PostMapping
-    public ResponseEntity<Void> createNotification(@RequestBody NotificationServiceRequestDto requestDto) {
-        notificationService.createNotification(
-                requestDto.recipientId(),
-                requestDto.type(),
-                requestDto.content(),
-                requestDto.senderId()
-                //fcm토큰 추가
-        );
-        return ResponseEntity.ok().build();
-    }
-
-    // 알림 목록 가져오기 (읽은 처리 안된 알람들 출력)
-    @GetMapping("/{recipientId}")
-    public ResponseEntity<List<NotificationResponseInfraDto>> getUnreadNotifications(
-            @PathVariable UserId recipientId
+    @GetMapping
+    public ResponseEntity<List<NotificationApiResponse>> getUnreadNotifications(
+            @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        List<NotificationResponseInfraDto> notifications = readRepository.findByRecipientIdAndIsReadFalse(recipientId);
-        return ResponseEntity.ok(notifications);
+        String recipientId = userPrincipal.getId();
+        List<NotificationServiceResponse> serviceResponses = notificationService.getUnreadNotifications(recipientId);
+
+        // Application 계층의 DTO를 API 전용 DTO로 변환
+        List<NotificationApiResponse> apiResponses = serviceResponses.stream()
+                .map(NotificationApiResponse::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(apiResponses);
     }
 
-    // 개별 읽음 처리
     @PutMapping("/{notificationId}/read")
-    public ResponseEntity<String> MarkAsRead(@PathVariable Long notificationId){
+    public ResponseEntity<String> markAsRead(@PathVariable Long notificationId) {
         notificationService.markAsRead(notificationId);
-        return ResponseEntity.status(200).body("알림이 읽음 처리되었습니다.");
+        return ResponseEntity.ok("알림이 읽음 처리되었습니다.");
     }
 
-    // 전체 읽음 처리
-    @PutMapping("/{recipientId}/read-all")
-    public ResponseEntity<String> MarkAsReadAll(@PathVariable UserId recipientId){
+    @PutMapping("/read-all")
+    public ResponseEntity<String> markAllAsRead(@RequestParam String recipientId) {
         notificationService.markAllAsRead(recipientId);
-        return ResponseEntity.status(200).body("알림이 읽음 처리되었습니다.");
+        return ResponseEntity.ok("모든 알림이 읽음 처리되었습니다.");
     }
 }
