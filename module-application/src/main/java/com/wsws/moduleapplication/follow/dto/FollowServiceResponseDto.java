@@ -1,4 +1,7 @@
 package com.wsws.moduleapplication.follow.dto;
 
-public record FollowServiceResponseDto(String userId, String nickname, String profileImage) {
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+public record FollowServiceResponseDto(String userId, String nickname, String profileImage, LocalDateTime createAt) {
 }

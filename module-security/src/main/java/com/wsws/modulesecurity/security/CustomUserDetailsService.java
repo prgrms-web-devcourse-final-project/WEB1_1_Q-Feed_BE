@@ -20,6 +20,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) {
         User user = userRepository.findByEmail(Email.from(email))
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
-        return new UserPrincipal(user.getId().getValue());
+        return UserPrincipalMapper.fromDomain(user);
     }
 }

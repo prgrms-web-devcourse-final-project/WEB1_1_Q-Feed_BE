@@ -1,6 +1,7 @@
 package com.wsws.moduleinfra.service.auth;
 
-import com.wsws.moduledomain.auth.service.EmailService;
+
+import com.wsws.moduledomain.auth.repo.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

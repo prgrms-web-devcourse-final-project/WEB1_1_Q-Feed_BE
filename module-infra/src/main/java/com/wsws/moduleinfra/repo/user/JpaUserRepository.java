@@ -1,15 +1,14 @@
 package com.wsws.moduleinfra.repo.user;
 
-import com.wsws.moduledomain.user.User;
-import com.wsws.moduledomain.user.repo.UserRepository;
-import com.wsws.moduledomain.user.vo.Email;
-import com.wsws.moduledomain.user.vo.UserId;
+import com.wsws.moduleinfra.entity.user.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface JpaUserRepository extends JpaRepository<User, UserId>, UserRepository {
-
+public interface JpaUserRepository extends JpaRepository<UserEntity, String> {
+    Optional<UserEntity> findByEmail(String email);
+    Optional<UserEntity> findByNickname(String nickname);
+    boolean existsByEmail(String email);
 }
