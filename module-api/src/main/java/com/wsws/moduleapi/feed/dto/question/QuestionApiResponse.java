@@ -1,15 +1,15 @@
 package com.wsws.moduleapi.feed.dto.question;
 
-import com.wsws.moduleapplication.feed.dto.QuestionServiceResponse;
+import com.wsws.moduleapplication.feed.dto.QuestionFindServiceResponse;
 
 public record QuestionApiResponse(
         Long questionId,
         String content
 ) {
-    public QuestionApiResponse(QuestionServiceResponse questionServiceResponse) {
+    public QuestionApiResponse(QuestionFindServiceResponse questionFindServiceResponse) {
         this(
-                questionServiceResponse.questionId(),
-                questionServiceResponse.content()
+                questionFindServiceResponse.questionId(),
+                questionFindServiceResponse.content()
         );
     }
 
