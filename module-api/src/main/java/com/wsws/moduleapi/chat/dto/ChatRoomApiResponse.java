@@ -1,17 +1,16 @@
 package com.wsws.moduleapi.chat.dto;
 
 import com.wsws.moduleapplication.chat.dto.ChatRoomServiceResponse;
-import com.wsws.moduledomain.chat.vo.Content;
-import com.wsws.moduledomain.user.vo.Nickname;
 
 import java.time.LocalDateTime;
 
 public record ChatRoomApiResponse(
         Long chatRoomId,
-        Nickname otherUserNickname,
+        String otherUserNickname,
         String otherUserProfile,
-        Content lastMessageContent,
-        LocalDateTime lastMessageCreatedAt
+        String lastMessageContent,
+        LocalDateTime lastMessageCreatedAt,
+        Long unreadMessageCount
 ) {
     //serviceresponse->apiresponseResponse
     public ChatRoomApiResponse(ChatRoomServiceResponse serviceResponse) {
@@ -20,7 +19,8 @@ public record ChatRoomApiResponse(
                 serviceResponse.otherUserNickname(),
                 serviceResponse.otherUserProfile(),
                 serviceResponse.lastMessageContent(),
-                serviceResponse.lastMessageCreatedAt()
+                serviceResponse.lastMessageCreatedAt(),
+                serviceResponse.unreadMessageCount()
         );
     }
 }

@@ -6,7 +6,7 @@ import com.wsws.modulecommon.exception.DomainException;
 public class SelfSelectionNotAllowedException extends DomainException {
     public static final SelfSelectionNotAllowedException EXCEPTION = new SelfSelectionNotAllowedException();
 
-    private SelfSelectionNotAllowedException() {
+    public SelfSelectionNotAllowedException() {
         super(ChatErrorCode.SELF_SELECTION_NOT_ALLOWED);
     }
 }
