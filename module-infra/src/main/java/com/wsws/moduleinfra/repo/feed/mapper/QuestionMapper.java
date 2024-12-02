@@ -7,7 +7,7 @@ import com.wsws.moduleinfra.entity.feed.QuestionEntity;
 public class QuestionMapper {
     public static Question toDomain(QuestionEntity entity) {
         return Question.create(
-                QuestionId.of(entity.getId()),
+                entity.getId(),
                 entity.getContent(),
                 entity.getQuestionStatus(),
                 entity.getCreatedAt(),
