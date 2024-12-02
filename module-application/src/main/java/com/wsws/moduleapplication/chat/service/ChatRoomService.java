@@ -76,11 +76,10 @@ public class ChatRoomService {
         return new ChatRoomServiceResponse(
                 chatRoom, otherUser, lastMessage
         );
-
     }
 
     private ChatRoom getChatRoomById(Long chatRoomId) {
-        return chatRoomRepository.findById(chatRoomId)
+        return chatRoomRepository.findChatRoomById(chatRoomId)
                 .orElseThrow(() -> ChatRoomNotFoundException.EXCEPTION);
     }
 

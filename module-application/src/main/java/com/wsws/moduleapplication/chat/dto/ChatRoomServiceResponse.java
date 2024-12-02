@@ -2,12 +2,8 @@ package com.wsws.moduleapplication.chat.dto;
 
 import com.wsws.moduledomain.chat.ChatMessage;
 import com.wsws.moduledomain.chat.ChatRoom;
-import com.wsws.moduledomain.chat.vo.Content;
 import com.wsws.moduledomain.user.User;
-import com.wsws.moduledomain.user.vo.Nickname;
-import org.apache.logging.log4j.message.Message;
 
-import javax.swing.text.AbstractDocument;
 import java.time.LocalDateTime;
 
 public record ChatRoomServiceResponse(

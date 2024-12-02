@@ -12,7 +12,7 @@ public interface ChatRoomRepository {
 
     Optional<ChatRoom> findChatRoomBetweenUsers(String userId, String userId2);
 
-    Optional<ChatRoom> findById(Long chatRoomId);
+    Optional<ChatRoom> findChatRoomById(Long chatRoomId);
 
     List<ChatRoom> findChatRooms(String userId);
 }
