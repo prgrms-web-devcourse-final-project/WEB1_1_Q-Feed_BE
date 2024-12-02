@@ -5,17 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 @Getter
 @EqualsAndHashCode
 @NoArgsConstructor
 public class QuestionId implements Serializable {
 
-    private Long id;
+    private Long value;
 
-    private QuestionId(Long id) {
-        this.id = id;
+    private QuestionId(Long value) {
+        this.value = value;
     }
 
     public static QuestionId of(Long id) {
