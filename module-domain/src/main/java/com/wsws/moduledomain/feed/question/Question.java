@@ -8,15 +8,16 @@ import java.time.LocalDateTime;
 
 @Getter
 public class Question {
-    private QuestionId id;
+    private QuestionId questionId;
     private String content;
     private QuestionStatus questionStatus;
     private LocalDateTime createdAt;
     private Long categoryId;
 
 
-    public static Question create(String content, QuestionStatus questionStatus, LocalDateTime createdAt, Long categoryId) {
+    public static Question create(QuestionId questionId, String content, QuestionStatus questionStatus, LocalDateTime createdAt, Long categoryId) {
         Question question = new Question();
+        question.questionId = questionId;
         question.content = content;
         question.questionStatus = questionStatus;
         question.createdAt = createdAt;
