@@ -9,7 +9,7 @@ public record QuestionServiceResponse(
 
     public QuestionServiceResponse(Question question) {
         this(
-                question.getQuestionId().getId(),
+                question.getQuestionId().getValue(),
                 question.getContent()
         );
     }
