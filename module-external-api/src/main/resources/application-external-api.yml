@@ -3,9 +3,21 @@ spring:
     name: module-external-api
 
   ai:
+    retry:
+      on-client-errors: true
     openai:
       api-key: ${OPENAI_API_KEY}
       chat:
         options:
           model: gpt-4o-mini
           temperature: 0.9
+      embedding:
+        options:
+          model: text-embedding-3-large
+    vectorstore:
+      redis:
+        uri: ${REDIS_VECTOR_URI}
+        port: ${REDIS_VECTOR_PORT}
+        index: qfeedV-index
+        prefix: qfeedV
+        initialize-schema: true

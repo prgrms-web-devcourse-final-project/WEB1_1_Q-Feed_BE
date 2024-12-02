@@ -1,7 +1,6 @@
-package com.wsws.moduleexternalapi.ai.config;
+package com.wsws.moduleexternalapi.feed.config;
 
-import com.wsws.moduleexternalapi.ai.client.AIQuestionClient;
-import com.wsws.moduleexternalapi.ai.dto.AIQuestionResponse;
+import com.wsws.moduleexternalapi.feed.dto.AIQuestionResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.openai.OpenAiChatOptions;

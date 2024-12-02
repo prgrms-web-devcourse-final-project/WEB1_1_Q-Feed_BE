@@ -1,8 +1,6 @@
 package com.wsws.moduledomain.chat;
 
 import com.wsws.moduledomain.chat.exception.SelfSelectionNotAllowedException;
-import com.wsws.moduledomain.user.vo.UserId;
-import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,35 +9,26 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatRoom {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
     private String userId;
-
-    @Column(nullable = false)
     private String userId2;
-
-    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
-
-    @OneToMany(mappedBy="chatRoom", cascade = CascadeType.ALL, orphanRemoval = true )
     private List<ChatMessage> messages = new ArrayList<>();
 
+    // 생성자 (userId, userId2를 받아 초기화)
     public ChatRoom(String userId, String userId2) {
         this.userId = userId;
         this.userId2 = userId2;
         this.createdAt = LocalDateTime.now();
     }
 
+    // 팩토리 메서드 (userId < userId2 순서로 설정)
     public static ChatRoom create(String userId, String userId2) {
         if (userId.equals(userId2)) {
-            throw  SelfSelectionNotAllowedException.EXCEPTION;
+            throw new SelfSelectionNotAllowedException(); // 예외는 직접 정의해야 함
         }
 
         // 항상 userId < userId2 순서로 설정
@@ -51,5 +40,4 @@ public class ChatRoom {
             return new ChatRoom(userId, userId2);
         }
     }
-
 }
