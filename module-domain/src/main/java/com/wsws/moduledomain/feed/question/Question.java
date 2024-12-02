@@ -1,5 +1,6 @@
 package com.wsws.moduledomain.feed.question;
 
+import com.wsws.moduledomain.feed.question.vo.QuestionId;
 import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
 import lombok.Getter;
 
@@ -7,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class Question {
-    Long id;
+    private QuestionId id;
     private String content;
     private QuestionStatus questionStatus;
     private LocalDateTime createdAt;

@@ -4,6 +4,7 @@ import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface QuestionRepository {
 
@@ -14,5 +15,5 @@ public interface QuestionRepository {
     Question save(Question question);
 
     // 카테고리를 기준으로 질문 가져오기
-    Question findByCategoryId(Long id);
+    Optional<Question> findByCategoryId(Long id);
 }

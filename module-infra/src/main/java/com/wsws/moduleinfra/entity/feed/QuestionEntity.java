@@ -1,4 +1,4 @@
-package com.wsws.moduleinfra.entity;
+package com.wsws.moduleinfra.entity.feed;
 
 import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
 import jakarta.persistence.*;
