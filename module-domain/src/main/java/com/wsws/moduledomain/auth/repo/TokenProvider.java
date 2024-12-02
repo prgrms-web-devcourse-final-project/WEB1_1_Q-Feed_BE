@@ -1,4 +1,4 @@
-package com.wsws.moduledomain.auth;
+package com.wsws.moduledomain.auth.repo;
 
 public interface TokenProvider {
     String createAccessToken(String userId);
