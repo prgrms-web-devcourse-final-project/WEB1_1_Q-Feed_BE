@@ -7,16 +7,20 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Repository
-@RequiredArgsConstructor
+
 public class RedisAuthRepository implements AuthRepository {
 
-    @Qualifier("redisTemplate")
+
     private final RedisTemplate<String, String> redisTemplate;
+
+    public RedisAuthRepository(@Qualifier("customRedisTemplateString") RedisTemplate<String, String> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     private String createRedisKey(String token) {
         return "auth:refreshToken:" + token;

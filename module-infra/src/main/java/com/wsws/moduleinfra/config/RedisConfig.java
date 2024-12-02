@@ -24,7 +24,7 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, String> redisTemplateString(RedisConnectionFactory connectionFactory) {
+    public RedisTemplate<String, String> customRedisTemplateString(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(connectionFactory);
         redisTemplate.setKeySerializer(new StringRedisSerializer()); // Key 직렬화 설정
