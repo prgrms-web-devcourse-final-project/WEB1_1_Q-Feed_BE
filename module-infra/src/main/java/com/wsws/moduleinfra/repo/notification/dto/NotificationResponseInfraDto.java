@@ -1,16 +1,14 @@
 package com.wsws.moduleinfra.repo.notification.dto;
 
-import com.wsws.moduledomain.notification.NotificationType;
-import com.wsws.moduledomain.user.vo.UserId;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-import java.time.LocalDateTime;
-
-public record NotificationResponseInfraDto (
-        Long notificationId,
-        NotificationType type,
-        boolean isRead,
-        UserId senderId,
-        UserId recipientId,
-        LocalDateTime createdAt
-) {
+@Getter
+@AllArgsConstructor
+public class NotificationResponseInfraDto {
+    private Long id;
+    private String type;
+    private String sender;
+    private String recipient;
+    private boolean isRead;
 }
