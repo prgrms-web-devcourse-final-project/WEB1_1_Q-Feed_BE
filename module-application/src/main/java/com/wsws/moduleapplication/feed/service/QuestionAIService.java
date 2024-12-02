@@ -36,7 +36,7 @@ public class QuestionAIService {
     public void saveQuestions(Map<String, String> questionTempStore) {
         log.info("데이터베이스에 질문을 저장");
 
-        List<Category> categoryList = categoryRepository.findAll(); // 카테고리 전부 로드
+        List<Category> categoryList = categoryRepository.findAllCategories(); // 카테고리 전부 로드
         // RDBMS에 질문 저장
         for (String categoryName : questionTempStore.keySet()) {
             Category category = categoryList.stream()

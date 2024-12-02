@@ -14,7 +14,7 @@ public interface CategoryRepository {
     /**
      * 카테고리 전부 받아오기
      */
-    List<Category> findAll();
+    List<Category> findAllCategories();
 
     /**
      * 카테고리 저장하기

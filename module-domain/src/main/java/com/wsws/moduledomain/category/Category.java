@@ -1,11 +1,14 @@
 package com.wsws.moduledomain.category;
 
 import com.wsws.moduledomain.category.vo.CategoryName;
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Category {
     private Long id;
     private CategoryName categoryName;
