@@ -16,7 +16,7 @@ public class UserId implements Serializable {
 
     private String value;
 
-    private UserId(String value) {
+    public UserId(String value) {
         this.value = value;
     }
 

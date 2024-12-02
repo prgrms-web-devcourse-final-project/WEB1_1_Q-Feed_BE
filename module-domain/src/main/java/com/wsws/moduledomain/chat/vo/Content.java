@@ -20,7 +20,7 @@ public class Content {
 
     private String value;
 
-    private Content(final String content) {
+    public Content(final String content) {
         if (!PATTERN.matcher(content).matches()) {
             throw InvalidChatFormatException.EXCEPTION;
         }

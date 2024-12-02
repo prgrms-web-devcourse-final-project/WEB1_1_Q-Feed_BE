@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-public interface JpaChatMessageRepository extends JpaRepository<ChatMessageEntity, Long>, ChatMessageRepository {
+public interface JpaChatMessageRepository extends JpaRepository<ChatMessageEntity, Long> {
 
     @Query("SELECT new com.wsws.moduledomain.chat.dto.ChatMessageDTO(" +
             "m.id, m.content, m.type, m.url, m.isRead, m.createdAt, u.id.value, u.nickname.value, u.profileImage) " +
@@ -31,7 +31,7 @@ public interface JpaChatMessageRepository extends JpaRepository<ChatMessageEntit
     void markAllMessagesAsRead(@Param("chatRoomId") Long chatRoomId);
 
     // 특정 채팅방에서 마지막 메시지를 가져오기 (최신 메시지 하나만)
-    Optional<ChatMessage> findTopByChatRoomOrderByCreatedAtDesc(ChatRoom chatRoom);
+    Optional<ChatMessageEntity> findTopByChatRoomOrderByCreatedAtDesc(ChatRoom chatRoom);
 
     @Query("SELECT COUNT(cm) FROM ChatMessageEntity cm WHERE cm.chatRoom.id = :chatRoomId AND cm.isRead = false AND cm.userId = :userId")
     long countUnreadMessages(@org.springframework.data.repository.query.Param("chatRoomId") Long chatRoomId, @org.springframework.data.repository.query.Param("userId") String userId);
