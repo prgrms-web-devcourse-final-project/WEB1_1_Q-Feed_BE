@@ -44,13 +44,13 @@ public class FollowReadRepositoryImpl implements FollowReadRepository {
     //나를 팔로우 하고 있는 사람 목록
     @Override
     public List<FollowResponseInfraDto> findFollowersWithCursor(String followeeId, LocalDateTime cursor, int size) {
-
+        LocalDateTime effectiveCursor = cursor != null ? cursor : LocalDateTime.now(); // 기본값 설정
         //캐싱 추가 예정
 
         return queryFactory
                 .select(Projections.constructor(FollowResponseInfraDto.class,
                         follow.followerId.as("userId"),
-                        user.nickname.as("nickname"),
+                        user.nickname.value.as("nickname"),
                         user.profileImage.as("profileImage"),
                         follow.createdAt
                 ))
@@ -58,7 +58,7 @@ public class FollowReadRepositoryImpl implements FollowReadRepository {
                 .join(user).on(user.id.value.eq(follow.followerId))
                 .where(
                         follow.followeeId.eq(followeeId)
-                                .and(cursor != null ? follow.createdAt.lt(cursor) : null)
+                                .and(follow.createdAt.lt(effectiveCursor))
                 )
                 .orderBy(follow.createdAt.desc())
                 .limit(size)
@@ -69,13 +69,13 @@ public class FollowReadRepositoryImpl implements FollowReadRepository {
     //내가 팔로우하고 있는 사람 목록
     @Override
     public List<FollowResponseInfraDto> findFollowingsWithCursor(String followerId, LocalDateTime cursor, int size) {
-
+        LocalDateTime effectiveCursor = cursor != null ? cursor : LocalDateTime.now();
         //캐싱 추가 예정
 
         return queryFactory
                 .select(Projections.constructor(FollowResponseInfraDto.class,
                         follow.followeeId.as("userId"),
-                        user.nickname.as("nickname"),
+                        user.nickname.value.as("nickname"),
                         user.profileImage.as("profileImage"),
                         follow.createdAt
                 ))
@@ -83,7 +83,7 @@ public class FollowReadRepositoryImpl implements FollowReadRepository {
                 .join(user).on(user.id.value.eq(follow.followeeId))
                 .where(
                         follow.followerId.eq(followerId)
-                                .and(cursor != null ? follow.createdAt.lt(cursor) : null)
+                                .and(follow.createdAt.lt(effectiveCursor))
                 )
                 .orderBy(follow.createdAt.desc())
                 .limit(size)
