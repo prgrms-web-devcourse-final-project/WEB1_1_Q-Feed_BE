@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatMessageRepository {
-    ChatMessage save(ChatMessage chatMessage);
+    void save(ChatMessage chatMessage);
 
     void markAllMessagesAsRead(Long chatRoomId);
 
