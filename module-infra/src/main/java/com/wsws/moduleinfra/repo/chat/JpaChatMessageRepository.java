@@ -6,6 +6,8 @@ import com.wsws.moduledomain.chat.repo.ChatMessageRepository;
 import com.wsws.moduledomain.chat.dto.ChatMessageDTO;
 import com.wsws.moduleinfra.entity.chat.ChatMessageEntity;
 import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,12 +20,12 @@ import java.util.Optional;
 public interface JpaChatMessageRepository extends JpaRepository<ChatMessageEntity, Long> {
 
     @Query("SELECT new com.wsws.moduledomain.chat.dto.ChatMessageDTO(" +
-            "m.id, m.content, m.type, m.url, m.isRead, m.createdAt, u.id.value, u.nickname.value, u.profileImage) " +
+            "m.id, m.content, m.type, m.url, m.isRead, m.createdAt, u.id, u.nickname, u.profileImage) " +
             "FROM ChatMessageEntity m " +
-            "JOIN User u ON m.userId = u.id " +
+            "JOIN UserEntity u ON m.userId = u.id " +
             "WHERE m.chatRoom.id = :chatRoomId " +
             "ORDER BY m.createdAt DESC")
-    List<ChatMessageDTO> findMessagesWithUserDetails(@Param("chatRoomId") Long chatRoomId, int page, int size);
+    Page<ChatMessageDTO> findMessagesWithUserDetails(@Param("chatRoomId") Long chatRoomId, Pageable pageable);
 
     @Modifying
     @Transactional

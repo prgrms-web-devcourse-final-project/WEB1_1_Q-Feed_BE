@@ -9,6 +9,7 @@ import com.wsws.moduleinfra.entity.chat.ChatMessageEntity;
 import com.wsws.moduleinfra.entity.chat.ChatRoomEntity;
 import com.wsws.moduleinfra.repo.chat.mapper.ChatMessageMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -41,7 +42,9 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepository {
 
     @Override
     public List<ChatMessageDTO> findMessagesWithUserDetails(Long chatRoomId, int page, int size) {
-        return jpaChatMessageRepository.findMessagesWithUserDetails(chatRoomId, page,size);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ChatMessageDTO> resultPage = jpaChatMessageRepository.findMessagesWithUserDetails(chatRoomId, pageable);
+        return resultPage.getContent();
     }
 
     @Override
