@@ -1,15 +1,17 @@
-package com.wsws.moduleapplication.follow.exception;
+package com.wsws.moduledomain.chat.exception;
 
 import com.wsws.modulecommon.exception.BaseErrorCode;
 import com.wsws.modulecommon.exception.ErrorInfo;
 import lombok.RequiredArgsConstructor;
+
 import static com.wsws.modulecommon.constants.ErrorCodeConstants.BAD_REQUEST;
 
 @RequiredArgsConstructor
-public enum FollowServiceErrorCode implements BaseErrorCode {
-    ALREADY_FOLLOWED(BAD_REQUEST, "FOLLOW_400_1", "이미 팔로우한 사용자입니다."),
-    FOLLOW_NOT_FOUND(BAD_REQUEST, "FOLLOW_400_2", "팔로우 관계를 찾을 수 없습니다.");
+public enum ChatErrorCode implements BaseErrorCode {
 
+    SELF_SELECTION_NOT_ALLOWED(BAD_REQUEST, "CHAT_400_1","자기 자신을 선택할 수 없습니다."),
+    INVALID_CHAT_FORMAT(BAD_REQUEST, "CHAT_400_2", "유효하지 않은 채팅 형식입니다."),
+    URL_REQUIRED(BAD_REQUEST, "CHAT_400_3", "URL이 필요합니다.");
 
     private final Integer status;
     private final String errorCode;
