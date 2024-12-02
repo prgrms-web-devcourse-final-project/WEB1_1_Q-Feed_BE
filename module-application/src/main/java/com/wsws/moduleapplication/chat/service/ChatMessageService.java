@@ -1,6 +1,7 @@
 package com.wsws.moduleapplication.chat.service;
 
 import com.wsws.moduleapplication.chat.dto.ChatMessageRequest;
+import com.wsws.moduleapplication.chat.dto.ChatMessageServiceResponse;
 import com.wsws.moduleapplication.chat.exception.ChatRoomNotFoundException;
 import com.wsws.moduleapplication.chat.exception.FileProcessingException;
 import com.wsws.moduleapplication.user.exception.UserNotFoundException;
@@ -11,6 +12,7 @@ import com.wsws.moduledomain.chat.ChatRoom;
 import com.wsws.moduledomain.chat.MessageType;
 import com.wsws.moduledomain.chat.repo.ChatMessageRepository;
 import com.wsws.moduledomain.chat.repo.ChatRoomRepository;
+import com.wsws.moduledomain.chat.vo.ChatMessageDTO;
 import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.UserId;
@@ -18,6 +20,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,11 +54,15 @@ public class ChatMessageService {
         chatMessageRepository.save(chatMessage);
     }
 
-    // 채팅방의 메세지 조회
-//    public List<ChatMessageInfraDTO> getMessagesByChatRoomId(Long chatRoomId, int page, int size) {
-//        Pageable pageable = PageRequest.of(page, size);
-//        return chatMessageRepository.findMessagesWithUserDetails(chatRoomId,pageable);
-//    }
+    //채팅방의 메세지 조회
+    public List<ChatMessageServiceResponse> getChatMessages(Long chatRoomId,int page, int size ) {
+        List<ChatMessageDTO> chatMessages = chatMessageRepository.findMessagesWithUserDetails(chatRoomId, page, size);
+
+        // ChatMessageDTO를 ChatMessageServiceResponse로 변환
+        return chatMessages.stream()
+                .map(ChatMessageServiceResponse::new)
+                .collect(Collectors.toList());
+    }
 
     // 메세지 읽음 처리
     public void markAllMessagesAsRead(Long chatRoomId) {
@@ -61,7 +70,7 @@ public class ChatMessageService {
     }
 
     private ChatRoom getChatRoomById(Long chatRoomId) {
-        return chatRoomRepository.findById(chatRoomId)
+        return chatRoomRepository.findChatRoomById(chatRoomId)
                 .orElseThrow(() -> ChatRoomNotFoundException.EXCEPTION);
     }
 

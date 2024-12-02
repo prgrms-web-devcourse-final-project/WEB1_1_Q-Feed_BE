@@ -1,9 +1,10 @@
 package com.wsws.moduleapi.chat.controller;
 
+import com.wsws.moduleapi.chat.dto.ChatMessageApiResponse;
 import com.wsws.moduleapplication.chat.dto.ChatMessageRequest;
+import com.wsws.moduleapplication.chat.dto.ChatMessageServiceResponse;
 import com.wsws.moduleapplication.chat.service.ChatMessageService;
 import com.wsws.moduleinfra.repo.chat.JpaChatMessageRepository;
-import com.wsws.moduleinfra.repo.chat.dto.ChatMessageInfraDTO;
 import com.wsws.modulesecurity.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,13 +34,18 @@ public class ChatMessageController {
 
     // 채팅방의 메세지 조회 API
     @GetMapping("/{chatRoomId}/messages")
-    public ResponseEntity<List<ChatMessageInfraDTO>> getMessages(
+    public ResponseEntity<List<ChatMessageApiResponse>> getMessages(
             @PathVariable Long chatRoomId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        List<ChatMessageInfraDTO> messages = jpaChatMessageRepository.findMessagesWithUserDetails(chatRoomId, pageable);
-        return ResponseEntity.ok(messages);
+        //Pageable pageable = PageRequest.of(page, size);
+        List<ChatMessageServiceResponse> messages = chatMessageService.getChatMessages(chatRoomId, page, size);
+
+        List<ChatMessageApiResponse> apiResponses = messages.stream()
+                .map(ChatMessageApiResponse::new)  // 생성자에서 변환
+                .toList();
+
+        return ResponseEntity.ok(apiResponses);
     }
 
     @PutMapping("/{chatRoomId}/markasread")
