@@ -16,6 +16,7 @@ public class ChatRoom {
     private String userId;
     private String userId2;
     private LocalDateTime createdAt;
+    private List<ChatMessage> messages = new ArrayList<>();
 
     // 생성자 (userId, userId2를 받아 초기화)
     public ChatRoom(String userId, String userId2) {
