@@ -59,11 +59,7 @@ public class ChatRoomService {
             ChatMessage lastMessage = getLastMessage(chatRoom);
 
             return new ChatRoomServiceResponse(
-                    chatRoom.getId(),
-                    otherUser.getNickname(),
-                    otherUser.getProfileImage(),
-                    lastMessage != null ? lastMessage.getContent() : null,
-                    lastMessage != null ? lastMessage.getCreatedAt() : null
+                    chatRoom, otherUser, lastMessage
             );
         }).collect(Collectors.toList());
     }
@@ -78,11 +74,7 @@ public class ChatRoomService {
         ChatMessage lastMessage = getLastMessage(chatRoom);
 
         return new ChatRoomServiceResponse(
-                chatRoom.getId(),
-                otherUser.getNickname(),
-                otherUser.getProfileImage(),
-                lastMessage != null ? lastMessage.getContent() : null,
-                lastMessage != null ? lastMessage.getCreatedAt() : null
+                chatRoom, otherUser, lastMessage
         );
 
     }
