@@ -1,10 +1,9 @@
 package com.wsws.moduleapplication.feed.service;
 
-import com.wsws.moduleapplication.feed.dto.AnswerCreateServiceRequest;
-import com.wsws.moduleapplication.feed.dto.AnswerCreateServiceResponse;
-import com.wsws.moduleapplication.feed.dto.AnswerFindServiceResponse;
+import com.wsws.moduleapplication.feed.dto.answer.*;
 import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.feed.exception.QuestionNotFoundException;
+import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.user.exception.ProfileImageProcessingException;
 import com.wsws.moduleapplication.util.FileValidator;
 import com.wsws.modulecommon.service.FileStorageService;
@@ -14,17 +13,19 @@ import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AnswerService {
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
     private final FileStorageService fileStorageService;
 
     public AnswerFindServiceResponse findAnswerByAnswerId(Long answerId) {
-        Answer answer = answerRepository.findByAnswerId(answerId).orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
+        Answer answer = answerRepository.findById(answerId).orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
 
         return null;
     }
@@ -49,8 +50,57 @@ public class AnswerService {
                 request.userId()
         );
 
-        Answer saved = answerRepository.save(answer, question); // 저장
+        Answer saved = null; // 저장
+        try {
+            saved = answerRepository.save(answer, question);
+        } catch (RuntimeException e) {
+            throw QuestionNotFoundException.EXCEPTION;
+        }
+
         return new AnswerCreateServiceResponse(saved.getAnswerId().getValue());
+    }
+
+    /**
+     * 답변 수정
+     */
+    public void editAnswer(AnswerEditServiceRequest request) {
+        String url = processImage(request.image()); // 이미지 처리
+
+        Answer answer = answerRepository.findById(request.answerId())
+                .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
+
+        answer.editAnswer(request.content(), request.visibility(), url);
+
+        try {
+            answerRepository.edit(answer);
+        } catch (RuntimeException e) {
+            throw AnswerNotFoundException.EXCEPTION;
+        }
+    }
+
+    /**
+     * 답변 삭제
+     */
+    public void deleteAnswer(Long answerId) {
+        answerRepository.deleteById(answerId);
+    }
+
+    /**
+     * 좋아요 추가
+     */
+    public void addLikeToAnswer(LikeServiceRequest request) {
+        Answer answer = answerRepository.findById(request.targetId())
+                .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
+
+        answer.addReactionCount();// Answer의 reactionCount 1증가
+
+        // 수정 반영
+        try {
+            answerRepository.edit(answer);
+        } catch (RuntimeException e) {
+            throw AnswerNotFoundException.EXCEPTION;
+        }
+
     }
 
     /**
