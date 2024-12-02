@@ -47,7 +47,7 @@ public class ChatRoomController {
         // ChatRoomServiceResponse->ChatRoomApiResponse
         List<ChatRoomApiResponse> response = chatRooms.stream()
                 .map(ChatRoomApiResponse::new)
-                .collect(Collectors.toList());
+                .toList();
 
         return ResponseEntity.ok(response);
     }
