@@ -23,13 +23,13 @@ public class AnswerMapper {
         );
     }
 
-    public static AnswerEntity toEntity(Answer answer, QuestionEntity questionEntity) {
+    public static AnswerEntity toEntity(Answer answer) {
         return AnswerEntity.create(
                 answer.getContent(),
                 answer.getVisibility(),
                 answer.getUrl(),
                 answer.getReactionCount(),
-                questionEntity,
+                null,
                 answer.getUserId().getValue()
         );
     }

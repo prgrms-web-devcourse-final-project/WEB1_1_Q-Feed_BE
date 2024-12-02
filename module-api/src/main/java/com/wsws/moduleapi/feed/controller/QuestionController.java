@@ -2,7 +2,7 @@ package com.wsws.moduleapi.feed.controller;
 
 import com.wsws.moduleapi.feed.dto.question.QuestionApiResponse;
 import com.wsws.moduleapplication.feed.service.QuestionService;
-import com.wsws.moduleapplication.feed.dto.QuestionServiceResponse;
+import com.wsws.moduleapplication.feed.dto.QuestionFindServiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +18,8 @@ public class QuestionController {
 
     @GetMapping("/daily")
     public ResponseEntity<QuestionApiResponse> getDailyQuestions(@RequestParam("category-id")Long categoryId) {
-        QuestionServiceResponse questionServiceResponse = questionService.findQuestionByCategoryId(categoryId);
+        QuestionFindServiceResponse questionFindServiceResponse = questionService.findQuestionByCategoryId(categoryId);
 
-        return ResponseEntity.ok().body(new QuestionApiResponse(questionServiceResponse));
+        return ResponseEntity.ok().body(new QuestionApiResponse(questionFindServiceResponse));
     }
 }

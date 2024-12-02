@@ -32,4 +32,11 @@ public class AnswerEntity {
         answerEntity.userId = userId;
         return answerEntity;
     }
+
+    /**
+     * 연관관계 편의 메서드
+     */
+    public void setQuestionEntity(final QuestionEntity questionEntity) {
+        this.questionEntity = questionEntity;
+    }
 }

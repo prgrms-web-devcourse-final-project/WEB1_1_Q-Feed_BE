@@ -29,6 +29,17 @@ public class QuestionRepositoryImpl implements QuestionRepository {
     }
 
     /**
+     * Id로 질문 찾기
+     * @param id
+     * @return
+     */
+    @Override
+    public Optional<Question> findById(Long id) {
+        return questionJpaRepository.findById(id)
+                .map(QuestionMapper::toDomain);
+    }
+
+    /**
      * 질문 저장
      */
     @Override
