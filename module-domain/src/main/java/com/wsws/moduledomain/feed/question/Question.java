@@ -2,11 +2,14 @@ package com.wsws.moduledomain.feed.question;
 
 import com.wsws.moduledomain.feed.question.vo.QuestionId;
 import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Question {
     private QuestionId questionId;
     private String content;
@@ -17,7 +20,6 @@ public class Question {
 
     public static Question create(Long questionId, String content, QuestionStatus questionStatus, LocalDateTime createdAt, Long categoryId) {
         Question question = new Question();
-        question.questionId = QuestionId.of(questionId);
         question.content = content;
         question.questionStatus = questionStatus;
         question.createdAt = createdAt;

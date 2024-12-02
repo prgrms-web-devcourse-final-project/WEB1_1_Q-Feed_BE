@@ -1,17 +1,17 @@
 package com.wsws.moduleinfra.repo.feed.mapper;
 
 import com.wsws.moduledomain.feed.question.Question;
-import com.wsws.moduledomain.feed.question.vo.QuestionId;
 import com.wsws.moduleinfra.entity.feed.QuestionEntity;
 
 public class QuestionMapper {
-    public static Question toDomain(QuestionEntity entity) {
+
+    public static Question toDomain(QuestionEntity questionEntity) {
         return Question.create(
-                entity.getId(),
-                entity.getContent(),
-                entity.getQuestionStatus(),
-                entity.getCreatedAt(),
-                entity.getCategoryId()
+                questionEntity.getId(),
+                questionEntity.getContent(),
+                questionEntity.getQuestionStatus(),
+                questionEntity.getCreatedAt(),
+                questionEntity.getCategoryId()
         );
     }
 
