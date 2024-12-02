@@ -1,6 +1,7 @@
 package com.wsws.moduleapplication.chat.dto;
 
-import com.wsws.moduledomain.chat.dto.ChatMessageDTO;
+import com.wsws.moduledomain.chat.vo.ChatMessageUserInfraDTO;
+import com.wsws.moduledomain.chat.vo.ChatMessageUserInfraDTO;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +16,7 @@ public record ChatMessageServiceResponse(
         String userNickName,
         String userProfileImage
 ) {
-    public ChatMessageServiceResponse(ChatMessageDTO dto) {
+    public ChatMessageServiceResponse(ChatMessageUserInfraDTO dto) {
         this(
                 dto.messageId(),
                 dto.content(),

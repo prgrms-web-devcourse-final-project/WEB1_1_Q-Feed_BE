@@ -1,10 +1,10 @@
-package com.wsws.moduledomain.chat.dto;
+package com.wsws.moduledomain.chat.vo;
 
 import com.wsws.moduledomain.chat.MessageType;
 
 import java.time.LocalDateTime;
 
-public record ChatMessageDTO(
+public record ChatMessageUserInfraDTO(
         Long messageId,
         String content,
         MessageType type,

@@ -8,11 +8,11 @@ import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduleapplication.util.FileValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.chat.ChatMessage;
-import com.wsws.moduledomain.chat.ChatRoom;
 import com.wsws.moduledomain.chat.MessageType;
 import com.wsws.moduledomain.chat.repo.ChatMessageRepository;
 import com.wsws.moduledomain.chat.repo.ChatRoomRepository;
-import com.wsws.moduledomain.chat.dto.ChatMessageDTO;
+import com.wsws.moduledomain.chat.vo.ChatMessageUserInfraDTO;
+import com.wsws.moduledomain.chat.vo.ChatRoomInfraDto;
 import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.UserId;
@@ -35,7 +35,7 @@ public class ChatMessageService {
 
     @Transactional
     public void sendMessage(Long chatRoomId, String senderId, ChatMessageRequest request ) {
-        ChatRoom chatRoom = getChatRoomById(chatRoomId);
+        ChatRoomInfraDto chatRoom = getChatRoomById(chatRoomId);
         User user = getUserById(senderId);
 
         UserId userId = user.getId();
@@ -49,14 +49,14 @@ public class ChatMessageService {
                 request.type(),
                 fileProcess,
                 userId,
-                chatRoom
+                chatRoom.id()
         );
         chatMessageRepository.save(chatMessage);
     }
 
     //채팅방의 메세지 조회
     public List<ChatMessageServiceResponse> getChatMessages(Long chatRoomId,int page, int size ) {
-        List<ChatMessageDTO> chatMessages = chatMessageRepository.findMessagesWithUserDetails(chatRoomId, page, size);
+        List<ChatMessageUserInfraDTO> chatMessages = chatMessageRepository.findMessagesWithUserDetails(chatRoomId, page, size);
 
         // ChatMessageDTO를 ChatMessageServiceResponse로 변환
         return chatMessages.stream()
@@ -69,7 +69,7 @@ public class ChatMessageService {
         chatMessageRepository.markAllMessagesAsRead(chatRoomId);
     }
 
-    private ChatRoom getChatRoomById(Long chatRoomId) {
+    private ChatRoomInfraDto getChatRoomById(Long chatRoomId) {
         return chatRoomRepository.findChatRoomById(chatRoomId)
                 .orElseThrow(() -> ChatRoomNotFoundException.EXCEPTION);
     }
