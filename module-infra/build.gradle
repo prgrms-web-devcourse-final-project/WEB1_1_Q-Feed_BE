@@ -4,8 +4,8 @@ dependencies {
 
 	//jpa + querydsl
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
-//	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
+
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
 
 	//보안
 	implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -19,4 +19,7 @@ dependencies {
 
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	//mail
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 }

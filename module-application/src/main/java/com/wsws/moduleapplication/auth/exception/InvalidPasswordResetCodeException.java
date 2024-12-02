@@ -1,0 +1,11 @@
+package com.wsws.moduleapplication.auth.exception;
+
+import com.wsws.moduleapi.exception.ApplicationException;
+
+public class InvalidPasswordResetCodeException extends ApplicationException {
+    public static final InvalidPasswordResetCodeException EXCEPTION = new InvalidPasswordResetCodeException();
+
+    private InvalidPasswordResetCodeException() {
+        super(AuthServiceErrorCode.INVALID_PASSWORD_RESET_CODE);
+    }
+}

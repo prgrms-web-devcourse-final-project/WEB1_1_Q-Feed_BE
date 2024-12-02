@@ -6,6 +6,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,9 +23,12 @@ public class Follow {
     @Column(nullable = false)
     private String followeeId;
 
+    private LocalDateTime createdAt;
+
     public Follow(String followerId, String followeeId) {
         this.followerId = followerId;
         this.followeeId = followeeId;
+        this.createdAt = LocalDateTime.now();
     }
 
     public static Follow create(String followerId, String followeeId) {

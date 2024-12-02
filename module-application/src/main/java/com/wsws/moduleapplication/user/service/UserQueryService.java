@@ -20,36 +20,26 @@ public class UserQueryService {
     private final CacheManager cacheManager;
 
     public UserProfileResponse getUserProfile(String userId) {
+
+        String cacheKey = "user:" + userId + ":profile";
+        UserProfileResponse cachedProfile = cacheManager.get(cacheKey, UserProfileResponse.class);
+        if (cachedProfile != null) {
+            return cachedProfile;
+        }
+
+        //cache에 없으면
         User user = userRepository.findById(UserId.of(userId))
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
-        int followerCount = getFollowerCount(userId);
-        int followingCount = getFollowingCount(userId);
+        int followerCount = followReadRepository.countFollowersByUserId(userId);
+        int followingCount = followReadRepository.countFollowingsByUserId(userId);
 
-        return new UserProfileResponse(user, followerCount, followingCount);
+        UserProfileResponse profileResponse = new UserProfileResponse(user, followerCount, followingCount);
+
+        cacheManager.set(cacheKey, profileResponse, 600); // 10시간
+
+        return profileResponse;
     }
 
 
-
-    private int getFollowerCount(String userId) {
-        String cacheKey = "user:" + userId + ":followerCount";
-        Integer cachedCount = cacheManager.get(cacheKey);
-        if (cachedCount != null) {
-            return cachedCount;
-        }
-        int count = followReadRepository.countFollowersByUserId(userId);
-        cacheManager.set(cacheKey, count, 10);
-        return count;
-    }
-
-    private int getFollowingCount(String userId) {
-        String cacheKey = "user:" + userId + ":followingCount";
-        Integer cachedCount = cacheManager.get(cacheKey);
-        if (cachedCount != null) {
-            return cachedCount;
-        }
-        int count = followReadRepository.countFollowingsByUserId(userId);
-        cacheManager.set(cacheKey, count, 10);
-        return count;
-    }
 }

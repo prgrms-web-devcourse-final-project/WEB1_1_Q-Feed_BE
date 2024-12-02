@@ -69,6 +69,13 @@ public class User {
         this.password = Password.encode(newPassword, passwordEncoder);
     }
 
+    public void resetPassword(String newPassword, PasswordEncoder passwordEncoder) {
+
+        Password.validate(newPassword);
+
+        this.password = Password.encode(newPassword, passwordEncoder);
+    }
+
     // 사용자 상태 변경
     public void deactivate() {
         this.isUsable = false;
