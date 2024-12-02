@@ -7,7 +7,17 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-
+  mail:
+    host: smtp.gmail.com          # SMTP 서버 호스트
+    port: 587                     # SMTP 포트 (TLS)
+    username: ${MAIL_EMAIL}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 redis:
   host: ${REDIS_HOST}
   port: ${REDIS_PORT}
