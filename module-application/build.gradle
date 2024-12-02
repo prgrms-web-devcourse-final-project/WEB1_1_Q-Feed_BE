@@ -6,3 +6,9 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 }
+
+test {
+	if (file('build-test.gradle').exists()) {
+		apply from: 'build-test.gradle'
+	}
+}

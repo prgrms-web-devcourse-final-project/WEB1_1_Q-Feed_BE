@@ -1,6 +1,7 @@
 package com.wsws.moduledomain.auth.exception;
 
-import com.wsws.moduleapi.exception.DomainException;
+
+import com.wsws.modulecommon.exception.DomainException;
 
 public class InvalidRefreshTokenException extends DomainException {
 

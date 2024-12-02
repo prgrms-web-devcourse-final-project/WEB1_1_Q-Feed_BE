@@ -1,8 +1,8 @@
-package com.wsws.moduleapi.exception;
+package com.wsws.modulecommon.exception;
 
 import lombok.RequiredArgsConstructor;
 
-import static com.wsws.moduleapi.constants.ErrorCodeConstants.*;
+import static com.wsws.modulecommon.constants.ErrorCodeConstants.*;
 
 @RequiredArgsConstructor
 public enum GlobalErrorCode implements BaseErrorCode {

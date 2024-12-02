@@ -1,4 +1,4 @@
-package com.wsws.moduleapi.exception;
+package com.wsws.modulecommon.exception;
 
 public class InfraException extends CustomException{
     public InfraException(BaseErrorCode errorCode, String message) {

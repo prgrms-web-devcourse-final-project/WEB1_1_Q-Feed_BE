@@ -1,6 +1,6 @@
 package com.wsws.modulesecurity.exception;
 
-import com.wsws.moduleapi.exception.SecurityException;
+import com.wsws.modulecommon.exception.SecurityException;
 
 public class InvalidTokenException extends SecurityException {
     public static final InvalidTokenException EXCEPTION = new InvalidTokenException();
