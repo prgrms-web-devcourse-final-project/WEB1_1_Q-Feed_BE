@@ -6,8 +6,10 @@ import com.wsws.moduleapi.feed.dto.answer.AnswerPostApiResponse;
 import com.wsws.moduleapplication.feed.dto.answer.AnswerCreateServiceResponse;
 import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.feed.service.AnswerService;
+import com.wsws.modulesecurity.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -68,11 +70,11 @@ public class AnswerController {
      */
     @PostMapping("/{answer-id}/likes")
     public ResponseEntity<String> likeToAnswer(
-//            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("answer-id") Long answerId) {
 
-//        String userId = userPrincipal.getId(); // 좋아요 누른 사용자 아이디 받아오기
-        String userId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
+        String userId = userPrincipal.getId(); // 좋아요 누른 사용자 아이디 받아오기
+//        String userId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
         LikeServiceRequest request = new LikeServiceRequest(userId, "ANSWER", answerId); // 도메인으로의 의존성을 피하기 위해 문자열로 넘겨줌
         answerService.addLikeToAnswer(request); // 해당 글에 좋아요 1 카운트
         return ResponseEntity.ok("좋아요가 추가되었습니다.");
@@ -84,11 +86,11 @@ public class AnswerController {
      */
     @PostMapping("/{answer-id}/cancel-likes")
     public ResponseEntity<String> cancelLikeToAnswer(
-//            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("answer-id") Long answerId) {
 
-//        String userId = userPrincipal.getId(); // 좋아요 누른 사용자 아이디 받아오기
-        String userId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
+        String userId = userPrincipal.getId(); // 좋아요 누른 사용자 아이디 받아오기
+//        String userId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
 
         LikeServiceRequest request = new LikeServiceRequest(userId, "ANSWER", answerId); // 도메인으로의 의존성을 피하기 위해 문자열로 넘겨줌
 
