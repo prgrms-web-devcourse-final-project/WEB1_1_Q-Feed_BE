@@ -21,7 +21,6 @@ import com.wsws.moduledomain.user.vo.Email;
 import com.wsws.moduledomain.user.vo.Nickname;
 import com.wsws.moduledomain.user.vo.UserId;
 import com.wsws.moduledomain.user.vo.UserInterest;
-import com.wsws.moduleinfra.repo.category.CategoryJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,7 +69,8 @@ public class UserService {
     public void updateProfile(UpdateProfileServiceDto dto, String userId) {
         User user = findUserByIdOrThrow(userId);
 
-        if (!user.getNickname().getValue().equals(dto.nickname())) {
+
+        if (!dto.nickname().isEmpty() &&!user.getNickname().getValue().equals(dto.nickname())) {
             validateUniqueNickname(Nickname.from(dto.nickname()));
         }
 
@@ -81,12 +81,16 @@ public class UserService {
         }
 
         user.updateProfile(dto.nickname(), profileImageUrl, dto.description());
+
+        userRepository.save(user);
     }
 
     // 비밀번호 변경
     public void changePassword(PasswordChangeServiceDto dto, String userId) {
         User user = findUserByIdOrThrow(userId);
         user.changePassword(dto.currentPassword(), dto.newPassword(), passwordEncoder);
+
+        userRepository.save(user);
     }
 
     //사용자 탈퇴
@@ -136,6 +140,24 @@ public class UserService {
 
         // 새로운 관심사 저장
         userInterestRepository.save(user.getId(), userInterests);
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> getUserInterests(String userId) {
+        // 사용자 확인
+        User user = findUserByIdOrThrow(userId);
+
+        // 관심사 조회
+        List<UserInterest> userInterests = userInterestRepository.findByUserId(user.getId());
+
+        // 관심사를 CategoryName(String) 리스트로 변환
+        return userInterests.stream()
+                .map(userInterest -> {
+                    CategoryId categoryId = userInterest.getCategoryId();
+                    Category category = categoryRepository.findById(categoryId);
+                    return category.getCategoryName().getName(); // CategoryName의 문자열 반환
+                })
+                .toList();
     }
 
 

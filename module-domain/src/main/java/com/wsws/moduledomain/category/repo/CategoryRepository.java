@@ -1,6 +1,7 @@
 package com.wsws.moduledomain.category.repo;
 
 import com.wsws.moduledomain.category.Category;
+import com.wsws.moduledomain.category.vo.CategoryId;
 import com.wsws.moduledomain.category.vo.CategoryName;
 
 import java.util.List;
@@ -11,6 +12,10 @@ public interface CategoryRepository {
      */
     Category findByCategoryName(CategoryName categoryName);
 
+    /**
+     * 카테고리 ID로 카테고리 받아오기
+     */
+    Category findById(CategoryId categoryId);
 
     /**
      * 카테고리 전부 받아오기
