@@ -32,8 +32,9 @@ public class ChatRoomController {
 
     //채팅방 삭제
     @DeleteMapping("/{chatRoomId}")
-    public ResponseEntity<String> deleteChatRoom(@PathVariable Long chatRoomId) {
-        chatRoomService.deleteChatRoom(chatRoomId);
+    public ResponseEntity<String> deleteChatRoom(@PathVariable Long chatRoomId,@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        String userId = userPrincipal.getId();
+        chatRoomService.deleteChatRoom(chatRoomId,userId);
         return ResponseEntity.status(200).body("채팅방이 삭제되었습니다.");
     }
 
@@ -53,10 +54,10 @@ public class ChatRoomController {
     }
 
     //채팅방 조회
-    @GetMapping("/{userId2}")
-    public ResponseEntity<ChatRoomApiResponse> getChatRoom(@AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable String userId2) {
+    @GetMapping("/{nickname}")
+    public ResponseEntity<ChatRoomApiResponse> getChatRoom(@AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable String nickname) {
         String userId = userPrincipal.getId();
-        ChatRoomApiResponse response = new ChatRoomApiResponse(chatRoomService.getChatRoomWithOtherUser(userId,userId2));
+        ChatRoomApiResponse response = new ChatRoomApiResponse(chatRoomService.getChatRoomWithOtherUser(userId,nickname));
         return ResponseEntity.ok(response);
     }
 
