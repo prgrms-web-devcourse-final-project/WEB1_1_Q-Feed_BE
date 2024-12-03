@@ -7,4 +7,6 @@ dependencies {
     implementation 'org.springframework.ai:spring-ai-redis-store-spring-boot-starter'
     implementation 'redis.clients:jedis:5.1.0'
 
+    implementation 'com.google.firebase:firebase-admin:9.2.0' // FCM
+
 }
