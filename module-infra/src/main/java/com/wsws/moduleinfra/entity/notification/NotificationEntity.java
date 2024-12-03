@@ -20,16 +20,15 @@ public class NotificationEntity {
 
     private String type;
 
-    @Embedded
-    private UserId sender;
+    private String sender;
 
-    @Embedded
-    private UserId recipient;
+    private String recipient;
 
     private boolean isRead;
 
     public static class create extends NotificationEntity {
-        public create(String type, UserId sender, UserId recipient, boolean read) {
+        public create(String type, String sender, String recipient, boolean read) {
         }
+
     }
 }

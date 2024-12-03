@@ -14,8 +14,8 @@ public record NotificationServiceResponse(
         this(
                 notification.getId(),
                 notification.getType(),
-                notification.getSender().getValue(),
-                notification.getRecipient().getValue(),
+                notification.getSender(),
+                notification.getRecipient(),
                 notification.isRead()
         );
     }
