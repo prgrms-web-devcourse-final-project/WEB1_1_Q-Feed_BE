@@ -62,7 +62,7 @@ public class UserService {
         );
 
         userRepository.save(user);
-        System.out.println("3resquest password:" + request.password());
+
     }
 
 

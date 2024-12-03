@@ -36,7 +36,7 @@ public class User {
 
     // 사용자 생성
     public static User create(String email, String rawPassword, String nickname, String profileImage, PasswordEncoder passwordEncoder) {
-        System.out.println("Creating user with password: " + rawPassword);
+
 
 
         User user = new User();

@@ -26,7 +26,6 @@ public class Password {
     public static Password encode(final String rawPassword, final PasswordEncoder passwordEncoder) {
         validate(rawPassword); // null 체크 및 검증
         String encodedPassword = passwordEncoder.encode(rawPassword);
-        System.out.println("Encoded password: " + encodedPassword);
 
         return new Password(encodedPassword);
     }
