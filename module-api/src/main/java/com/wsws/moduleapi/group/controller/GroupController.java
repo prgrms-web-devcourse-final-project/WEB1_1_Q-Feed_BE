@@ -2,8 +2,10 @@ package com.wsws.moduleapi.group.controller;
 
 import com.wsws.moduleapi.chat.dto.ChatMessageApiResponse;
 import com.wsws.moduleapi.group.dto.GroupApiResponse;
+import com.wsws.moduleapi.group.dto.GroupDetailApiResponse;
 import com.wsws.moduleapplication.chat.dto.ChatRoomServiceRequest;
 import com.wsws.moduleapplication.group.dto.CreateGroupRequest;
+import com.wsws.moduleapplication.group.dto.GroupDetailServiceResponse;
 import com.wsws.moduleapplication.group.dto.GroupServiceResponse;
 import com.wsws.moduleapplication.group.dto.UpdateGroupRequest;
 import com.wsws.moduleapplication.group.service.GroupService;
@@ -65,6 +67,15 @@ public class GroupController {
                 .map(GroupApiResponse::new)
                 .toList();
         return ResponseEntity.ok(apiResponses);
+    }
+
+    //그룹 상세 조회
+    @GetMapping("/{groupId}")
+    public ResponseEntity<GroupDetailApiResponse> getGroupDetail(@PathVariable Long groupId) {
+        GroupDetailServiceResponse response = groupService.getGroupDetail(groupId);
+        //변환작업
+        GroupDetailApiResponse apiResponse = new GroupDetailApiResponse(response);
+        return ResponseEntity.ok(apiResponse);
     }
 
 

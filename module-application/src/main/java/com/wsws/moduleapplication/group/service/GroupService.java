@@ -2,13 +2,16 @@ package com.wsws.moduleapplication.group.service;
 
 import com.wsws.moduleapplication.chat.dto.ChatMessageServiceResponse;
 import com.wsws.moduleapplication.group.dto.CreateGroupRequest;
+import com.wsws.moduleapplication.group.dto.GroupDetailServiceResponse;
 import com.wsws.moduleapplication.group.dto.GroupServiceResponse;
 import com.wsws.moduleapplication.group.dto.UpdateGroupRequest;
 import com.wsws.moduleapplication.user.exception.ProfileImageProcessingException;
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.group.Group;
+import com.wsws.moduledomain.group.dto.GroupDetailDto;
 import com.wsws.moduledomain.group.dto.GroupDto;
+import com.wsws.moduledomain.group.dto.GroupMemberDto;
 import com.wsws.moduledomain.group.repo.GroupMemberRepository;
 import com.wsws.moduledomain.group.repo.GroupRepository;
 import com.wsws.moduledomain.group.vo.GroupId;
@@ -83,7 +86,6 @@ public class GroupService {
     }
 
     public List<GroupServiceResponse> getGroupsByCategory(Long categoryId){
-
         List<GroupDto> groups = groupRepository.findByCategoryIdWithMemberCount(categoryId);
 
         //serviceresponse->apiresponse
@@ -92,8 +94,17 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
+    //그룹 상세조회
+    @Transactional(readOnly = true)
+    public GroupDetailServiceResponse getGroupDetail(Long groupId) {
 
+        GroupDetailDto groupDetailDto = groupRepository.findGroupWithCategory(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
 
+        List<GroupMemberDto> groupMembers = groupRepository.findMembersByGroupId(groupId);
+
+        return new GroupDetailServiceResponse(groupDetailDto, groupMembers);
+    }
 
     private Group findGroupById(Long groupId) {
         return groupRepository.findById(GroupId.of(groupId))

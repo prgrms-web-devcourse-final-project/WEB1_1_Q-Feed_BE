@@ -1,15 +1,14 @@
 package com.wsws.moduleinfra.repo.group;
 
 import com.wsws.moduledomain.group.Group;
+import com.wsws.moduledomain.group.dto.GroupDetailDto;
 import com.wsws.moduledomain.group.dto.GroupDto;
+import com.wsws.moduledomain.group.dto.GroupMemberDto;
 import com.wsws.moduledomain.group.repo.GroupRepository;
 import com.wsws.moduledomain.group.vo.GroupId;
 import com.wsws.moduleinfra.entity.group.GroupEntity;
 import com.wsws.moduleinfra.repo.group.mapper.GroupMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -42,6 +41,19 @@ public class GroupRepositoryImpl implements GroupRepository {
     @Override
     public List<GroupDto> findByCategoryIdWithMemberCount(Long categoryId) {
         return jpaGroupRepository.findByCategoryIdWithMemberCount(categoryId);
+    }
+
+    //카테고리 이름을 얻어 그룹 목록 반환
+    @Override
+    public Optional<GroupDetailDto> findGroupWithCategory(Long groupId) {
+        return jpaGroupRepository.findGroupWithCategory(groupId);
+
+    }
+
+    //user 정보가 포함된 그룹 멤버 반환
+    @Override
+    public List<GroupMemberDto> findMembersByGroupId(Long groupId) {
+        return jpaGroupRepository.findMembersByGroupId(groupId);
     }
 
 }
