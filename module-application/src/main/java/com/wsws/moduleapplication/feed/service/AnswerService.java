@@ -4,13 +4,21 @@ import com.wsws.moduleapplication.feed.dto.answer.*;
 import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.feed.exception.QuestionNotFoundException;
 import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
+import com.wsws.moduleapplication.user.exception.AlreadyLikeException;
 import com.wsws.moduleapplication.user.exception.ProfileImageProcessingException;
+import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduleapplication.util.FileValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
+import com.wsws.moduledomain.user.Like;
+import com.wsws.moduledomain.user.User;
+import com.wsws.moduledomain.user.repo.LikeRepository;
+import com.wsws.moduledomain.user.repo.UserRepository;
+import com.wsws.moduledomain.user.vo.TargetType;
+import com.wsws.moduledomain.user.vo.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +30,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class AnswerService {
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
+    private final LikeRepository likeRepository;
+    private final UserRepository userRepository;
+
     private final FileStorageService fileStorageService;
 
     public AnswerFindServiceResponse findAnswerByAnswerId(Long answerId) {
@@ -89,6 +100,9 @@ public class AnswerService {
      * 좋아요 추가
      */
     public void addLikeToAnswer(LikeServiceRequest request) {
+
+        createLike(request); // Like 객체 추가
+
         Answer answer = answerRepository.findById(request.targetId())
                 .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
 
@@ -103,6 +117,29 @@ public class AnswerService {
 
     }
 
+//    /**
+//     * 좋아요 취소
+//     */
+//    public void cancelLikeToAnswer(LikeServiceRequest request) {
+//        Answer answer = answerRepository.findById(request.targetId())
+//                .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
+//
+//        answer.addReactionCount();// Answer의 reactionCount 1증가
+//
+//        // 수정 반영
+//        try {
+//            answerRepository.edit(answer);
+//        } catch (RuntimeException e) {
+//            throw AnswerNotFoundException.EXCEPTION;
+//        }
+//
+//    }
+
+
+
+
+    /* private 메서드 */
+
     /**
      * 이미지 처리
      */
@@ -116,5 +153,38 @@ public class AnswerService {
             }
         }
         return null; // 이미지가 없는 경우
+    }
+
+    /**
+     * Like 저장 생성 및 저장
+     */
+    private void createLike(LikeServiceRequest request) {
+
+        User user = userRepository.findById(UserId.of(request.userId()))
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION);// 연관 맺을 User 찾아오기
+
+        if(isAlreadyLike(request.targetId(), user)) // 좋아요를 누른적이 있는지 확인
+            throw AlreadyLikeException.EXCEPTION;
+
+
+        Like like = Like.create(
+                null,
+                TargetType.valueOf(request.targetType()),
+                request.targetId(),
+                request.userId()
+        );
+        try {
+            likeRepository.save(like, user);
+        } catch (RuntimeException e) { // 연관관계 맺는 과정 중 예외처리
+            throw UserNotFoundException.EXCEPTION;
+        }
+
+    }
+
+    /**
+     * 같은 글에 좋아요를 누른적이 있는지 확인
+     */
+    private boolean isAlreadyLike(Long targetId, User user) {
+        return likeRepository.existsByTargetIdAndUserEntity(targetId, user);
     }
 }

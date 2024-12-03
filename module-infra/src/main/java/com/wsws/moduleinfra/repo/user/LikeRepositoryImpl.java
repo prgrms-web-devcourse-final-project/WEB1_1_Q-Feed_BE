@@ -6,6 +6,7 @@ import com.wsws.moduledomain.user.repo.LikeRepository;
 import com.wsws.moduleinfra.entity.user.LikeEntity;
 import com.wsws.moduleinfra.entity.user.LikeEntityMapper;
 import com.wsws.moduleinfra.entity.user.UserEntity;
+import com.wsws.moduleinfra.entity.user.UserEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -24,5 +25,10 @@ public class LikeRepositoryImpl implements LikeRepository {
         likeEntity.setUserEntity(userEntity);
 
         return LikeEntityMapper.toDomain(jpaLikeUserRepository.save(likeEntity));
+    }
+
+    @Override
+    public boolean existsByTargetIdAndUserEntity(Long targetId, User user) {
+        return jpaLikeUserRepository.existsByTargetIdAndUserEntity(targetId, UserEntityMapper.fromDomain(user));
     }
 }

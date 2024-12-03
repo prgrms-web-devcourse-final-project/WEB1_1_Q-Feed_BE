@@ -6,11 +6,8 @@ import com.wsws.moduleapi.feed.dto.answer.AnswerPostApiResponse;
 import com.wsws.moduleapplication.feed.dto.answer.AnswerCreateServiceResponse;
 import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.feed.service.AnswerService;
-import com.wsws.moduleapplication.user.service.LikeService;
-import com.wsws.modulesecurity.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 public class AnswerController {
 
     private final AnswerService answerService;
-    private final LikeService likeService;
 
     /**
      * 답변 목록 조회
@@ -68,17 +64,32 @@ public class AnswerController {
     }
 
     /**
-     * 답변 반응(좋아요)
+     * 답변 좋아요 추가
      */
     @PostMapping("/{answer-id}/likes")
     public ResponseEntity<String> likeToAnswer(
 //            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("answer-id") Long answerId) {
+
 //        String userId = userPrincipal.getId(); // 좋아요 누른 사용자 아이디 받아오기
         String userId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
         LikeServiceRequest request = new LikeServiceRequest(userId, "ANSWER", answerId); // 도메인으로의 의존성을 피하기 위해 문자열로 넘겨줌
-        likeService.createLike(request); // Like 생성 및 저장
         answerService.addLikeToAnswer(request); // 해당 글에 좋아요 1 카운트
         return ResponseEntity.ok("좋아요가 추가되었습니다.");
     }
+
+
+//    /**
+//     * 답변 좋아요 취소
+//     */
+//    @PostMapping("/{answer-id}/cancel-likes")
+//    public ResponseEntity<String> cancelLikeToAnswer(
+////            @AuthenticationPrincipal UserPrincipal userPrincipal,
+//            @PathVariable("answer-id") Long answerId) {
+////        String userId = userPrincipal.getId(); // 좋아요 누른 사용자 아이디 받아오기
+//        String userId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
+//        LikeServiceRequest request = new LikeServiceRequest(userId, "ANSWER", answerId); // 도메인으로의 의존성을 피하기 위해 문자열로 넘겨줌
+//        answerService.addLikeToAnswer(request); // 해당 글에 좋아요 1 카운트
+//        return ResponseEntity.ok("좋아요가 취소되었습니다.");
+//    }
 }

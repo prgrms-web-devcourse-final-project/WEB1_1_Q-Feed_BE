@@ -5,4 +5,5 @@ import com.wsws.moduledomain.user.User;
 
 public interface LikeRepository {
     Like save(Like like, User user);
+    boolean existsByTargetIdAndUserEntity(Long targetId, User user);
 }
