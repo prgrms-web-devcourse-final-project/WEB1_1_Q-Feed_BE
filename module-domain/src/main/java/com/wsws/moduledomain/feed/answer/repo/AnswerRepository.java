@@ -21,4 +21,9 @@ public interface AnswerRepository {
      * 답변 수정
      */
     void edit(Answer answer);
+
+    /**
+     * 답변 삭제
+     */
+    void deleteById(Long id);
 }

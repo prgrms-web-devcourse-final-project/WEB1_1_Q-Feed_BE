@@ -58,4 +58,9 @@ public class AnswerController {
     /**
      * 답변 삭제
      */
+    @DeleteMapping("/{answer-id}")
+    public ResponseEntity<String> deleteAnswer(@PathVariable("answer-id") Long answerId) {
+        answerService.deleteAnswer(answerId);
+        return ResponseEntity.ok("답변이 삭제되었습니다.");
+    }
 }

@@ -56,4 +56,9 @@ public class AnswerRepositoryImpl implements AnswerRepository {
                 .orElseThrow(RuntimeException::new);
         answerEntity.editAnswer(answer.getContent(), answer.getVisibility(), answer.getUrl());
     }
+
+    @Override
+    public void deleteById(Long id) {
+        answerJpaRepository.deleteById(id);
+    }
 }

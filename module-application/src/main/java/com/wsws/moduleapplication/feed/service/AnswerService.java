@@ -81,6 +81,14 @@ public class AnswerService {
         }
     }
 
+    /**
+     * 답변 삭제
+     */
+    public void deleteAnswer(Long answerId) {
+        answerRepository.deleteById(answerId);
+    }
+
+
 
     /**
      * 이미지 처리
