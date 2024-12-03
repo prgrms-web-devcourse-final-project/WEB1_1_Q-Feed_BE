@@ -13,10 +13,12 @@ import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.UserId;
 
+import com.wsws.moduleinfra.repo.chat.ChatRoomRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +38,7 @@ public class ChatRoomService {
         if (chatRoomRepository.findChatRoomBetweenUsers(req.userId(), req.userId2()).isPresent()) {
             throw AlreadyChatRoomException.EXCEPTION;
         }
-        ChatRoom chatRoom = ChatRoom.create(req.userId(), req.userId2());
+        ChatRoom chatRoom = ChatRoom.create(null,req.userId(), req.userId2(), LocalDateTime.now());
         chatRoomRepository.save(chatRoom);
     }
 
@@ -58,12 +60,11 @@ public class ChatRoomService {
             // 마지막 메시지 가져오기
             ChatMessage lastMessage = getLastMessage(chatRoom);
 
+            // 읽지 않은 메시지 개수 가져오기
+            long unreadCount = chatMessageRepository.countUnreadMessages(chatRoom.getId(), otherUser.getId().getValue());
+
             return new ChatRoomServiceResponse(
-                    chatRoom.getId(),
-                    otherUser.getNickname(),
-                    otherUser.getProfileImage(),
-                    lastMessage != null ? lastMessage.getContent() : null,
-                    lastMessage != null ? lastMessage.getCreatedAt() : null
+                    chatRoom, otherUser, lastMessage, unreadCount
             );
         }).collect(Collectors.toList());
     }
@@ -77,18 +78,16 @@ public class ChatRoomService {
         // 마지막 메시지 가져오기
         ChatMessage lastMessage = getLastMessage(chatRoom);
 
-        return new ChatRoomServiceResponse(
-                chatRoom.getId(),
-                otherUser.getNickname(),
-                otherUser.getProfileImage(),
-                lastMessage != null ? lastMessage.getContent() : null,
-                lastMessage != null ? lastMessage.getCreatedAt() : null
-        );
+        // 읽지 않은 메시지 개수 가져오기
+        long unreadCount = chatMessageRepository.countUnreadMessages(chatRoom.getId(), otherUser.getId().getValue());
 
+        return new ChatRoomServiceResponse(
+                chatRoom, otherUser, lastMessage, unreadCount
+        );
     }
 
     private ChatRoom getChatRoomById(Long chatRoomId) {
-        return chatRoomRepository.findById(chatRoomId)
+        return chatRoomRepository.findChatRoomById(chatRoomId)
                 .orElseThrow(() -> ChatRoomNotFoundException.EXCEPTION);
     }
 

@@ -3,8 +3,10 @@ package com.wsws.moduleinfra.repo.chat;
 import com.wsws.moduledomain.chat.ChatMessage;
 import com.wsws.moduledomain.chat.ChatRoom;
 import com.wsws.moduledomain.chat.repo.ChatMessageRepository;
-import com.wsws.moduleinfra.repo.chat.dto.ChatMessageInfraDTO;
+import com.wsws.moduledomain.chat.dto.ChatMessageDTO;
+import com.wsws.moduleinfra.entity.chat.ChatMessageEntity;
 import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,21 +17,24 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-public interface JpaChatMessageRepository extends JpaRepository<ChatMessage, String>, ChatMessageRepository {
+public interface JpaChatMessageRepository extends JpaRepository<ChatMessageEntity, Long> {
 
-    @Query("SELECT new com.wsws.moduleinfra.repo.chat.dto.ChatMessageInfraDTO(" +
-            "m.id, m.content, m.type, m.url, m.isRead, m.createdAt,u.id, u.nickname, u.profileImage) " +
-            "FROM ChatMessage m " +
-            "JOIN User u ON m.userId = u.id " +
+    @Query("SELECT new com.wsws.moduledomain.chat.dto.ChatMessageDTO(" +
+            "m.id, m.content, m.type, m.url, m.isRead, m.createdAt, u.id, u.nickname, u.profileImage) " +
+            "FROM ChatMessageEntity m " +
+            "JOIN UserEntity u ON m.userId = u.id " +
             "WHERE m.chatRoom.id = :chatRoomId " +
             "ORDER BY m.createdAt DESC")
-    List<ChatMessageInfraDTO> findMessagesWithUserDetails(@Param("chatRoomId") Long chatRoomId,Pageable pageable);
+    Page<ChatMessageDTO> findMessagesWithUserDetails(@Param("chatRoomId") Long chatRoomId, Pageable pageable);
 
     @Modifying
     @Transactional
-    @Query("UPDATE ChatMessage cm SET cm.isRead = true WHERE cm.chatRoom.id = :chatRoomId AND cm.isRead = false")
+    @Query("UPDATE ChatMessageEntity cm SET cm.isRead = true WHERE cm.chatRoom.id = :chatRoomId AND cm.isRead = false")
     void markAllMessagesAsRead(@Param("chatRoomId") Long chatRoomId);
 
     // 특정 채팅방에서 마지막 메시지를 가져오기 (최신 메시지 하나만)
-    Optional<ChatMessage> findTopByChatRoomOrderByCreatedAtDesc(ChatRoom chatRoom);
+    Optional<ChatMessageEntity> findTopByChatRoomOrderByCreatedAtDesc(ChatRoom chatRoom);
+
+    @Query("SELECT COUNT(cm) FROM ChatMessageEntity cm WHERE cm.chatRoom.id = :chatRoomId AND cm.isRead = false AND cm.userId = :userId")
+    long countUnreadMessages(@org.springframework.data.repository.query.Param("chatRoomId") Long chatRoomId, @org.springframework.data.repository.query.Param("userId") String userId);
 }

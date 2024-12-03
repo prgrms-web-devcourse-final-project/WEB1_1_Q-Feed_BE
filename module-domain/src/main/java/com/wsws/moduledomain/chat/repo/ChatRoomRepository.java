@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatRoomRepository {
-    ChatRoom save(ChatRoom chatRoom);
+    void save(ChatRoom chatRoom);
 
     void delete(ChatRoom chatRoom);
 
     Optional<ChatRoom> findChatRoomBetweenUsers(String userId, String userId2);
 
-    Optional<ChatRoom> findById(Long chatRoomId);
+    Optional<ChatRoom> findChatRoomById(Long chatRoomId);
 
     List<ChatRoom> findChatRooms(String userId);
 }

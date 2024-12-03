@@ -2,6 +2,7 @@ dependencies {
 	implementation project(':module-domain')
 	implementation project(':module-infra')
 	implementation project(':module-common')
+	implementation project(':module-external-api')
 
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'

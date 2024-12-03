@@ -35,35 +35,35 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponse(serviceResponse));
     }
 
-//    @PostMapping("/reset-password/request")
-//    public ResponseEntity<AuthResponse> requestPasswordReset(@RequestBody PasswordResetRequest request) {
-//        authService.sendPasswordResetCode(request.toServiceDto());
-//        return ResponseEntity.ok(new AuthResponse("비밀번호 재설정 인증번호가 발송되었습니다"));
-//    }
-//
-//    @PostMapping("/reset-password/confirm")
-//    public ResponseEntity<AuthResponse> confirmPasswordReset(@RequestBody PasswordResetConfirmRequest request) {
-//        authService.resetPassword(request.toServiceDto());
-//        return ResponseEntity.ok(new AuthResponse("비밀번호가 성공적으로 재설정되었습니다"));
-//    }
-//
-//    @PostMapping("/email/verify")
-//    public ResponseEntity<AuthResponse> sendEmailVerificationCode(@RequestBody EmailVerificationRequest request) {
-//        authService.sendVerificationCode(request.toServiceDto());
-//        return ResponseEntity.ok(new AuthResponse("회원가입 인증번호가 발송되었습니다"));
-//    }
-//
-//    @PostMapping("/email/verify/check")
-//    public ResponseEntity<AuthResponse> checkEmailVerificationCode(@RequestBody EmailVerificationCheckRequest request) {
-//        authService.checkVerificationCode(request.toServiceDto());
-//        return ResponseEntity.ok(new AuthResponse("인증번호가 확인되었습니다"));
-//    }
-//
-//    // 닉네임 중복 체크
-//    @PostMapping("/nickname/check")
-//    public ResponseEntity<Boolean> checkNickname(@RequestBody NicknameCheckRequest request) {
-//        boolean exists = authService.checkNickname(authMapper.toServiceDto(request));
-//        return ResponseEntity.ok(exists);
-//    }
+    @PostMapping("/reset-password/request")
+    public ResponseEntity<AuthResponse> requestPasswordReset(@RequestBody PasswordResetRequest request) {
+        authService.sendPasswordResetCode(request.toServiceDto());
+        return ResponseEntity.ok(new AuthResponse("비밀번호 재설정 인증번호가 발송되었습니다"));
+    }
+
+    @PostMapping("/reset-password/confirm")
+    public ResponseEntity<AuthResponse> confirmPasswordReset(@RequestBody PasswordResetConfirmRequest request) {
+        authService.resetPassword(request.toServiceDto());
+        return ResponseEntity.ok(new AuthResponse("비밀번호가 성공적으로 재설정되었습니다"));
+    }
+
+    @PostMapping("/email/verify")
+    public ResponseEntity<AuthResponse> sendEmailVerificationCode(@RequestBody EmailVerificationRequest request) {
+        authService.sendVerificationCode(request.toServiceDto());
+        return ResponseEntity.ok(new AuthResponse("회원가입 인증번호가 발송되었습니다"));
+    }
+
+    @PostMapping("/email/verify/check")
+    public ResponseEntity<AuthResponse> checkEmailVerificationCode(@RequestBody EmailVerificationCheckRequest request) {
+        authService.checkVerificationCode(request.toServiceDto());
+        return ResponseEntity.ok(new AuthResponse("인증번호가 확인되었습니다"));
+    }
+
+    // 닉네임 중복 체크
+    @PostMapping("/nickname/check")
+    public ResponseEntity<Boolean> checkNickname(@RequestBody String nickname) {
+        boolean exists = authService.checkNickname(nickname);
+        return ResponseEntity.ok(exists);
+    }
 
 }

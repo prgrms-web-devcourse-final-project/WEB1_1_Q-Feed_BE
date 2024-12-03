@@ -1,14 +1,23 @@
 package com.wsws.moduledomain.category;
 
+import com.wsws.moduledomain.category.vo.CategoryId;
 import com.wsws.moduledomain.category.vo.CategoryName;
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Entity
+
+@Getter
 public class Category {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
-    private Long id;
+    private final CategoryId id;
+    private final CategoryName categoryName;
 
-    @Enumerated(EnumType.STRING)
-    private CategoryName categoryName;
+    private Category(CategoryId id, CategoryName categoryName) {
+        this.id = id;
+        this.categoryName = categoryName;
+    }
+
+    public static Category create(CategoryId id, CategoryName categoryName) {
+        return new Category(id, categoryName);
+    }
 }

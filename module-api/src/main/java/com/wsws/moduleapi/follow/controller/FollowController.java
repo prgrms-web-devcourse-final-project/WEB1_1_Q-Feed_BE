@@ -1,13 +1,14 @@
 package com.wsws.moduleapi.follow.controller;
 
+import com.wsws.moduleapi.follow.dto.FollowResponseDto;
 import com.wsws.moduleapplication.follow.dto.FollowServiceRequestDto;
+import com.wsws.moduleapplication.follow.service.FollowReadService;
 import com.wsws.moduleapplication.follow.service.FollowService;
-import com.wsws.moduleinfra.repo.follow.FollowReadRepository;
-import com.wsws.moduleinfra.repo.follow.dto.FollowResponseInfraDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -16,31 +17,38 @@ import java.util.List;
 public class FollowController {
 
     private final FollowService followService;
-    private final FollowReadRepository readRepository;
-
-
+    private final FollowReadService followReadService;
 
     //팔로우 정보 가져오기
     @GetMapping("/followers/{userId}")
-    public ResponseEntity<List<FollowResponseInfraDto>> getFollowers(
+    public ResponseEntity<List<FollowResponseDto>> getFollowers(
             @PathVariable String userId,
-            @RequestParam(defaultValue = "0") String cursor,
+            @RequestParam(required = false) String cursor,
             @RequestParam(defaultValue = "10") int size) {
-        List<FollowResponseInfraDto> followers = readRepository.findFollowersWithCursor(userId, cursor, size);
+        LocalDateTime parsedCursor = cursor != null ? LocalDateTime.parse(cursor) : null;
+
+        List<FollowResponseDto> followers = followReadService.getFollowersWithCursor(userId, parsedCursor, size)
+                .stream()
+                .map(FollowResponseDto::fromServiceDto) // 응답 변환
+                .toList();
+
         return ResponseEntity.ok(followers);
     }
 
-    //팔로잉 정보 가져오기
     @GetMapping("/followings/{userId}")
-    public ResponseEntity<List<FollowResponseInfraDto>> getFollowings(
+    public ResponseEntity<List<FollowResponseDto>> getFollowings(
             @PathVariable String userId,
-            @RequestParam(defaultValue = "0") String cursor,
-            @RequestParam(defaultValue = "10") int size
-    ){
-        List<FollowResponseInfraDto> followings = readRepository.findFollowingsWithCursor(userId, cursor, size);
+            @RequestParam(required = false) String cursor,
+            @RequestParam(defaultValue = "10") int size) {
+        LocalDateTime parsedCursor = cursor != null ? LocalDateTime.parse(cursor) : null;
+
+        List<FollowResponseDto> followings = followReadService.getFollowingsWithCursor(userId, parsedCursor, size)
+                .stream()
+                .map(FollowResponseDto::fromServiceDto) // 응답 변환
+                .toList();
+
         return ResponseEntity.ok(followings);
     }
-
     //팔로우 요청
     @PostMapping
     public ResponseEntity<String> followUser(@RequestBody FollowServiceRequestDto followServiceRequestDto) {

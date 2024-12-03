@@ -8,7 +8,6 @@ import com.wsws.modulesecurity.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +20,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) {
         User user = userRepository.findByEmail(Email.from(email))
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
-        return new UserPrincipal(user.getId().getValue());
+        return UserPrincipalMapper.fromDomain(user);
     }
 }

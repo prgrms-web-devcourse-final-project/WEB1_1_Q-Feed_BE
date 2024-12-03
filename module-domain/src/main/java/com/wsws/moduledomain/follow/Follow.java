@@ -1,34 +1,26 @@
 package com.wsws.moduledomain.follow;
 
 
-import jakarta.persistence.*;
-import lombok.AccessLevel;
+import com.wsws.moduledomain.follow.vo.FollowId;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Entity
+import java.time.LocalDateTime;
+
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Follow {
+    private final FollowId id;
+    private final LocalDateTime createdAt;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
-    private String followerId;
-
-    @Column(nullable = false)
-    private String followeeId;
-
-    public Follow(String followerId, String followeeId) {
-        this.followerId = followerId;
-        this.followeeId = followeeId;
+    private Follow(FollowId id, LocalDateTime createdAt) {
+        this.id = id;
+        this.createdAt = createdAt;
     }
 
     public static Follow create(String followerId, String followeeId) {
-        return new Follow(followerId, followeeId);
+        return new Follow(FollowId.of(followerId, followeeId), LocalDateTime.now());
     }
 
-
+    public static Follow of(FollowId id, LocalDateTime createdAt) {
+        return new Follow(id, createdAt);
+    }
 }

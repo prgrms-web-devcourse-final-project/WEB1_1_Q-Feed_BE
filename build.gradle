@@ -87,6 +87,17 @@ subprojects {
 	jar {
 		enabled = true
 	}
+
+	// spring ai 설정
+	ext {
+		springAiVersion = "1.0.0-M4"
+	}
+
+	dependencyManagement {
+		imports {
+			mavenBom "org.springframework.ai:spring-ai-bom:$springAiVersion"
+		}
+	}
 }
 
 // module-api만 실행 가능한 Spring Boot JAR 파일 생성

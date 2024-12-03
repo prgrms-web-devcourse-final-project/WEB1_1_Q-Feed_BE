@@ -2,6 +2,7 @@ package com.wsws.moduleinfra.repo.chat;
 
 import com.wsws.moduledomain.chat.ChatRoom;
 import com.wsws.moduledomain.chat.repo.ChatRoomRepository;
+import com.wsws.moduleinfra.entity.chat.ChatRoomEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,13 +12,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface JpaChatRoomRepository extends JpaRepository<ChatRoom, Long>,ChatRoomRepository {
+public interface JpaChatRoomRepository extends JpaRepository<ChatRoomEntity, Long> {
 
-    @Query("SELECT cr FROM ChatRoom cr WHERE cr.userId = :userId AND cr.userId2 = :userId2")
-    Optional<ChatRoom> findChatRoomBetweenUsers(@Param("userId") String userId, @Param("userId2") String userId2);
+    @Query("SELECT cr FROM ChatRoomEntity cr WHERE cr.userId = :userId AND cr.userId2 = :userId2")
+    Optional<ChatRoomEntity> findChatRoomBetweenUsers(@Param("userId") String userId, @Param("userId2") String userId2);
 
-    @Query("SELECT cr FROM ChatRoom cr WHERE cr.userId = :userId OR cr.userId2 = :userId")
-    List<ChatRoom> findChatRooms(@Param("userId") String userId);
+    @Query("SELECT cr FROM ChatRoomEntity cr WHERE cr.userId = :userId OR cr.userId2 = :userId")
+    List<ChatRoomEntity> findChatRooms(@Param("userId") String userId);
+
+    Optional<ChatRoomEntity> findChatRoomById(Long chatRoomId);
+
 
 
 //    @Query("SELECT new com.wsws.moduleinfra.repo.chat.dto.ChatRoomInfraDTO(" +

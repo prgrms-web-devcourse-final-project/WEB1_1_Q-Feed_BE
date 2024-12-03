@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -60,6 +62,28 @@ public class UserController {
         String userId = userPrincipal.getId();
         userService.deleteUser(userId);
         return ResponseEntity.ok(new AuthResponse("회원 탈퇴가 완료되었습니다."));
+    }
+
+    //관심사 생성
+
+    @PostMapping("/{userId}/interests")
+    public ResponseEntity<AuthResponse> createInterests(
+            @PathVariable String userId,
+            @RequestBody List<String> interestCategoryNames
+    ){
+        userService.createInterests(userId,interestCategoryNames);
+
+        return ResponseEntity.ok(new AuthResponse("사용자 관심사가 생성되었습니다."));
+    }
+
+    //관심사 수정 및 추가
+    @PutMapping("/interests")
+    public ResponseEntity<AuthResponse> updateUserInterests(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestBody List<String> interestCategoryNames){
+        String userId = userPrincipal.getId();
+        userService.updateInterests(userId, interestCategoryNames);
+        return ResponseEntity.ok(new AuthResponse("사용자 관심사가 업데이트되었습니다."));
     }
 
     // 과거 질문 및 답변 리스트 조회
