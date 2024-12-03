@@ -5,6 +5,7 @@ import com.wsws.moduledomain.group.dto.GroupMemberDetailDto;
 import com.wsws.moduledomain.group.repo.GroupMemberRepository;
 import com.wsws.moduleinfra.entity.group.GroupEntity;
 import com.wsws.moduleinfra.entity.group.GroupMemberEntity;
+import com.wsws.moduleinfra.repo.group.mapper.GroupMapper;
 import com.wsws.moduleinfra.repo.group.mapper.GroupMemberMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -35,6 +36,12 @@ public class GroupMemberRepositoryImpl implements GroupMemberRepository {
 
         GroupMemberEntity groupMemberEntity = GroupMemberMapper.toEntity(groupMember, groupEntity);
         jpaGroupMemberRepository.delete(groupMemberEntity);
+    }
+
+    @Override
+    public Optional<GroupMember> findById(Long memberId) {
+        return jpaGroupMemberRepository.findById(memberId)
+                .map(GroupMemberMapper::toDomain);
     }
 
     @Override

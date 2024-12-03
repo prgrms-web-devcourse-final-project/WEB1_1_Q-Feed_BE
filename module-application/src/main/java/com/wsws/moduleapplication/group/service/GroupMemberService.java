@@ -8,6 +8,7 @@ import com.wsws.moduledomain.group.repo.GroupMemberRepository;
 import com.wsws.moduledomain.group.repo.GroupRepository;
 import com.wsws.moduledomain.group.vo.GroupId;
 import com.wsws.moduledomain.user.repo.UserRepository;
+import com.wsws.moduledomain.user.vo.UserId;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -56,9 +57,39 @@ public class GroupMemberService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public void forceRemoveMember(Long groupId, String adminId, Long memberId) {
+        Group group = findGroupById(groupId) ;
+        // 그룹 관리자 확인
+        validateAdminPermission(group, adminId);
+
+        GroupMember groupMember = findMemberById(memberId);
+        //그룹 멤버 확인
+        validateGroupMembers(groupMember, groupId);
+
+        groupMemberRepository.delete(groupMember);
+    }
+
 
     private Group findGroupById(Long groupId) {
         return groupRepository.findById(GroupId.of(groupId))
                 .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
+    }
+
+    private void validateAdminPermission(Group group, String adminId) {
+        if (!group.getAdminId().equals(UserId.of(adminId))) {
+            throw new IllegalStateException("권한이 없습니다. 그룹 관리자만 멤버를 강제 퇴장시킬 수 있습니다.");
+        }
+    }
+
+    private GroupMember findMemberById(Long memberId) {
+        return groupMemberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
+    }
+
+    private void validateGroupMembers(GroupMember groupMember, Long memberId) {
+        if (!groupMember.getGroupMemberId().equals(memberId)) {
+            throw new IllegalArgumentException("해당 멤버는 이 그룹에 속해 있지 않습니다.");
+        }
     }
 }

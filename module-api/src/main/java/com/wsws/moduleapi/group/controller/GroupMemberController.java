@@ -42,4 +42,18 @@ public class GroupMemberController {
                 .toList();
         return ResponseEntity.ok(apiResponses);
     }
+
+    @DeleteMapping("/{groupId}/members/{memberId}")
+    public ResponseEntity<String> forceRemoveMember(
+            @PathVariable Long groupId,
+            @PathVariable Long memberId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        String adminId = userPrincipal.getId();
+        groupMemberService.forceRemoveMember(groupId, adminId, memberId);
+
+        return ResponseEntity.ok("멤버가 탈퇴되었습니다.");
+    }
+
+
 }
