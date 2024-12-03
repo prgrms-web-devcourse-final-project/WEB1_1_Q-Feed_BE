@@ -1,10 +1,10 @@
 package com.wsws.moduleapplication.notification.exception;
 
-import com.wsws.moduleapi.exception.BaseErrorCode;
-import com.wsws.moduleapi.exception.ErrorInfo;
+import com.wsws.modulecommon.exception.BaseErrorCode;
+import com.wsws.modulecommon.exception.ErrorInfo;
 import lombok.RequiredArgsConstructor;
 
-import static com.wsws.moduleapi.constants.ErrorCodeConstants.BAD_REQUEST;
+import static com.wsws.modulecommon.constants.ErrorCodeConstants.BAD_REQUEST;
 
 @RequiredArgsConstructor
 public enum NotificationServiceErrorCode implements BaseErrorCode {
