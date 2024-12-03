@@ -49,9 +49,9 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepository {
     }
 
     @Override
-    public Optional<ChatMessage> findTopByChatRoomOrderByCreatedAtDesc(ChatRoom chatRoom) {
+    public Optional<ChatMessage> findTopByChatRoomIdOrderByCreatedAtDesc(Long chatRoomId) {
         // 최신 메시지 하나를 찾아서 반환
-        return jpaChatMessageRepository.findTopByChatRoomOrderByCreatedAtDesc(chatRoom).map(ChatMessageMapper::toDomain);
+        return jpaChatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoomId).map(ChatMessageMapper::toDomain);
     }
 
     @Override

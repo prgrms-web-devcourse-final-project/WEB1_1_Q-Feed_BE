@@ -13,7 +13,7 @@ public interface ChatMessageRepository {
 
     List<ChatMessageDTO> findMessagesWithUserDetails(Long chatRoomId, int page, int size);
     // 특정 채팅방에서 마지막 메시지를 가져오기 (최신 메시지 하나만)
-    Optional<ChatMessage> findTopByChatRoomOrderByCreatedAtDesc(ChatRoom chatRoom);
+    Optional<ChatMessage> findTopByChatRoomIdOrderByCreatedAtDesc(Long chatRoomId);
 
     long countUnreadMessages(Long chatRoomId,String userId);
 }
