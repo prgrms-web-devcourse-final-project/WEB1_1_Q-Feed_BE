@@ -17,25 +17,50 @@ public class QuestionRepositoryImpl implements QuestionRepository {
 
     private final QuestionJpaRepository questionJpaRepository;
 
+    /**
+     * QuestionStatus로 질문들 찾기
+     */
     @Override
     public List<Question> findByQuestionStatus(QuestionStatus questionStatus) {
-        // QuestionEntity 리스트를 가져옴
-        List<QuestionEntity> entities = questionJpaRepository.findByQuestionStatus(questionStatus);
-
-        return entities.stream()
-                .map(QuestionMapper::toDomain) // toDomain 메서드로 변환
-                .toList(); // 최종적으로 리스트 반환
+        // 내보낼때 도메인으로 변환
+        return questionJpaRepository.findByQuestionStatus(questionStatus).stream()
+                .map(QuestionMapper::toDomain)
+                .toList();
     }
 
+    /**
+     * Id로 질문 찾기
+     * @param id
+     * @return
+     */
+    @Override
+    public Optional<Question> findById(Long id) {
+        return questionJpaRepository.findById(id)
+                .map(QuestionMapper::toDomain);
+    }
+
+    /**
+     * 질문 저장
+     */
     @Override
     public Question save(Question question) {
-        QuestionEntity questionEntity = questionJpaRepository.save(QuestionMapper.toEntity(question));
-        return QuestionMapper.toDomain(questionEntity);
+        // 들어올 때 엔티티로 변환 . 내보낼때 도메인으로 변환
+        return QuestionMapper.toDomain(
+                questionJpaRepository.save(
+                        QuestionMapper.toEntity(question)));
     }
 
+    /**
+     * 오늘의 질문을 카테고리 기준으로 찾기
+     */
     @Override
-    public Optional<Question> findByCategoryId(Long id) {
-        return questionJpaRepository.findById(id)
-                .map(QuestionMapper::toDomain); // 값이 있으면 변환하고, 없으면 빈 Optional 반환
+    public Optional<Question> findDailyQuestionByCategoryId(Long categoryId) {
+        // QuestionEntity를 가져옴
+        Optional<QuestionEntity> dailyQuestionEntity = questionJpaRepository.findDailyQuestionByCategoryId(categoryId);
+
+        // QuestionEntity를 Question으로 변환
+        return dailyQuestionEntity.map(QuestionMapper::toDomain);
     }
+
+
 }

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Table(name = "Question")
 public class QuestionEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "question_id")
@@ -31,5 +32,7 @@ public class QuestionEntity {
         questionEntity.categoryId = categoryId;
         return questionEntity;
     }
+
+
 
 }
