@@ -1,5 +1,6 @@
 package com.wsws.moduledomain.group;
 
+import com.wsws.moduledomain.category.vo.CategoryId;
 import com.wsws.moduledomain.group.vo.GroupId;
 import com.wsws.moduledomain.user.vo.UserId;
 import lombok.Getter;
@@ -16,7 +17,7 @@ public class Group {
     private String description;
     private LocalDateTime createdAt;
     private UserId adminId;
-    private Long categoryId;
+    private CategoryId categoryId;
     private String url;
     private boolean isOpen;
    // private List<GroupMember> groupMembers;
@@ -29,7 +30,7 @@ public class Group {
         group.description = description;
         group.createdAt = createdAt;
         group.adminId = UserId.of(adminId);
-        group.categoryId = categoryId;
+        group.categoryId = CategoryId.of(categoryId);
         group.url = url;
         group.isOpen = isOpen;
         return group;

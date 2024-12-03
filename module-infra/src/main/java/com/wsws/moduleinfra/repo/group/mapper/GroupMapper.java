@@ -27,7 +27,7 @@ public class GroupMapper {
                 group.getDescription(),
                 group.getCreatedAt(),
                 group.getAdminId().getValue(), // UserId -> String 변환
-                group.getCategoryId(),
+                group.getCategoryId().getValue(),
                 group.getUrl(),
                 group.isOpen()
         );
