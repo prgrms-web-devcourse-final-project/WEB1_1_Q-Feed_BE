@@ -1,11 +1,14 @@
 package com.wsws.moduleapplication.group.service;
 
+import com.wsws.moduleapplication.chat.dto.ChatMessageServiceResponse;
 import com.wsws.moduleapplication.group.dto.CreateGroupRequest;
+import com.wsws.moduleapplication.group.dto.GroupServiceResponse;
 import com.wsws.moduleapplication.group.dto.UpdateGroupRequest;
 import com.wsws.moduleapplication.user.exception.ProfileImageProcessingException;
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.group.Group;
+import com.wsws.moduledomain.group.dto.GroupDto;
 import com.wsws.moduledomain.group.repo.GroupMemberRepository;
 import com.wsws.moduledomain.group.repo.GroupRepository;
 import com.wsws.moduledomain.group.vo.GroupId;
@@ -17,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,6 +70,26 @@ public class GroupService {
         Group group = findGroupById(groupId);
         validateAdminPermission(group, adminId);
         groupRepository.delete(group);
+    }
+
+    @Transactional
+    public void ChangeGroupStatus(Long groupId, String adminId){
+        Group group = findGroupById(groupId);
+        validateAdminPermission(group, adminId);
+
+        //(true -> false, false -> true)
+        group.changeVisibility(!group.isOpen());
+        groupRepository.save(group);
+    }
+
+    public List<GroupServiceResponse> getGroupsByCategory(Long categoryId){
+
+        List<GroupDto> groups = groupRepository.findByCategoryIdWithMemberCount(categoryId);
+
+        //serviceresponse->apiresponse
+        return groups.stream()
+                .map(GroupServiceResponse::new)
+                .collect(Collectors.toList());
     }
 
 
