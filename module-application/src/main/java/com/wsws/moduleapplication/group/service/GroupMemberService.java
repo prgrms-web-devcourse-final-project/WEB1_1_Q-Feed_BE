@@ -1,12 +1,9 @@
 package com.wsws.moduleapplication.group.service;
 
 import com.wsws.moduleapplication.group.dto.GroupMemberDetailServiceResponse;
-import com.wsws.moduleapplication.group.dto.GroupServiceResponse;
 import com.wsws.moduledomain.group.Group;
 import com.wsws.moduledomain.group.GroupMember;
-import com.wsws.moduledomain.group.dto.GroupDto;
 import com.wsws.moduledomain.group.dto.GroupMemberDetailDto;
-import com.wsws.moduledomain.group.dto.GroupMemberDto;
 import com.wsws.moduledomain.group.repo.GroupMemberRepository;
 import com.wsws.moduledomain.group.repo.GroupRepository;
 import com.wsws.moduledomain.group.vo.GroupId;
@@ -24,7 +21,6 @@ public class GroupMemberService {
 
     private final GroupMemberRepository groupMemberRepository;
     private final GroupRepository groupRepository;
-    private final UserRepository userRepository;
 
     @Transactional
     public void joinGroup(Long groupId, String userId) {

@@ -1,9 +1,7 @@
 package com.wsws.moduleapi.group.controller;
 
-import com.wsws.moduleapi.chat.dto.ChatMessageApiResponse;
 import com.wsws.moduleapi.group.dto.GroupApiResponse;
 import com.wsws.moduleapi.group.dto.GroupDetailApiResponse;
-import com.wsws.moduleapplication.chat.dto.ChatRoomServiceRequest;
 import com.wsws.moduleapplication.group.dto.CreateGroupRequest;
 import com.wsws.moduleapplication.group.dto.GroupDetailServiceResponse;
 import com.wsws.moduleapplication.group.dto.GroupServiceResponse;
@@ -15,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController

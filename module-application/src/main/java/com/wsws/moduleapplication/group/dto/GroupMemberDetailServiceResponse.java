@@ -1,7 +1,6 @@
 package com.wsws.moduleapplication.group.dto;
 
 import com.wsws.moduledomain.group.dto.GroupMemberDetailDto;
-import com.wsws.moduledomain.group.dto.GroupMemberDto;
 
 public record GroupMemberDetailServiceResponse(
         Long groupMemberId,

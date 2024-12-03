@@ -1,6 +1,5 @@
 package com.wsws.moduleapi.group.controller;
 
-import com.wsws.moduleapi.group.dto.GroupApiResponse;
 import com.wsws.moduleapi.group.dto.GroupMemberDetailApiResponse;
 import com.wsws.moduleapplication.group.dto.GroupMemberDetailServiceResponse;
 import com.wsws.moduleapplication.group.service.GroupMemberService;

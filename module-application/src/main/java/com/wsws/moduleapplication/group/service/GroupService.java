@@ -1,6 +1,5 @@
 package com.wsws.moduleapplication.group.service;
 
-import com.wsws.moduleapplication.chat.dto.ChatMessageServiceResponse;
 import com.wsws.moduleapplication.group.dto.CreateGroupRequest;
 import com.wsws.moduleapplication.group.dto.GroupDetailServiceResponse;
 import com.wsws.moduleapplication.group.dto.GroupServiceResponse;
@@ -31,7 +30,6 @@ import java.util.stream.Collectors;
 public class GroupService {
     private final GroupMemberRepository groupMemberRepository;
     private final GroupRepository groupRepository;
-    private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
 
     @Transactional
@@ -88,7 +86,7 @@ public class GroupService {
     public List<GroupServiceResponse> getGroupsByCategory(Long categoryId){
         List<GroupDto> groups = groupRepository.findByCategoryIdWithMemberCount(categoryId);
 
-        //serviceresponse->apiresponse
+        //domaindto->serviceresponse
         return groups.stream()
                 .map(GroupServiceResponse::new)
                 .collect(Collectors.toList());

@@ -15,7 +15,7 @@ public record GroupApiResponse(
 ) {
     public GroupApiResponse(GroupServiceResponse serviceResponse) {
         this(
-                serviceResponse.groupId(), // groupId는 Long이기 때문에 String으로 변환
+                serviceResponse.groupId(),
                 serviceResponse.url(),
                 serviceResponse.groupName(),
                 serviceResponse.description(),

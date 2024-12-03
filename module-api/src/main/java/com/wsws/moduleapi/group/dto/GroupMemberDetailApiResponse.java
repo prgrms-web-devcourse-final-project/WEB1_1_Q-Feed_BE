@@ -8,7 +8,7 @@ public record GroupMemberDetailApiResponse(
         String profileImage,
         String description
 ) {
-    // GroupMemberDto -> GroupMemberApiResponse
+    // servieResponse -> ApiResponse
     public GroupMemberDetailApiResponse(GroupMemberDetailServiceResponse groupMemberDetail) {
         this(
                 groupMemberDetail.groupMemberId(),

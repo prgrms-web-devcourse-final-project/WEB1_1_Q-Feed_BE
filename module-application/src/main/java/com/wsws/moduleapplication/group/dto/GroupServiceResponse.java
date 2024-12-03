@@ -1,6 +1,5 @@
 package com.wsws.moduleapplication.group.dto;
 
-import com.wsws.moduledomain.chat.dto.ChatMessageDTO;
 import com.wsws.moduledomain.group.dto.GroupDto;
 
 import java.time.LocalDateTime;

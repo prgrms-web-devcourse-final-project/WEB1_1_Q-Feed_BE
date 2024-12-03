@@ -1,7 +1,6 @@
 package com.wsws.moduleapi.group.dto;
 
 import com.wsws.moduleapplication.group.dto.GroupDetailServiceResponse;
-import com.wsws.moduleapplication.group.dto.GroupMemberServiceResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
