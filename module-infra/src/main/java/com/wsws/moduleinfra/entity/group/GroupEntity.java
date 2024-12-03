@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@Table(name = "group")
+@Table(name = "user_groups")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GroupEntity {
     @Id
