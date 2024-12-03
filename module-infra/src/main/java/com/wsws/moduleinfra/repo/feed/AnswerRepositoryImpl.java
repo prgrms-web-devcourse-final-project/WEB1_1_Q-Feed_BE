@@ -52,7 +52,7 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     public void edit(Answer answer) {
         AnswerEntity answerEntity = jpaAnswerRepository.findById(answer.getAnswerId().getValue())
                 .orElseThrow(RuntimeException::new);
-        answerEntity.editEntity(answer.getContent(), answer.getVisibility(), answer.getUrl(), answerEntity.getReactionCount());
+        answerEntity.editEntity(answer.getContent(), answer.getVisibility(), answer.getUrl(), answer.getReactionCount());
     }
 
     /**

@@ -10,9 +10,11 @@ import com.wsws.moduledomain.user.vo.TargetType;
 import com.wsws.moduledomain.user.vo.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class LikeService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
