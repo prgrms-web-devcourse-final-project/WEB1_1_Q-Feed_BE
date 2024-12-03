@@ -5,20 +5,29 @@ import com.wsws.moduleapplication.user.dto.RegisterUserRequest;
 import com.wsws.moduleapplication.user.dto.UpdateProfileServiceDto;
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
+import com.wsws.moduledomain.category.Category;
+import com.wsws.moduledomain.category.repo.CategoryRepository;
+import com.wsws.moduledomain.category.vo.CategoryId;
+import com.wsws.moduledomain.category.vo.CategoryName;
 import com.wsws.moduledomain.user.PasswordEncoder;
 import com.wsws.moduledomain.user.User;
 import com.wsws.moduleapplication.user.exception.DuplicateEmailException;
 import com.wsws.moduleapplication.user.exception.DuplicateNicknameException;
 import com.wsws.moduleapplication.user.exception.ProfileImageProcessingException;
 import com.wsws.moduleapplication.user.exception.UserNotFoundException;
+import com.wsws.moduledomain.user.repo.UserInterestRepository;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.Email;
 import com.wsws.moduledomain.user.vo.Nickname;
 import com.wsws.moduledomain.user.vo.UserId;
+import com.wsws.moduledomain.user.vo.UserInterest;
+import com.wsws.moduleinfra.repo.category.CategoryJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -27,7 +36,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CategoryRepository categoryRepository;
     private final FileStorageService fileStorageService;
+    private final UserInterestRepository userInterestRepository;
 
 
 
@@ -39,6 +50,8 @@ public class UserService {
         // 프로필 이미지 처리
         String profileImageUrl = processProfileImage(request.profileImageFile());
 
+
+
         // 사용자 생성
         User user = User.create(
                 request.email(),
@@ -49,6 +62,7 @@ public class UserService {
         );
 
         userRepository.save(user);
+        System.out.println("3resquest password:" + request.password());
     }
 
 
@@ -79,6 +93,49 @@ public class UserService {
     public void deleteUser(String userId) {
         User user = findUserByIdOrThrow(userId);
         userRepository.delete(user);
+    }
+
+    public void createInterests(String userId, List<String> interestCategoryNames) {
+        // 사용자 조회
+        User user = findUserByIdOrThrow(userId);
+
+        // CategoryName → CategoryId
+        List<CategoryId> categoryIds = interestCategoryNames.stream()
+                .map(CategoryName::findByName) // String → CategoryName (ENUM)
+                .map(categoryRepository::findByCategoryName) // CategoryName → Category
+                .map(Category::getId) // Category → CategoryId
+                .toList();
+
+        // UserInterest 도메인 리스트 생성
+        List<UserInterest> userInterests = categoryIds.stream()
+                .map(UserInterest::create)
+                .toList();
+
+        // 관심사 저장
+        userInterestRepository.save(user.getId(), userInterests);
+    }
+
+    public void updateInterests(String userId, List<String> interestCategoryNames) {
+        // 사용자 조회
+        User user = findUserByIdOrThrow(userId);
+
+        // CategoryName → CategoryId
+        List<CategoryId> categoryIds = interestCategoryNames.stream()
+                .map(CategoryName::valueOf) // String → CategoryName (ENUM)
+                .map(categoryRepository::findByCategoryName) // CategoryName → Category
+                .map(Category::getId) // Category → CategoryId
+                .toList();
+
+        // UserInterest 도메인 리스트 생성
+        List<UserInterest> userInterests = categoryIds.stream()
+                .map(UserInterest::create)
+                .toList();
+
+        // 기존 관심사 삭제
+        userInterestRepository.deleteByUserId(user.getId());
+
+        // 새로운 관심사 저장
+        userInterestRepository.save(user.getId(), userInterests);
     }
 
 

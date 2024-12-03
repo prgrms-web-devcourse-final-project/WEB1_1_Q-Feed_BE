@@ -1,6 +1,7 @@
 package com.wsws.moduledomain.user;
 
 import com.wsws.moduledomain.auth.exception.PasswordMismatchException;
+import com.wsws.moduledomain.category.vo.CategoryId;
 import com.wsws.moduledomain.user.vo.*;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -29,12 +30,15 @@ public class User {
 
     private UserRole userRole;
 
-//    private List<UserInterest> userInterests = new ArrayList<>();
+    private List<UserInterest> interests = new ArrayList<>();
 
 
 
     // 사용자 생성
     public static User create(String email, String rawPassword, String nickname, String profileImage, PasswordEncoder passwordEncoder) {
+        System.out.println("Creating user with password: " + rawPassword);
+
+
         User user = new User();
         user.id = UserId.create(); // 새로운 UserId 생성
         user.email = Email.from(email); // Email VO 생성 및 유효성 검증
@@ -44,6 +48,30 @@ public class User {
         user.isUsable = true; // 기본 활성 상태
         user.userRole = UserRole.ROLE_USER; // 기본 역할
         return user;
+    }
+
+    public static User transform(String userid,String email,String encodedPassword, String nickname, String profileImage){
+        User user = new User();
+        user.id = UserId.of(userid);
+        user.email = Email.from(email);
+        user.password = Password.of(encodedPassword);
+        user.nickname = Nickname.from(nickname);
+        user.profileImage = profileImage;
+
+        return user;
+    }
+
+    //사용자 관심사 추가
+    public void addInterest(CategoryId categoryId) {
+        UserInterest interest = UserInterest.create(categoryId);
+        if (!this.interests.contains(interest)) {
+            this.interests.add(interest);
+        }
+    }
+
+    // 관심사 제거
+    public void removeInterest(CategoryId categoryId) {
+        this.interests.removeIf(interest -> interest.getCategoryId().equals(categoryId));
     }
 
 
