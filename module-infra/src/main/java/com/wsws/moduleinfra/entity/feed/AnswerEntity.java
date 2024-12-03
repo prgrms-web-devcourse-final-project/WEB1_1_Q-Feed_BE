@@ -39,4 +39,13 @@ public class AnswerEntity {
     public void setQuestionEntity(final QuestionEntity questionEntity) {
         this.questionEntity = questionEntity;
     }
+
+    /**
+     * 수정 메서드
+     */
+    public void editAnswer(String content, Boolean visibility, String url) {
+        this.content = content;
+        this.visibility = visibility;
+        this.url = url;
+    }
 }

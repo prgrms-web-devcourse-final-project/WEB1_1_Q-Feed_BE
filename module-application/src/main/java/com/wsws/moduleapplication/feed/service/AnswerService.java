@@ -1,8 +1,9 @@
 package com.wsws.moduleapplication.feed.service;
 
-import com.wsws.moduleapplication.feed.dto.AnswerCreateServiceRequest;
-import com.wsws.moduleapplication.feed.dto.AnswerCreateServiceResponse;
-import com.wsws.moduleapplication.feed.dto.AnswerFindServiceResponse;
+import com.wsws.moduleapplication.feed.dto.answer.AnswerCreateServiceRequest;
+import com.wsws.moduleapplication.feed.dto.answer.AnswerCreateServiceResponse;
+import com.wsws.moduleapplication.feed.dto.answer.AnswerEditServiceRequest;
+import com.wsws.moduleapplication.feed.dto.answer.AnswerFindServiceResponse;
 import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.feed.exception.QuestionNotFoundException;
 import com.wsws.moduleapplication.user.exception.ProfileImageProcessingException;
@@ -14,6 +15,7 @@ import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -32,6 +34,7 @@ public class AnswerService {
     /**
      * 답변 생성
      */
+    @Transactional
     public AnswerCreateServiceResponse createAnswer(AnswerCreateServiceRequest request) {
         String url = processImage(request.image()); // 이미지 처리
 
@@ -49,9 +52,35 @@ public class AnswerService {
                 request.userId()
         );
 
-        Answer saved = answerRepository.save(answer, question); // 저장
+        Answer saved = null; // 저장
+        try {
+            saved = answerRepository.save(answer, question);
+        } catch (RuntimeException e) {
+            throw QuestionNotFoundException.EXCEPTION;
+        }
+
         return new AnswerCreateServiceResponse(saved.getAnswerId().getValue());
     }
+
+    /**
+     * 답변 수정
+     */
+    @Transactional
+    public void editAnswer(AnswerEditServiceRequest request) {
+        String url = processImage(request.image()); // 이미지 처리
+
+        Answer answer = answerRepository.findByAnswerId(request.answerId())
+                .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
+
+        answer.editAnswer(request.content(), request.visibility(), url);
+
+        try {
+            answerRepository.edit(answer);
+        } catch (RuntimeException e) {
+            throw AnswerNotFoundException.EXCEPTION;
+        }
+    }
+
 
     /**
      * 이미지 처리

@@ -1,8 +1,9 @@
 package com.wsws.moduleapi.feed.controller;
 
+import com.wsws.moduleapi.feed.dto.answer.AnswerPatchApiRequest;
 import com.wsws.moduleapi.feed.dto.answer.AnswerPostApiRequest;
 import com.wsws.moduleapi.feed.dto.answer.AnswerPostApiResponse;
-import com.wsws.moduleapplication.feed.dto.AnswerCreateServiceResponse;
+import com.wsws.moduleapplication.feed.dto.answer.AnswerCreateServiceResponse;
 import com.wsws.moduleapplication.feed.service.AnswerService;
 import com.wsws.modulesecurity.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +37,10 @@ public class AnswerController {
     @PostMapping
     public ResponseEntity<AnswerPostApiResponse> postAnswers(
             @RequestBody AnswerPostApiRequest answerPostApiRequest
-            ,@AuthenticationPrincipal UserPrincipal userPrincipal
+//            ,@AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        String userId = userPrincipal.getId(); // 사용자 아이디를 가져온다.
-//        String userId = "user_id1";
+//        String userId = userPrincipal.getId(); // 사용자 아이디를 가져온다.
+        String userId = "user_id1";
         AnswerCreateServiceResponse serviceResponse = answerService.createAnswer(answerPostApiRequest.toServiceDto(userId)); // 답변 생성
 
         return ResponseEntity.status(201).body(new AnswerPostApiResponse(serviceResponse));
@@ -48,6 +49,11 @@ public class AnswerController {
     /**
      * 답변 수정
      */
+    @PatchMapping("/{answer-id}")
+    public ResponseEntity<String> patchAnswer(@PathVariable("answer-id") Long answerId, @RequestBody AnswerPatchApiRequest answerPatchApiRequest) {
+        answerService.editAnswer(answerPatchApiRequest.toServiceDto(answerId));
+        return ResponseEntity.ok("답변이 수정되었습니다.");
+    }
 
     /**
      * 답변 삭제

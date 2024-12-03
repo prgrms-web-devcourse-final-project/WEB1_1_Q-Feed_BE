@@ -20,7 +20,7 @@ import java.util.Optional;
 public class AnswerRepositoryImpl implements AnswerRepository {
 
     private final AnswerJpaRepository answerJpaRepository;
-    private final EntityManager em;
+    private final QuestionJpaRepository questionJpaRepository;
 
     /**
      * 답변을 Id를 기준으로 찾기
@@ -36,13 +36,24 @@ public class AnswerRepositoryImpl implements AnswerRepository {
      * 답변 저장
      */
     @Override
-    @Transactional
     public Answer save(Answer answer, Question question) {
-        QuestionEntity questionEntity = em.find(QuestionEntity.class, question.getQuestionId().getValue());
+        QuestionEntity questionEntity = questionJpaRepository.findById(question.getQuestionId().getValue())
+                .orElseThrow(RuntimeException::new);
         AnswerEntity answerEntity = AnswerMapper.toEntity(answer);
         answerEntity.setQuestionEntity(questionEntity); // 연관관계 설정
 
         AnswerEntity savedEntity = answerJpaRepository.save(answerEntity);// Answer를 엔티티로 변환하여 저장
         return AnswerMapper.toDomain(savedEntity);
+    }
+
+    /**
+     * 답변 수정
+     * 수정된 Answer 객체가 넘어온다.
+     */
+    @Override
+    public void edit(Answer answer) {
+        AnswerEntity answerEntity = answerJpaRepository.findById(answer.getAnswerId().getValue())
+                .orElseThrow(RuntimeException::new);
+        answerEntity.editAnswer(answer.getContent(), answer.getVisibility(), answer.getUrl());
     }
 }

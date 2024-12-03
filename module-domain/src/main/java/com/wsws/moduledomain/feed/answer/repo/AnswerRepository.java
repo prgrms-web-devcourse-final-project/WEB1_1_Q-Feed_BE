@@ -16,4 +16,9 @@ public interface AnswerRepository {
      * 답변 저장
      */
     Answer save(Answer answer, Question question);
+
+    /**
+     * 답변 수정
+     */
+    void edit(Answer answer);
 }
