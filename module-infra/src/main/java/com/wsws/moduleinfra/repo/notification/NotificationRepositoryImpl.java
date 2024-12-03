@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NotificationRepositoryImpl implements NotificationRepository {
 
-    private final JpaNotificationRepository jpaRpository;
+    private final JpaNotificationRepository jpaRepository;
     private final NotificationEntityMapper mapper;
 
     @Override
     public List<Notification> findByRecipientIdAndIsReadFalse(String recipientId) {
-        return jpaRpository.findByRecipient_ValueAndIsReadFalse(recipientId)
+        return jpaRepository.findByRecipientAndIsReadFalse(recipientId)
                 .stream()
                 .map(mapper::toDomain) // Entity → Domain 변환
                 .collect(Collectors.toList());
@@ -29,14 +29,14 @@ public class NotificationRepositoryImpl implements NotificationRepository {
 
     @Override
     public Optional<Notification> findById(Long notificationId) {
-        return jpaRpository.findById(notificationId)
+        return jpaRepository.findById(notificationId)
                 .map(mapper::toDomain); // Entity → Domain 변환
     }
 
     @Override
     public Notification save(Notification notification) {
         NotificationEntity entity = mapper.toEntity(notification);
-        NotificationEntity savedEntity = jpaRpository.save(entity);
+        NotificationEntity savedEntity = jpaRepository.save(entity);
         return mapper.toDomain(savedEntity); // 저장된 Entity를 Domain으로 변환
     }
 }
