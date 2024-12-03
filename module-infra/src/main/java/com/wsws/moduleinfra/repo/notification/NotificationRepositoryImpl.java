@@ -1,10 +1,10 @@
 package com.wsws.moduleinfra.repo.notification;
 
 
-import com.wsws.moduleinfra.NotificationEntity;
+import com.wsws.moduleinfra.entity.notification.NotificationEntity;
 import com.wsws.moduledomain.notification.Notification;
 import com.wsws.moduledomain.notification.repo.NotificationRepository;
-import com.wsws.moduleinfra.NotificationMapper;
+import com.wsws.moduleinfra.entity.notification.NotificationEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class NotificationRepositoryImpl implements NotificationRepository {
 
     private final JpaNotificationRepository jpaRpository;
-    private final NotificationMapper mapper;
+    private final NotificationEntityMapper mapper;
 
     @Override
     public List<Notification> findByRecipientIdAndIsReadFalse(String recipientId) {

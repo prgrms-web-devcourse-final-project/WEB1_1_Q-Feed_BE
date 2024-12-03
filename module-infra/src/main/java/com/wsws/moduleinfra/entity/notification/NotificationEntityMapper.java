@@ -1,10 +1,10 @@
-package com.wsws.moduleinfra;
+package com.wsws.moduleinfra.entity.notification;
 
 import com.wsws.moduledomain.notification.Notification;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NotificationMapper {
+public class NotificationEntityMapper {
 
     // Entity -> Domain
     public Notification toDomain(NotificationEntity entity) {
