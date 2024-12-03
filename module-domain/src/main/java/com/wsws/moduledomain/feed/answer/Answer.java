@@ -38,4 +38,8 @@ public class Answer {
         this.visibility = visibility;
         this.url = url;
     }
+
+    public void addReactionCount() {
+        this.reactionCount++;
+    }
 }

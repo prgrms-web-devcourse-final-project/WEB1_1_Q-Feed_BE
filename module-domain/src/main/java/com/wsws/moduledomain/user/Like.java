@@ -15,7 +15,7 @@ public class Like {
     private LikeTargetId targetId;
     private UserId userId;
 
-    public static Like createLike(Long likeId, TargetType targetType, Long targetId, String userId) {
+    public static Like create(Long likeId, TargetType targetType, Long targetId, String userId) {
         Like like = new Like();
         like.likeId = LikeId.of(likeId);
         like.targetType = targetType;
