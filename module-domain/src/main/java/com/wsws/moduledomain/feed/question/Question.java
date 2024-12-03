@@ -20,6 +20,7 @@ public class Question {
 
     public static Question create(Long questionId, String content, QuestionStatus questionStatus, LocalDateTime createdAt, Long categoryId) {
         Question question = new Question();
+        question.questionId = QuestionId.of(questionId);
         question.content = content;
         question.questionStatus = questionStatus;
         question.createdAt = createdAt;
