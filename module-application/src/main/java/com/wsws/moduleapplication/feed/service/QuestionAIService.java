@@ -45,6 +45,7 @@ public class QuestionAIService {
 
             questionRepository.save(
                     Question.create(
+                            null,
                             questionTempStore.get(categoryName),
                             QuestionStatus.CREATED,
                             LocalDateTime.now(),
