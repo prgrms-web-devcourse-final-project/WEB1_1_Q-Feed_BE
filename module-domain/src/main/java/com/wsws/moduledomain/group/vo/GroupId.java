@@ -12,7 +12,7 @@ public class GroupId {
 
     private Long value;
 
-    private GroupId(Long value) {
+    public GroupId(Long value) {
         this.value = value;
     }
 

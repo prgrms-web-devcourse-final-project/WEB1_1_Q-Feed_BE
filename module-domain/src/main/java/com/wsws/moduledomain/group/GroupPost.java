@@ -12,19 +12,19 @@ public class GroupPost {
     private Long groupPostId;
     private String content;
     private LocalDateTime createdAt;
-    private GroupId groupId;
+    private String groupId;
     private String userId;
     private String url;
     private long likeCount = 0;
 
-    // 게시글 생성
-    public static GroupPost create(String content, GroupId groupId, String url) {
-        GroupPost groupPost = new GroupPost();
-        groupPost.content = content;
-        groupPost.createdAt = LocalDateTime.now();
-        groupPost.groupId = groupId;
-        groupPost.url = url;
-        return groupPost;
+    public static GroupPost create(String content, String groupId, String url) {
+        GroupPost post = new GroupPost();
+        post.content = content;
+        post.groupId = groupId;
+        post.url = url;
+        post.createdAt = LocalDateTime.now();
+        post.likeCount = 0;
+        return post;
     }
 
     // 좋아요 증가
