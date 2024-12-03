@@ -1,4 +1,4 @@
-package com.wsws.moduleapplication.feed.dto;
+package com.wsws.moduleapplication.feed.dto.answer;
 
 import org.springframework.web.multipart.MultipartFile;
 
