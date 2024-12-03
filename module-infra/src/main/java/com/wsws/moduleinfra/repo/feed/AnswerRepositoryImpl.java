@@ -7,8 +7,11 @@ import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import com.wsws.moduleinfra.entity.feed.QuestionEntity;
 import com.wsws.moduleinfra.repo.feed.mapper.AnswerMapper;
 import com.wsws.moduleinfra.repo.feed.mapper.QuestionMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -17,6 +20,7 @@ import java.util.Optional;
 public class AnswerRepositoryImpl implements AnswerRepository {
 
     private final AnswerJpaRepository answerJpaRepository;
+    private final EntityManager em;
 
     /**
      * 답변을 Id를 기준으로 찾기
@@ -32,8 +36,9 @@ public class AnswerRepositoryImpl implements AnswerRepository {
      * 답변 저장
      */
     @Override
+    @Transactional
     public Answer save(Answer answer, Question question) {
-        QuestionEntity questionEntity = QuestionMapper.toEntity(question);  // Question을 엔티티로 변환
+        QuestionEntity questionEntity = em.find(QuestionEntity.class, question.getQuestionId().getValue());
         AnswerEntity answerEntity = AnswerMapper.toEntity(answer);
         answerEntity.setQuestionEntity(questionEntity); // 연관관계 설정
 
