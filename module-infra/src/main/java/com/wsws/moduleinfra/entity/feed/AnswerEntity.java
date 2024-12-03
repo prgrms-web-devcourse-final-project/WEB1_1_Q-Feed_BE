@@ -39,4 +39,15 @@ public class AnswerEntity {
     public void setQuestionEntity(final QuestionEntity questionEntity) {
         this.questionEntity = questionEntity;
     }
+
+    /**
+     * 수정 로직
+     */
+    public void editEntity(String content, Boolean visibility, String url, int reactionCount) {
+        this.content = content;
+        this.visibility = visibility;
+        this.url = url;
+        this.reactionCount = reactionCount;
+    }
+
 }

@@ -5,10 +5,7 @@ import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import com.wsws.moduleinfra.entity.feed.QuestionEntity;
-import com.wsws.moduleinfra.repo.feed.mapper.AnswerMapper;
-import com.wsws.moduleinfra.repo.feed.mapper.QuestionMapper;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import com.wsws.moduleinfra.entity.feed.mapper.AnswerEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,17 +16,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AnswerRepositoryImpl implements AnswerRepository {
 
-    private final AnswerJpaRepository answerJpaRepository;
-    private final EntityManager em;
+    private final JpaAnswerRepository jpaAnswerRepository;
+    private final JpaQuestionRepository jpaQuestionRepository;
 
     /**
      * 답변을 Id를 기준으로 찾기
      */
     @Override
-    public Optional<Answer> findByAnswerId(Long id) {
+    public Optional<Answer> findById(Long id) {
 
-        return answerJpaRepository.findById(id)
-                .map(AnswerMapper::toDomain);
+        return jpaAnswerRepository.findById(id)
+                .map(AnswerEntityMapper::toDomain);
     }
 
     /**
@@ -38,11 +35,31 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     @Override
     @Transactional
     public Answer save(Answer answer, Question question) {
-        QuestionEntity questionEntity = em.find(QuestionEntity.class, question.getQuestionId().getValue());
-        AnswerEntity answerEntity = AnswerMapper.toEntity(answer);
+        QuestionEntity questionEntity = jpaQuestionRepository.findById(question.getQuestionId().getValue())
+                .orElseThrow(RuntimeException::new);
+        AnswerEntity answerEntity = AnswerEntityMapper.toEntity(answer);
         answerEntity.setQuestionEntity(questionEntity); // 연관관계 설정
 
-        AnswerEntity savedEntity = answerJpaRepository.save(answerEntity);// Answer를 엔티티로 변환하여 저장
-        return AnswerMapper.toDomain(savedEntity);
+        AnswerEntity savedEntity = jpaAnswerRepository.save(answerEntity);// Answer를 엔티티로 변환하여 저장
+        return AnswerEntityMapper.toDomain(savedEntity);
+    }
+
+    /**
+     * 답변 수정
+     * 수정된 Answer 객체가 넘어온다.
+     */
+    @Override
+    public void edit(Answer answer) {
+        AnswerEntity answerEntity = jpaAnswerRepository.findById(answer.getAnswerId().getValue())
+                .orElseThrow(RuntimeException::new);
+        answerEntity.editEntity(answer.getContent(), answer.getVisibility(), answer.getUrl(), answer.getReactionCount());
+    }
+
+    /**
+     * 답변 삭제
+     */
+    @Override
+    public void deleteById(Long id) {
+        jpaAnswerRepository.deleteById(id);
     }
 }

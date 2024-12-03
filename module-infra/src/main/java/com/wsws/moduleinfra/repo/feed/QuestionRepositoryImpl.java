@@ -4,7 +4,7 @@ import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
 import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
 import com.wsws.moduleinfra.entity.feed.QuestionEntity;
-import com.wsws.moduleinfra.repo.feed.mapper.QuestionMapper;
+import com.wsws.moduleinfra.entity.feed.mapper.QuestionEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class QuestionRepositoryImpl implements QuestionRepository {
 
-    private final QuestionJpaRepository questionJpaRepository;
+    private final JpaQuestionRepository jpaQuestionRepository;
 
     /**
      * QuestionStatus로 질문들 찾기
@@ -23,8 +23,8 @@ public class QuestionRepositoryImpl implements QuestionRepository {
     @Override
     public List<Question> findByQuestionStatus(QuestionStatus questionStatus) {
         // 내보낼때 도메인으로 변환
-        return questionJpaRepository.findByQuestionStatus(questionStatus).stream()
-                .map(QuestionMapper::toDomain)
+        return jpaQuestionRepository.findByQuestionStatus(questionStatus).stream()
+                .map(QuestionEntityMapper::toDomain)
                 .toList();
     }
 
@@ -35,8 +35,8 @@ public class QuestionRepositoryImpl implements QuestionRepository {
      */
     @Override
     public Optional<Question> findById(Long id) {
-        return questionJpaRepository.findById(id)
-                .map(QuestionMapper::toDomain);
+        return jpaQuestionRepository.findById(id)
+                .map(QuestionEntityMapper::toDomain);
     }
 
     /**
@@ -45,9 +45,9 @@ public class QuestionRepositoryImpl implements QuestionRepository {
     @Override
     public Question save(Question question) {
         // 들어올 때 엔티티로 변환 . 내보낼때 도메인으로 변환
-        return QuestionMapper.toDomain(
-                questionJpaRepository.save(
-                        QuestionMapper.toEntity(question)));
+        return QuestionEntityMapper.toDomain(
+                jpaQuestionRepository.save(
+                        QuestionEntityMapper.toEntity(question)));
     }
 
     /**
@@ -56,10 +56,10 @@ public class QuestionRepositoryImpl implements QuestionRepository {
     @Override
     public Optional<Question> findDailyQuestionByCategoryId(Long categoryId) {
         // QuestionEntity를 가져옴
-        Optional<QuestionEntity> dailyQuestionEntity = questionJpaRepository.findDailyQuestionByCategoryId(categoryId);
+        Optional<QuestionEntity> dailyQuestionEntity = jpaQuestionRepository.findDailyQuestionByCategoryId(categoryId);
 
         // QuestionEntity를 Question으로 변환
-        return dailyQuestionEntity.map(QuestionMapper::toDomain);
+        return dailyQuestionEntity.map(QuestionEntityMapper::toDomain);
     }
 
 

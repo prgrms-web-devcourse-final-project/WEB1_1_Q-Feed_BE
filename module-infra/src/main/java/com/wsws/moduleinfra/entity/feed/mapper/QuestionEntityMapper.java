@@ -1,9 +1,9 @@
-package com.wsws.moduleinfra.repo.feed.mapper;
+package com.wsws.moduleinfra.entity.feed.mapper;
 
 import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduleinfra.entity.feed.QuestionEntity;
 
-public class QuestionMapper {
+public class QuestionEntityMapper {
 
     public static Question toDomain(QuestionEntity questionEntity) {
         return Question.create(
