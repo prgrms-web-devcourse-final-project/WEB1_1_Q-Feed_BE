@@ -11,6 +11,7 @@ public interface CategoryRepository {
      */
     Category findByCategoryName(CategoryName categoryName);
 
+
     /**
      * 카테고리 전부 받아오기
      */
