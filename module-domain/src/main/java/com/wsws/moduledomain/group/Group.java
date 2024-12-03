@@ -35,4 +35,28 @@ public class Group {
         return group;
     }
 
+    // 그룹 공개 상태 전환
+    public void changeVisibility(boolean isOpen) {
+        this.isOpen = isOpen;
+    }
+
+    public void changeCategory(Long newCategoryId) {
+        if (newCategoryId == null) {
+            throw new IllegalArgumentException("카테고리 ID는 null일 수 없습니다.");
+        }
+        this.categoryId = newCategoryId;
+    }
+    public void updateGroupInfro(String groupName, String description, String image) {
+
+        if (groupName != null && !groupName.isEmpty()) {
+            this.groupName = groupName;
+        }
+        if (description != null) {
+            this.description = description;
+        }
+        if (image != null) {
+            this.url = image;
+        }
+    }
+
 }
