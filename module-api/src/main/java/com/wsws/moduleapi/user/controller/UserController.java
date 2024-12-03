@@ -86,6 +86,13 @@ public class UserController {
         return ResponseEntity.ok(new AuthResponse("사용자 관심사가 업데이트되었습니다."));
     }
 
+    // 사용자 관심사 조회
+    @GetMapping("/{userId}/interests")
+    public ResponseEntity<List<String>> getUserInterests(@PathVariable String userId) {
+        List<String> interests = userService.getUserInterests(userId);
+        return ResponseEntity.ok(interests);
+    }
+
     // 과거 질문 및 답변 리스트 조회
 
 
