@@ -1,6 +1,6 @@
 package com.wsws.moduleapplication.notification.exception;
 
-import com.wsws.moduleapi.exception.ApplicationException;
+import com.wsws.modulecommon.exception.ApplicationException;
 
 public class NotificationNotFoundException extends ApplicationException {
     public static final NotificationNotFoundException EXCEPTION = new NotificationNotFoundException();
@@ -10,3 +10,5 @@ public class NotificationNotFoundException extends ApplicationException {
         super(NotificationServiceErrorCode.NOTIFICATION_NOT_FOUND);
     }
 }
+
+
