@@ -25,11 +25,11 @@ public class GroupMemberController {
         return ResponseEntity.ok("그룹에 가입되었습니다.");
     }
 
-    @PostMapping("/{groupId}/leave")
+    @DeleteMapping("/{groupId}/leave")
     public ResponseEntity<String> leaveGroup(@PathVariable Long groupId, @AuthenticationPrincipal UserPrincipal userPrincipal) {
         String userId = userPrincipal.getId();
         groupMemberService.leaveGroup(groupId, userId);
-        return ResponseEntity.ok("그룹에서 탈퇴되었습니다.");
+        return ResponseEntity.ok("그룹을 탈퇴하였습니다.");
     }
 
     @GetMapping("/{groupId}/members")
