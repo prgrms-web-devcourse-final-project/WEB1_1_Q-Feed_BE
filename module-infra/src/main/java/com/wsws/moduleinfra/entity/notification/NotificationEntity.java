@@ -1,4 +1,4 @@
-package com.wsws.moduleinfra;
+package com.wsws.moduleinfra.entity.notification;
 
 import com.wsws.moduledomain.user.vo.UserId;
 import jakarta.persistence.*;

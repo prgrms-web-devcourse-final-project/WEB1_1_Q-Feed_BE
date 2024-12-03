@@ -1,6 +1,6 @@
 package com.wsws.moduleinfra.repo.notification;
 
-import com.wsws.moduleinfra.NotificationEntity;
+import com.wsws.moduleinfra.entity.notification.NotificationEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
