@@ -38,6 +38,9 @@ public class ChatRoomService {
         if (chatRoomRepository.findChatRoomBetweenUsers(req.userId(), req.userId2()).isPresent()) {
             throw AlreadyChatRoomException.EXCEPTION;
         }
+        //사용자 존재 확인
+        getUserById(req.userId());
+        getUserById(req.userId2());
         ChatRoom chatRoom = ChatRoom.create(null,req.userId(), req.userId2(), LocalDateTime.now());
         chatRoomRepository.save(chatRoom);
     }
@@ -58,7 +61,7 @@ public class ChatRoomService {
             User otherUser = getOtherUser(chatRoom, userId);
 
             // 마지막 메시지 가져오기
-            ChatMessage lastMessage = getLastMessage(chatRoom);
+            ChatMessage lastMessage = getLastMessage(chatRoom.getId());
 
             // 읽지 않은 메시지 개수 가져오기
             long unreadCount = chatMessageRepository.countUnreadMessages(chatRoom.getId(), otherUser.getId().getValue());
@@ -76,7 +79,7 @@ public class ChatRoomService {
         User otherUser = getUserById(userId2);
 
         // 마지막 메시지 가져오기
-        ChatMessage lastMessage = getLastMessage(chatRoom);
+        ChatMessage lastMessage = getLastMessage(chatRoom.getId());
 
         // 읽지 않은 메시지 개수 가져오기
         long unreadCount = chatMessageRepository.countUnreadMessages(chatRoom.getId(), otherUser.getId().getValue());
@@ -108,8 +111,8 @@ public class ChatRoomService {
     }
 
     // 마지막 메시지 가져오기
-    private ChatMessage getLastMessage(ChatRoom chatRoom) {
-        return chatMessageRepository.findTopByChatRoomOrderByCreatedAtDesc(chatRoom)
+    private ChatMessage getLastMessage(Long chatRoomId) {
+        return chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoomId)
                 .orElse(null);  // 메시지가 없으면 null 반환
     }
 
