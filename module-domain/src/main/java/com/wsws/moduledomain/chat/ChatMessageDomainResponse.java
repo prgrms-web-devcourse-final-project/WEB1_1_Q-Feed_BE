@@ -16,7 +16,7 @@ public record ChatMessageDomainResponse(
     public static ChatMessageDomainResponse createFrom(ChatMessage chatMessage, User sender) {
         return new ChatMessageDomainResponse(
                 chatMessage.getId(),
-                chatMessage.getChatRoom().getId(),
+                chatMessage.getChatRoomId(),
                 sender.getId().getValue(),
                 sender.getNickname().getValue(),
                 sender.getProfileImage(),

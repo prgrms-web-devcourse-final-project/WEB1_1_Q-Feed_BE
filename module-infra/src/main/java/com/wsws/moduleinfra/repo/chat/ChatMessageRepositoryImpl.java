@@ -30,7 +30,8 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepository {
         ChatRoomEntity chatRoomEntity = jpaChatRoomRepository.findById(chatMessage.getChatRoomId())
                 .orElseThrow();
 
-        ChatMessageEntity entity = ChatMessageMapper.toEntity(chatMessage,chatRoomEntity);
+        ChatMessageEntity entity = ChatMessageMapper.toEntity(chatMessage);
+        entity.setChatRoom(chatRoomEntity); // 연관관계 설정
         jpaChatMessageRepository.save(entity);
     }
 

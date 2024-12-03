@@ -32,24 +32,6 @@ public class ChatRoomEntity {
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatMessageEntity> messages = new ArrayList<>();
 
-//    public ChatRoomEntity(String userId, String userId2, LocalDateTime createdAt) {
-//        this.userId = userId;
-//        this.userId2 = userId2;
-//        this.createdAt = createdAt;
-//    }
-//
-//    public static ChatRoomEntity createChatRoom(String userId, String userId2, LocalDateTime createdAt) {
-//        if (userId.equals(userId2)) {
-//            throw SelfSelectionNotAllowedException.EXCEPTION;
-//        }
-//
-//        if (userId.compareTo(userId2) > 0) {
-//            return new ChatRoomEntity(userId2, userId, createdAt);
-//        } else {
-//            return new ChatRoomEntity(userId, userId2, createdAt);
-//        }
-//    }
-
     public static ChatRoomEntity create(String userId, String userId2, LocalDateTime createdAt){
         ChatRoomEntity chatRoomEntity = new ChatRoomEntity();
         chatRoomEntity.userId = userId;
@@ -57,4 +39,11 @@ public class ChatRoomEntity {
         chatRoomEntity.createdAt = createdAt;
         return chatRoomEntity;
     }
+
+//    // 연관 관계 편의 메서드 (ChatMessage 추가 시 호출)
+//    public void addMessage(ChatMessageEntity message) {
+//        messages.add(message);
+//        message.setChatRoom(this);  // 메시지가 추가될 때 ChatRoom도 설정
+//    }
+
 }
