@@ -19,19 +19,31 @@ public class GroupController {
 
     private final GroupService groupService;
 
-    @PostMapping
+    //그룹 생성
+    @PostMapping("/create")
     public ResponseEntity<String> createGroup(@RequestBody CreateGroupRequest req, @AuthenticationPrincipal UserPrincipal userPrincipal) {
         String adminId = userPrincipal.getId();
         groupService.createGroup(req, adminId);
         return ResponseEntity.status(201).body("그룹 생성이 완료되었습니다.");
     }
 
-    @PutMapping("/{groupId}")
+    //그룹 수정
+    @PatchMapping("/{groupId}")
     public ResponseEntity<String> updateGroup(@PathVariable Long groupId,@RequestBody UpdateGroupRequest req,
-                                              @AuthenticationPrincipal UserPrincipal userPrincipal
-    ) {
+                                              @AuthenticationPrincipal UserPrincipal userPrincipal) {
         String adminId = userPrincipal.getId();
         groupService.updateGroup(groupId, req, adminId);
         return ResponseEntity.status(200).body("그룹 수정이 완료되었습니다.");
     }
+
+    //그룹 삭제
+    @DeleteMapping("/{groupId}")
+    public ResponseEntity<String> deleteGroup(@PathVariable Long groupId,  @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        String adminId = userPrincipal.getId();
+        groupService.deleteGroup(groupId, adminId);
+        return ResponseEntity.status(200).body("그룹 삭제가 완료되었습니다.");
+    }
+
+
+
 }

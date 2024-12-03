@@ -28,7 +28,6 @@ public class GroupService {
 
     @Transactional
     public void createGroup(CreateGroupRequest req, String adminId){
-
         // 그룹 이미지 처리
         String groupImageUrl = processGroupImage(req.url());
 
@@ -60,6 +59,15 @@ public class GroupService {
         //그룹 정보 수정
         group.updateGroupInfro(req.groupName(),req.description(),groupImageUrl);
     }
+
+    @Transactional
+    public void deleteGroup(Long groupId, String adminId){
+        Group group = findGroupById(groupId);
+        validateAdminPermission(group, adminId);
+        groupRepository.delete(group);
+    }
+
+
 
 
     private Group findGroupById(Long groupId) {
