@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Embeddable
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class FollowIdEmbeddable {
 
     @Column(name = "follower_id", nullable = false)
