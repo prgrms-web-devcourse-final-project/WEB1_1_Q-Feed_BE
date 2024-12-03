@@ -27,4 +27,9 @@ public class GroupMemberEntity {
         groupMemberEntity.group = group;
         return groupMemberEntity;
     }
+
+    // 연관관계 편의 메서드
+    public void setGroup(GroupEntity group) {
+        this.group = group;
+    }
 }

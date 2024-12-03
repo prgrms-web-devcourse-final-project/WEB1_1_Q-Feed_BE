@@ -25,7 +25,9 @@ public class GroupMemberRepositoryImpl implements GroupMemberRepository {
         GroupEntity groupEntity = jpaGroupRepository.findById(groupMember.getGroupId().getValue())
                 .orElseThrow();
 
-        GroupMemberEntity groupMemberEntity = GroupMemberMapper.toEntity(groupMember, groupEntity);
+        GroupMemberEntity groupMemberEntity = GroupMemberMapper.toEntity(groupMember);
+        // 연관관계 편의 메서드를 사용해 관계 설정
+        groupMemberEntity.setGroup(groupEntity);
         jpaGroupMemberRepository.save(groupMemberEntity);
     }
 
@@ -34,7 +36,7 @@ public class GroupMemberRepositoryImpl implements GroupMemberRepository {
         GroupEntity groupEntity = jpaGroupRepository.findById(groupMember.getGroupId().getValue())
                 .orElseThrow();
 
-        GroupMemberEntity groupMemberEntity = GroupMemberMapper.toEntity(groupMember, groupEntity);
+        GroupMemberEntity groupMemberEntity = GroupMemberMapper.toEntity(groupMember);
         jpaGroupMemberRepository.delete(groupMemberEntity);
     }
 

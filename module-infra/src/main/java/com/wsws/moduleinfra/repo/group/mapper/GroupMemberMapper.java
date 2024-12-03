@@ -15,10 +15,10 @@ public class GroupMemberMapper {
     }
 
     // Domain -> Entity 변환
-    public static GroupMemberEntity toEntity(GroupMember groupMember, GroupEntity groupEntity) {
+    public static GroupMemberEntity toEntity(GroupMember groupMember) {
         return GroupMemberEntity.create(
                 groupMember.getUserId().getValue(), // UserId -> String 변환
-                groupEntity
+                null
         );
     }
 }
