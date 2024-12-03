@@ -49,11 +49,9 @@ public class RedisConfig {
     @Bean
     public RedisMessageListenerContainer redisMessageListenerContainer(
             RedisConnectionFactory redisConnectionFactory,
-            MessageListenerAdapter messageListenerAdapter,
-            ChannelTopic channelTopic) {
+            MessageListenerAdapter messageListenerAdapter) {
         RedisMessageListenerContainer redisMessageListenerContainer = new RedisMessageListenerContainer();
         redisMessageListenerContainer.setConnectionFactory(redisConnectionFactory);
-        redisMessageListenerContainer.addMessageListener(messageListenerAdapter, channelTopic);
         return redisMessageListenerContainer;
     }
 
@@ -63,11 +61,11 @@ public class RedisConfig {
         return new MessageListenerAdapter(subscriber, "onMessage");
     }
 
-    // 구독할 Redis 채널 설정
-    @Bean
-    public ChannelTopic channelTopic() {
-        return new ChannelTopic("/sub/chat");
-    }
+//    // 구독할 Redis 채널 설정
+//    @Bean
+//    public ChannelTopic channelTopic() {
+//        return new ChannelTopic("/sub/chat/*");
+//    }
 
     // Object 타입 데이터를 처리하는 RedisTemplate 설정
     @Bean(name = "customRedisTemplateObject")

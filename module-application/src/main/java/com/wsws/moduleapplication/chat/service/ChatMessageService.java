@@ -17,6 +17,7 @@ import com.wsws.moduledomain.chat.dto.ChatMessageDTO;
 import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.UserId;
+import com.wsws.moduleinfra.redis.RedisSubscriber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class ChatMessageService {
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisSubscriber redisSubscriber;
 
     @Transactional
     public void sendMessage(Long chatRoomId, String senderId, ChatMessageRequest request ) {
@@ -62,7 +64,10 @@ public class ChatMessageService {
 
         // Redis 발행
         ChatMessageDomainResponse response = ChatMessageDomainResponse.createFrom(chatMessage, user);
-        redisTemplate.convertAndSend("chatroom:" + chatRoomId, response);
+        String channel = "/sub/chat/" + chatRoomId;
+        redisTemplate.convertAndSend(channel, response);
+        // 해당 채팅방을 구독하도록 RedisSubscriber에 요청
+        redisSubscriber.subscribeToChatRoom(chatRoomId);
     }
 
     //채팅방의 메세지 조회
