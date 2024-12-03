@@ -1,6 +1,6 @@
 package com.wsws.moduleapplication.feed.service;
 
-import com.wsws.moduleapplication.feed.dto.question.QuestionFindServiceResponse;
+import com.wsws.moduleapplication.feed.dto.QuestionFindServiceResponse;
 import com.wsws.moduleapplication.feed.exception.QuestionNotFoundException;
 import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
