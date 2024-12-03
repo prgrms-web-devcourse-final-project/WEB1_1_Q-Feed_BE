@@ -4,13 +4,13 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.UserId;
 import com.wsws.moduleexternalapi.fcm.dto.FCMRequestDto;
 import com.wsws.moduleinfra.FcmRedis;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -21,15 +21,14 @@ import org.springframework.stereotype.Service;
 public class FcmService {
 
       private final FcmRedis fcmredis;
-      private UserRepository userRepository;
+      private final UserRepository userRepository;
 
     @Async("taskExecutor")
     public void FcmSend(String recipient, FCMRequestDto fcmRequestDto) {
-        User user = getUserById(recipient);
+        User user = getUserById(recipient); // 사용자 조회
+        UserId userId = user.getId(); // UserId 가져오기
 
-        UserId userId = user.getId();
-
-        String fcmRedisKey = getFcmRedisKey(recipient.getValue()); // Redis 키 생성.
+        String fcmRedisKey = getFcmRedisKey(recipient); // Redis 키 생성.
         String fcmToken = fcmredis.getFcmToken(fcmRedisKey); // Redis에서 FCM 토큰 조회.
 
         if (fcmToken != null && !fcmToken.isEmpty()) { // 토큰이 존재하면 메시지 생성 후 전송.
@@ -37,6 +36,12 @@ public class FcmService {
             sendMessage(message);
         }
     }
+
+    private User getUserById(String recipient) {
+        return userRepository.findById(UserId.of(recipient))
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID: " + recipient));
+    }
+
 
     // 메시지 생성
     public Message makeMessage(FCMRequestDto fcmRequestDto, String token){ // 나중에 토큰도 추가
