@@ -60,3 +60,4 @@ replay_pid*
 atlassian-ide-plugin.xml
 
 build-test.gradle
+/module-external-api/src/main/resources/firebase/q-feed-firebase-adminsdk-ig40w-d0bf1986b6.json
