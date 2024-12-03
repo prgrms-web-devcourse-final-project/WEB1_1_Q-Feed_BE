@@ -4,9 +4,20 @@ import com.wsws.moduledomain.user.User;
 import com.wsws.moduleinfra.entity.user.LikeEntity;
 import com.wsws.moduleinfra.entity.user.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface JpaLikeUserRepository extends JpaRepository<LikeEntity, Long> {
-    boolean existsByTargetIdAndUserEntity(Long targetId, UserEntity user);
+
+    /**
+     * 특정 targetId와 userId를 가지는 LikeEntity가 있는지
+     */
+    @Query("SELECT COUNT(l) > 0 FROM LikeEntity l WHERE l.targetId = :targetId AND l.userEntity.id = :userId")
+    boolean existsByTargetIdAndUserId(Long targetId, String userId);
+
+    @Modifying
+    @Query("DELETE FROM LikeEntity l WHERE l.targetId = :targetId AND l.userEntity.id = :userId")
+    void deleteByTargetIdAndUserId(Long targetId, String userId);
 }

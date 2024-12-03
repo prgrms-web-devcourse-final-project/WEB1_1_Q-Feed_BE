@@ -4,7 +4,8 @@ import com.wsws.moduleapplication.feed.dto.answer.*;
 import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.feed.exception.QuestionNotFoundException;
 import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
-import com.wsws.moduleapplication.user.exception.AlreadyLikeException;
+import com.wsws.moduleapplication.user.exception.AlreadyLikedException;
+import com.wsws.moduleapplication.user.exception.NotLikedException;
 import com.wsws.moduleapplication.user.exception.ProfileImageProcessingException;
 import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduleapplication.util.FileValidator;
@@ -101,7 +102,7 @@ public class AnswerService {
      */
     public void addLikeToAnswer(LikeServiceRequest request) {
 
-        createLike(request); // Like 객체 추가
+        createLike(request); // Like 객체 생성
 
         Answer answer = answerRepository.findById(request.targetId())
                 .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
@@ -117,23 +118,25 @@ public class AnswerService {
 
     }
 
-//    /**
-//     * 좋아요 취소
-//     */
-//    public void cancelLikeToAnswer(LikeServiceRequest request) {
-//        Answer answer = answerRepository.findById(request.targetId())
-//                .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
-//
-//        answer.addReactionCount();// Answer의 reactionCount 1증가
-//
-//        // 수정 반영
-//        try {
-//            answerRepository.edit(answer);
-//        } catch (RuntimeException e) {
-//            throw AnswerNotFoundException.EXCEPTION;
-//        }
-//
-//    }
+    /**
+     * 좋아요 취소
+     */
+    public void cancelLikeToAnswer(LikeServiceRequest request) {
+
+        Answer answer = answerRepository.findById(request.targetId())
+                .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
+
+        deleteLike(request); // 기존 좋아요 객체 삭제
+
+        answer.cancelReactionCount();// Answer의 reactionCount 1 감소
+
+        // 수정 반영
+        try {
+            answerRepository.edit(answer);
+        } catch (RuntimeException e) {
+            throw AnswerNotFoundException.EXCEPTION;
+        }
+    }
 
 
 
@@ -163,8 +166,8 @@ public class AnswerService {
         User user = userRepository.findById(UserId.of(request.userId()))
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);// 연관 맺을 User 찾아오기
 
-        if(isAlreadyLike(request.targetId(), user)) // 좋아요를 누른적이 있는지 확인
-            throw AlreadyLikeException.EXCEPTION;
+        if(isAlreadyLike(request.targetId(), request.userId())) // 좋아요를 누른적이 있다면 예외
+            throw AlreadyLikedException.EXCEPTION;
 
 
         Like like = Like.create(
@@ -178,13 +181,22 @@ public class AnswerService {
         } catch (RuntimeException e) { // 연관관계 맺는 과정 중 예외처리
             throw UserNotFoundException.EXCEPTION;
         }
-
     }
+    /**
+     * Like 삭제
+     */
+    private void deleteLike(LikeServiceRequest request) {
+        if(!isAlreadyLike(request.targetId(), request.userId())) // 좋아요를 누른적이 없다면 예외
+            throw NotLikedException.EXCEPTION;
+
+        likeRepository.deleteByTargetIdAndUserId(request.targetId(), request.userId()); // 해당 좋아요 정보 삭제
+    }
+
 
     /**
      * 같은 글에 좋아요를 누른적이 있는지 확인
      */
-    private boolean isAlreadyLike(Long targetId, User user) {
-        return likeRepository.existsByTargetIdAndUserEntity(targetId, user);
+    private boolean isAlreadyLike(Long targetId, String userId) {
+        return likeRepository.existsByTargetIdAndUserId(targetId, userId);
     }
 }

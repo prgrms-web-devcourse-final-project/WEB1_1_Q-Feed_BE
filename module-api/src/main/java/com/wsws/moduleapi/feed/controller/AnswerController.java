@@ -79,17 +79,20 @@ public class AnswerController {
     }
 
 
-//    /**
-//     * 답변 좋아요 취소
-//     */
-//    @PostMapping("/{answer-id}/cancel-likes")
-//    public ResponseEntity<String> cancelLikeToAnswer(
-////            @AuthenticationPrincipal UserPrincipal userPrincipal,
-//            @PathVariable("answer-id") Long answerId) {
-////        String userId = userPrincipal.getId(); // 좋아요 누른 사용자 아이디 받아오기
-//        String userId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
-//        LikeServiceRequest request = new LikeServiceRequest(userId, "ANSWER", answerId); // 도메인으로의 의존성을 피하기 위해 문자열로 넘겨줌
-//        answerService.addLikeToAnswer(request); // 해당 글에 좋아요 1 카운트
-//        return ResponseEntity.ok("좋아요가 취소되었습니다.");
-//    }
+    /**
+     * 답변 좋아요 취소
+     */
+    @PostMapping("/{answer-id}/cancel-likes")
+    public ResponseEntity<String> cancelLikeToAnswer(
+//            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("answer-id") Long answerId) {
+
+//        String userId = userPrincipal.getId(); // 좋아요 누른 사용자 아이디 받아오기
+        String userId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
+
+        LikeServiceRequest request = new LikeServiceRequest(userId, "ANSWER", answerId); // 도메인으로의 의존성을 피하기 위해 문자열로 넘겨줌
+
+        answerService.cancelLikeToAnswer(request); // 해당 글에 좋아요 1 마이너스
+        return ResponseEntity.ok("좋아요가 취소되었습니다.");
+    }
 }

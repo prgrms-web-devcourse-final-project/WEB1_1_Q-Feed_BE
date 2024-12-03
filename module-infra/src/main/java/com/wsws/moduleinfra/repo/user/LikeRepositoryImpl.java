@@ -28,7 +28,12 @@ public class LikeRepositoryImpl implements LikeRepository {
     }
 
     @Override
-    public boolean existsByTargetIdAndUserEntity(Long targetId, User user) {
-        return jpaLikeUserRepository.existsByTargetIdAndUserEntity(targetId, UserEntityMapper.fromDomain(user));
+    public boolean existsByTargetIdAndUserId(Long targetId, String userId) {
+        return jpaLikeUserRepository.existsByTargetIdAndUserId(targetId, userId);
+    }
+
+    @Override
+    public void deleteByTargetIdAndUserId(Long targetId, String userId) {
+        jpaLikeUserRepository.deleteByTargetIdAndUserId(targetId, userId);
     }
 }

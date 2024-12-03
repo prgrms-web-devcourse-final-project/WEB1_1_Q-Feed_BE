@@ -1,7 +1,7 @@
 //package com.wsws.moduleapplication.user.service;
 //
 //import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
-//import com.wsws.moduleapplication.user.exception.AlreadyLikeException;
+//import com.wsws.moduleapplication.user.exception.AlreadyLikedException;
 //import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 //import com.wsws.moduledomain.user.Like;
 //import com.wsws.moduledomain.user.User;
@@ -29,7 +29,7 @@
 //                .orElseThrow(() -> UserNotFoundException.EXCEPTION);// 연관 맺을 User 찾아오기
 //
 //        if(isAlreadyLike(request.targetId(), user)) // 좋아요를 누른적이 있는지 확인
-//            throw AlreadyLikeException.EXCEPTION;
+//            throw AlreadyLikedException.EXCEPTION;
 //
 //
 //        Like like = Like.create(
