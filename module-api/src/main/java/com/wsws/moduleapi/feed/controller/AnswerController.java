@@ -35,10 +35,11 @@ public class AnswerController {
      */
     @PostMapping
     public ResponseEntity<AnswerPostApiResponse> postAnswers(
-            @RequestBody AnswerPostApiRequest answerPostApiRequest,
-            @AuthenticationPrincipal UserPrincipal userPrincipal
+            @RequestBody AnswerPostApiRequest answerPostApiRequest
+            ,@AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         String userId = userPrincipal.getId(); // 사용자 아이디를 가져온다.
+//        String userId = "user_id1";
         AnswerCreateServiceResponse serviceResponse = answerService.createAnswer(answerPostApiRequest.toServiceDto(userId)); // 답변 생성
 
         return ResponseEntity.status(201).body(new AnswerPostApiResponse(serviceResponse));
