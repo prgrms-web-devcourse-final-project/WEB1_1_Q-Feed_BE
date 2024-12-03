@@ -18,7 +18,7 @@ public class FollowRepositoryImpl implements FollowRepository {
 
     @Override
     public Optional<Follow> findByFollowerIdAndFolloweeId(String followerId, String followeeId) {
-        return jpaFollowRepository.findByFollowerIdAndFolloweeId(followerId, followeeId)
+        return jpaFollowRepository.findById_FollowerIdAndId_FolloweeId(followerId, followeeId)
                 .map(FollowEntityMapper::toFollow); // 엔티티를 도메인 객체로 변환
     }
 
