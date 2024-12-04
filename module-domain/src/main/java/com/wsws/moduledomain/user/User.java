@@ -1,9 +1,7 @@
 package com.wsws.moduledomain.user;
 
-import com.wsws.moduledomain.auth.exception.PasswordMismatchException;
 import com.wsws.moduledomain.category.vo.CategoryId;
 import com.wsws.moduledomain.user.vo.*;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -50,14 +48,14 @@ public class User {
         return user;
     }
 
-    public static User transform(String userid,String email,String encodedPassword, String nickname, String profileImage){
+    public static User transform(String userid,String email,String encodedPassword, String nickname, String profileImage, String description){
         User user = new User();
         user.id = UserId.of(userid);
         user.email = Email.from(email);
         user.password = Password.of(encodedPassword);
         user.nickname = Nickname.from(nickname);
         user.profileImage = profileImage;
-
+        user.description = description;
         return user;
     }
 
