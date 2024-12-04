@@ -1,20 +1,23 @@
 package com.wsws.moduledomain.feed.answer.vo;
 
+import com.wsws.moduledomain.user.vo.LikeTargetId;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class AnswerId {
-    private Long value;
+public class AnswerId extends LikeTargetId {
 
     private AnswerId(Long value) {
-        this.value = value;
+        super(value);
     }
 
     public static AnswerId of(Long id) {
         return new AnswerId(id);
     }
+
 }
+
+

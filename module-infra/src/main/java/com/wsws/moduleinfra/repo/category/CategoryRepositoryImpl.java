@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -28,6 +29,14 @@ public class CategoryRepositoryImpl implements CategoryRepository {
                 .map(this::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Category findById(CategoryId categoryId) {
+        Optional<CategoryEntity> entity = categoryJpaRepository.findById(categoryId.getValue());
+        return entity.map(this::toDomain).orElseThrow(() ->
+                new IllegalArgumentException("Category not found with ID: " + categoryId));
+    }
+
 
     @Override
     public Category save(Category category) {

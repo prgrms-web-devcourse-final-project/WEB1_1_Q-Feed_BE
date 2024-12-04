@@ -31,4 +31,19 @@ public class Answer {
         answer.userId = UserId.of(userId);
         return answer;
     }
+
+    /* 비즈니스 로직 */
+    public void editAnswer(String content, Boolean visibility, String url) {
+        this.content = content;
+        this.visibility = visibility;
+        this.url = url;
+    }
+
+    public void addReactionCount() {
+        this.reactionCount++;
+    }
+
+    public void cancelReactionCount() {
+        this.reactionCount--;
+    }
 }

@@ -3,6 +3,7 @@ package com.wsws.moduleapi.global.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.wsws.modulecommon.exception.ErrorInfo;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,6 +25,7 @@ public class ErrorResponse {
     private String message;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @Schema(description = "유효성 검사 에러 목록. 없으면 포함되지 않습니다.")
     private List<FieldError> errors;
 
 

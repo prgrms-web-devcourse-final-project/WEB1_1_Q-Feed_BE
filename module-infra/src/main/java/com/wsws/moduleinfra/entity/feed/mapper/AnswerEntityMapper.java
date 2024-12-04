@@ -1,10 +1,9 @@
-package com.wsws.moduleinfra.repo.feed.mapper;
+package com.wsws.moduleinfra.entity.feed.mapper;
 
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
-import com.wsws.moduleinfra.entity.feed.QuestionEntity;
 
-public class AnswerMapper {
+public class AnswerEntityMapper {
     public static Answer toDomain(AnswerEntity answerEntity) {
 
         Long questionId = null;
