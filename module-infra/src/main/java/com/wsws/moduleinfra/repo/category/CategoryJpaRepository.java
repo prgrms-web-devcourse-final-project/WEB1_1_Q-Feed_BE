@@ -10,4 +10,6 @@ public interface CategoryJpaRepository extends JpaRepository<CategoryEntity, Lon
 
     CategoryEntity findByCategoryName(CategoryName categoryName);
 
+    Boolean existsByCategoryName(CategoryName categoryName);
+
 }
