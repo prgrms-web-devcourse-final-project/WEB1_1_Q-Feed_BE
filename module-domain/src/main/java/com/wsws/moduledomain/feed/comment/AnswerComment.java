@@ -7,14 +7,14 @@ import lombok.Getter;
 
 @Getter
 public class AnswerComment {
-    AnswerCommentId answerCommentId;
-    String content;
-    int depth;
-    int reactionCount;
+    private AnswerCommentId answerCommentId;
+    private String content;
+    private int depth;
+    private int reactionCount;
 
-    AnswerId answerId;
-    UserId userId;
-    AnswerCommentId parentAnswerCommentId;
+    private AnswerId answerId;
+    private UserId userId;
+    private AnswerCommentId parentAnswerCommentId;
 
     public static AnswerComment create(Long commentId, String content, int depth, int reactionCount, Long answerId, String userId, Long parentCommentId) {
         AnswerComment answerComment = new AnswerComment();
