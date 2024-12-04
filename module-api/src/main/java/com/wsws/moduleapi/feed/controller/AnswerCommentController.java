@@ -1,8 +1,12 @@
 package com.wsws.moduleapi.feed.controller;
 
 import com.wsws.moduleapi.feed.dto.answer_comment.AnswerCommentPostApiRequest;
+import com.wsws.moduleapi.feed.dto.answer_comment.AnswerCommentPostApiResponse;
+import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateServiceRequest;
+import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateServiceResponse;
 import com.wsws.moduleapplication.feed.service.AnswerCommentService;
 import com.wsws.modulesecurity.security.UserPrincipal;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,8 +31,14 @@ public class AnswerCommentController {
      * 답변 댓글 추가
      */
     @PostMapping
-    public ResponseEntity<?> postAnswerComment(@AuthenticationPrincipal UserPrincipal userPrincipal, AnswerCommentPostApiRequest request) {
-        return null;
+    public ResponseEntity<AnswerCommentPostApiResponse> postAnswerComment(
+//            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Valid @RequestBody AnswerCommentPostApiRequest request) {
+//        String userId = userPrincipal.getId();
+        String userId = "user_id1";
+        AnswerCommentCreateServiceResponse answerComment =
+                answerCommentService.createAnswerComment(request.toServiceDto(userId));
+        return ResponseEntity.ok(new AnswerCommentPostApiResponse(answerComment.answerCommentId(), "댓글이 추가되었습니다."));
     }
 
 

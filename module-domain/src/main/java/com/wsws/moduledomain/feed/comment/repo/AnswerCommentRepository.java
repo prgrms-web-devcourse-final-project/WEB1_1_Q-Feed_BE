@@ -7,5 +7,13 @@ import java.util.Optional;
 
 @Repository
 public interface AnswerCommentRepository {
+    /**
+     * id로 답변 댓글 찾아오기
+     */
     Optional<AnswerComment> findById(Long id);
+
+    /**
+     * 답변 댓글 저장
+     */
+    AnswerComment save(AnswerComment answerComment);
 }

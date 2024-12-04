@@ -39,4 +39,13 @@ public class AnswerCommentEntity {
         return answerCommentEntity;
     }
 
+    /* 연관관계 편의 메서드 */
+    public void setAnswerEntity(AnswerEntity answerEntity) {
+        this.answerEntity = answerEntity;
+    }
+
+    public void setParentCommentEntity(AnswerCommentEntity parentCommentEntity) {
+        this.parentCommentEntity = parentCommentEntity;
+    }
+
 }
