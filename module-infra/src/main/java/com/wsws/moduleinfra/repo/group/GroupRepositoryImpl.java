@@ -1,11 +1,13 @@
 package com.wsws.moduleinfra.repo.group;
 
+import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.group.Group;
 import com.wsws.moduledomain.group.dto.GroupDetailDto;
 import com.wsws.moduledomain.group.dto.GroupDto;
 import com.wsws.moduledomain.group.dto.GroupMemberDto;
 import com.wsws.moduledomain.group.repo.GroupRepository;
 import com.wsws.moduledomain.group.vo.GroupId;
+import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import com.wsws.moduleinfra.entity.group.GroupEntity;
 import com.wsws.moduleinfra.repo.group.mapper.GroupMapper;
 import lombok.RequiredArgsConstructor;
@@ -21,16 +23,32 @@ public class GroupRepositoryImpl implements GroupRepository {
     private final JpaGroupRepository jpaGroupRepository;
 
     @Override
-    public void save(Group group) {
+    public Group save(Group group) {
         GroupEntity groupEntity = GroupMapper.toEntity(group);
         jpaGroupRepository.save(groupEntity);
+        return group;
     }
 
     @Override
-    public void delete(Group group) {
-        GroupEntity groupEntity = GroupMapper.toEntity(group);
-        jpaGroupRepository.delete(groupEntity);
+    public void deleteById(Long groupId) {
+        //GroupEntity groupEntity = GroupMapper.toEntity(group);
+        jpaGroupRepository.deleteById(groupId);
     }
+
+    @Override
+    public void edit(Group group) {
+        GroupEntity groupEntity = jpaGroupRepository.findById(group.getGroupId().getValue())
+                .orElseThrow(RuntimeException::new);
+        groupEntity.editEntity(group.getGroupName(), group.getDescription(), group.getUrl());
+    }
+
+    @Override
+    public void changeStatus(Group group) {
+        GroupEntity groupEntity = jpaGroupRepository.findById(group.getGroupId().getValue())
+                .orElseThrow(RuntimeException::new);
+        groupEntity.changeStatus(group.isOpen());
+    }
+
 
     @Override
     public Optional<Group> findById(GroupId groupId) {

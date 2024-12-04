@@ -1,5 +1,6 @@
 package com.wsws.moduleapplication.group.service;
 
+import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.group.dto.CreateGroupRequest;
 import com.wsws.moduleapplication.group.dto.GroupDetailServiceResponse;
 import com.wsws.moduleapplication.group.dto.GroupServiceResponse;
@@ -64,13 +65,18 @@ public class GroupService {
 
         //그룹 정보 수정
         group.updateGroupInfro(req.groupName(),req.description(),groupImageUrl);
+        try {
+            groupRepository.edit(group);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("그룹이 존재하지않습니다.");
+        }
     }
 
     @Transactional
     public void deleteGroup(Long groupId, String adminId){
         Group group = findGroupById(groupId);
         validateAdminPermission(group, adminId);
-        groupRepository.delete(group);
+        groupRepository.deleteById(groupId);
     }
 
     @Transactional
@@ -80,7 +86,7 @@ public class GroupService {
 
         //(true -> false, false -> true)
         group.changeVisibility(!group.isOpen());
-        groupRepository.save(group);
+        groupRepository.changeStatus(group);
     }
 
     public List<GroupServiceResponse> getGroupsByCategory(Long categoryId){
@@ -111,7 +117,7 @@ public class GroupService {
 
     private void validateAdminPermission(Group group, String adminId) {
         if (!group.getAdminId().equals(UserId.of(adminId))) {
-            throw new IllegalStateException("수정 권한이 없습니다. 관리자만 수정할 수 있습니다.");
+            throw new IllegalStateException("권한이 없습니다. 관리자만 수정할 수 있습니다.");
         }
     }
 
