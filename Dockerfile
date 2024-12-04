@@ -1,5 +1,6 @@
 FROM openjdk:17-jdk
 
-COPY build/libs/*.jar app.jar
+# 정확한 파일 이름을 사용
+COPY build/libs/WEB1_1_Q-Feed_BE.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "/app.jar"]
