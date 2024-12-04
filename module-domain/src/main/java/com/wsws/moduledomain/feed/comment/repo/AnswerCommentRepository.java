@@ -16,4 +16,9 @@ public interface AnswerCommentRepository {
      * 답변 댓글 저장
      */
     AnswerComment save(AnswerComment answerComment);
+
+    /**
+     * 답변 댓글 수정
+     */
+    void edit(AnswerComment answerComment);
 }

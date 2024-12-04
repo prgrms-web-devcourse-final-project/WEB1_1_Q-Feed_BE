@@ -43,7 +43,7 @@ public class AnswerEntity {
     /**
      * 수정 로직
      */
-    public void editEntity(String content, Boolean visibility, String url, int reactionCount) {
+    public void editQuestionEntity(String content, Boolean visibility, String url, int reactionCount) {
         this.content = content;
         this.visibility = visibility;
         this.url = url;

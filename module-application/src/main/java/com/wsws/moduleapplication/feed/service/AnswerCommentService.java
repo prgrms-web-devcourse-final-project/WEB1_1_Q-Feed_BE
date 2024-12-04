@@ -2,12 +2,12 @@ package com.wsws.moduleapplication.feed.service;
 
 import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateServiceRequest;
 import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateServiceResponse;
+import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentEditServiceRequest;
 import com.wsws.moduleapplication.feed.exception.AnswerCommentNotFoundException;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.comment.repo.AnswerCommentRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +45,19 @@ public class AnswerCommentService {
         AnswerComment saved = answerCommentRepository.save(answerComment);
         return new AnswerCommentCreateServiceResponse(saved.getAnswerCommentId().getValue());
     }
+
+    /**
+     * 답변 댓글 수정
+     */
+    public void editAnswerComment(AnswerCommentEditServiceRequest request) {
+        AnswerComment answerComment = answerCommentRepository.findById(request.answerCommentId())
+                .orElseThrow(() -> AnswerCommentNotFoundException.EXCEPTION);
+
+        answerComment.editAnswerComment(request.content());
+
+        answerCommentRepository.edit(answerComment);
+    }
+
 
 
     private Answer getRelatedAnswer(Long answerId) {

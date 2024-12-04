@@ -1,7 +1,9 @@
 package com.wsws.moduleapi.feed.controller;
 
+import com.wsws.moduleapi.feed.dto.MessageResponse;
 import com.wsws.moduleapi.feed.dto.answer_comment.AnswerCommentPostApiRequest;
 import com.wsws.moduleapi.feed.dto.answer_comment.AnswerCommentPostApiResponse;
+import com.wsws.moduleapi.feed.dto.answer_comment.AnswerCommentPutApiRequest;
 import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateServiceRequest;
 import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateServiceResponse;
 import com.wsws.moduleapplication.feed.service.AnswerCommentService;
@@ -58,8 +60,9 @@ public class AnswerCommentController {
      * 답변 댓글 수정
      */
     @PutMapping("/{comment-id}")
-    public ResponseEntity<?> putAnswerComment() {
-        return null;
+    public ResponseEntity<MessageResponse> putAnswerComment(@PathVariable("comment-id")Long commentId, AnswerCommentPutApiRequest request) {
+        answerCommentService.editAnswerComment(request.toServiceDto(commentId));
+        return ResponseEntity.ok(new MessageResponse("댓글이 수정되었습니다."));
     }
 
     /**

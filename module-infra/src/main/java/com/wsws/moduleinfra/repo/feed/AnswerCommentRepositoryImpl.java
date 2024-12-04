@@ -28,9 +28,9 @@ public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
         AnswerCommentEntity answerCommentEntity = AnswerCommentEntityMapper.toEntity(answerComment);
 
         AnswerEntity answerEntity = jpaAnswerRepository.findById(answerComment.getAnswerId().getValue())
-                .orElse(null);
+                .orElse(null); // 연관관계에 잇는 AnswerEntity 가져오기
 
-        answerCommentEntity.setAnswerEntity(answerEntity);
+        answerCommentEntity.setAnswerEntity(answerEntity); // 연관관계 설정
 
         if (answerComment.getParentAnswerCommentId().getValue() != null) { // NPE 방지
             AnswerCommentEntity parentCommentEntity =
@@ -40,5 +40,13 @@ public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
         }
 
         return AnswerCommentEntityMapper.toDomain(jpaAnswerCommentRepository.save(answerCommentEntity));
+    }
+
+    @Override
+    public void edit(AnswerComment answerComment) {
+        Optional<AnswerCommentEntity> answerCommentEntity = jpaAnswerCommentRepository.findById(answerComment.getAnswerCommentId().getValue());
+
+        answerCommentEntity
+                .ifPresent(entity -> entity.editAnswerCommentEntity(answerComment.getContent(), answerComment.getReactionCount()));
     }
 }

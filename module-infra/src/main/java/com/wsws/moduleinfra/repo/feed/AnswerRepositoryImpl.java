@@ -2,7 +2,6 @@ package com.wsws.moduleinfra.repo.feed;
 
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
-import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import com.wsws.moduleinfra.entity.feed.QuestionEntity;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerEntityMapper;
@@ -52,7 +51,7 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     public void edit(Answer answer) {
         AnswerEntity answerEntity = jpaAnswerRepository.findById(answer.getAnswerId().getValue())
                 .orElseThrow(RuntimeException::new);
-        answerEntity.editEntity(answer.getContent(), answer.getVisibility(), answer.getUrl(), answer.getReactionCount());
+        answerEntity.editQuestionEntity(answer.getContent(), answer.getVisibility(), answer.getUrl(), answer.getReactionCount());
     }
 
     /**

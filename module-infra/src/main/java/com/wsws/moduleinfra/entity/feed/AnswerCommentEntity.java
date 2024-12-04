@@ -48,4 +48,10 @@ public class AnswerCommentEntity {
         this.parentCommentEntity = parentCommentEntity;
     }
 
+
+     /* 수정 로직 */
+    public void editAnswerCommentEntity(String content, int reactionCount) {
+        this.content = content;
+        this.reactionCount = reactionCount;
+    }
 }

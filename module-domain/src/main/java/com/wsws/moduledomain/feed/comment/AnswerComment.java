@@ -27,4 +27,9 @@ public class AnswerComment {
         answerComment.parentAnswerCommentId = AnswerCommentId.of(parentCommentId);
         return answerComment;
     }
+
+    /* 비즈니스 로직 */
+    public void editAnswerComment(String content) {
+        this.content = content;
+    }
 }
