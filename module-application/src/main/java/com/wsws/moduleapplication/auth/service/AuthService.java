@@ -178,6 +178,4 @@ public class AuthService {
             throw EmailNotFoundException.EXCEPTION;
         }
     }
-
-
 }

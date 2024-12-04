@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import java.time.Duration;
 
 @Component
 @RequiredArgsConstructor
@@ -14,9 +15,9 @@ public class FcmRedis {
 
     private static final String PREFIX = "FCM_TOKEN_";
 
-    public void saveFcmToken(Long userId, String fcmToken) {
+    public void saveFcmToken(String userId, String fcmToken, Duration time) {
         String key = PREFIX + userId;
-        redisTemplate.opsForValue().set(key, fcmToken);
+        redisTemplate.opsForValue().set(key, fcmToken, time);
     }
 
     public String getFcmToken(String redisKey) {
