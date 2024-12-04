@@ -11,6 +11,7 @@ import com.wsws.modulesecurity.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -47,7 +48,7 @@ public class AnswerController {
     @PostMapping
     @Operation(summary = "답변 생성", description = "현재 인증된 사용자로 답변을 생성합니다.")
     public ResponseEntity<AnswerPostApiResponse> postAnswers(
-            @RequestBody AnswerPostApiRequest answerPostApiRequest
+            @Valid @RequestBody AnswerPostApiRequest answerPostApiRequest
             ,@AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         String userId = userPrincipal.getId(); // 사용자 아이디를 가져온다.
@@ -64,7 +65,7 @@ public class AnswerController {
     @Operation(summary = "답변 수정", description = "답변을 수정합니다.")
     public ResponseEntity<MessageResponse> patchAnswer(
             @Parameter(description = "수정할 답변 ID") @PathVariable("answer-id") Long answerId,
-            @RequestBody AnswerPatchApiRequest answerPatchApiRequest) {
+            @Valid @RequestBody AnswerPatchApiRequest answerPatchApiRequest) {
         answerService.editAnswer(answerPatchApiRequest.toServiceDto(answerId));
         return ResponseEntity.ok(new MessageResponse("답변이 수정되었습니다."));
     }
