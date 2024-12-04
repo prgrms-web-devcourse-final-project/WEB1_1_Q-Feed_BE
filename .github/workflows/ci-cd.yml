@@ -82,10 +82,12 @@ jobs:
             docker stop q-feed-server || true
             docker rm q-feed-server || true
             
-            if [ -f .env ]; then
-              rm .env
+            if [ "$(docker ps -q -f name=q-feed-server)" ]; then
+              docker stop q-feed-server
+              docker rm q-feed-server
             fi
-            
+  
+  
             echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env
             echo "REDIS_VECTOR_URI=${{ secrets.REDIS_VECTOR_URI }}" >> .env
             echo "REDIS_VECTOR_PORT=${{ secrets.REDIS_VECTOR_PORT }}" >> .env
@@ -99,6 +101,6 @@ jobs:
             echo "MAIL_EMAIL=${{ secrets.MAIL_EMAIL }}" >> .env
             echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
             
-            docker pull ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
+            docker pull ${{ steps.login-ecr.outputs.registry }}/q-feed:latest
             
-            docker run -d --name q-feed-server --env-file ./.env -e ABSOLUTE_PATH=$(pwd) -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
+            docker run -d --name q-feed-server --env-file ./.env -e ABSOLUTE_PATH=$(pwd) -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/q-feed:latest
