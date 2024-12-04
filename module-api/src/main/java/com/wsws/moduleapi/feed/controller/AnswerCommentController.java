@@ -6,6 +6,11 @@ import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateSer
 import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateServiceResponse;
 import com.wsws.moduleapplication.feed.service.AnswerCommentService;
 import com.wsws.modulesecurity.security.UserPrincipal;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/feed/comments")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth") // Security 적용
 public class AnswerCommentController {
 
     private final AnswerCommentService answerCommentService;
@@ -30,6 +36,12 @@ public class AnswerCommentController {
     /**
      * 답변 댓글 추가
      */
+    @Operation(summary = "답변 댓글 추가", description = "답변에 대한 댓글을 작성합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "답변 댓글 작성 성공"),
+            @ApiResponse(responseCode = "400", description = "Answer Id가 누락됨", content = @Content),
+            @ApiResponse(responseCode = "404", description = "부모 댓글이 요청으로 들어왔는데 없는 경우", content = @Content)
+    })
     @PostMapping
     public ResponseEntity<AnswerCommentPostApiResponse> postAnswerComment(
 //            @AuthenticationPrincipal UserPrincipal userPrincipal,
