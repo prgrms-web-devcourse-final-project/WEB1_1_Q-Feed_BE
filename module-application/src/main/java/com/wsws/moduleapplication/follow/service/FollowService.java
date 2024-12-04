@@ -12,7 +12,7 @@ import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.UserId;
 import com.wsws.moduleexternalapi.fcm.dto.fcmRequestDto;
-import com.wsws.moduleexternalapi.fcm.service.FcmServiceImpl;
+import com.wsws.moduleexternalapi.fcm.service.FcmService;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class FollowService {
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
     private final NotificationRepository notificationRepository;
-    private final FcmServiceImpl fcmService;
+    private final FcmService fcmService;
 
     // 팔로우
     @Transactional
