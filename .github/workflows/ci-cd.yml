@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - feature/QFEED-105-CI-CD
+      - develop
 
 jobs:
   deploy:
