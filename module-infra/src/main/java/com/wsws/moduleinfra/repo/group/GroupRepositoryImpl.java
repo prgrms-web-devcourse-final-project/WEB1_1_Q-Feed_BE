@@ -25,8 +25,8 @@ public class GroupRepositoryImpl implements GroupRepository {
     @Override
     public Group save(Group group) {
         GroupEntity groupEntity = GroupMapper.toEntity(group);
-        jpaGroupRepository.save(groupEntity);
-        return group;
+        GroupEntity saveGroupEntity = jpaGroupRepository.save(groupEntity);
+        return GroupMapper.toDomain(saveGroupEntity);
     }
 
     @Override

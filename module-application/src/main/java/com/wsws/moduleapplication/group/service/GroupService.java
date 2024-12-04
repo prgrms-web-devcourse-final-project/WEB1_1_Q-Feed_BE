@@ -9,6 +9,7 @@ import com.wsws.moduleapplication.user.exception.ProfileImageProcessingException
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.group.Group;
+import com.wsws.moduledomain.group.GroupMember;
 import com.wsws.moduledomain.group.dto.GroupDetailDto;
 import com.wsws.moduledomain.group.dto.GroupDto;
 import com.wsws.moduledomain.group.dto.GroupMemberDto;
@@ -48,7 +49,9 @@ public class GroupService {
                 groupImageUrl,
                 req.isOpen()
         );
-        groupRepository.save(group);
+        Group saveGroup = groupRepository.save(group);
+        GroupMember groupMember = GroupMember.create(null,adminId, saveGroup.getGroupId().getValue());
+        groupMemberRepository.save(groupMember);
     }
 
     @Transactional
