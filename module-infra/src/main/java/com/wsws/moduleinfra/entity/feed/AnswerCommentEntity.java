@@ -2,11 +2,13 @@ package com.wsws.moduleinfra.entity.feed;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "answer_comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class AnswerCommentEntity {
     @Id @GeneratedValue
     private Long id;
