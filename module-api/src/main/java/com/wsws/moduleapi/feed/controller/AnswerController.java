@@ -1,5 +1,6 @@
 package com.wsws.moduleapi.feed.controller;
 
+import com.wsws.moduleapi.feed.dto.MessageResponse;
 import com.wsws.moduleapi.feed.dto.answer.AnswerPatchApiRequest;
 import com.wsws.moduleapi.feed.dto.answer.AnswerPostApiRequest;
 import com.wsws.moduleapi.feed.dto.answer.AnswerPostApiResponse;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,25 +54,25 @@ public class AnswerController {
      * 답변 수정
      */
     @PatchMapping("/{answer-id}")
-    public ResponseEntity<String> patchAnswer(@PathVariable("answer-id") Long answerId, @RequestBody AnswerPatchApiRequest answerPatchApiRequest) {
+    public ResponseEntity<MessageResponse> patchAnswer(@PathVariable("answer-id") Long answerId, @RequestBody AnswerPatchApiRequest answerPatchApiRequest) {
         answerService.editAnswer(answerPatchApiRequest.toServiceDto(answerId));
-        return ResponseEntity.ok("답변이 수정되었습니다.");
+        return ResponseEntity.ok(new MessageResponse("답변이 수정되었습니다."));
     }
 
     /**
      * 답변 삭제
      */
     @DeleteMapping("/{answer-id}")
-    public ResponseEntity<String> deleteAnswer(@PathVariable("answer-id") Long answerId) {
+    public ResponseEntity<MessageResponse> deleteAnswer(@PathVariable("answer-id") Long answerId) {
         answerService.deleteAnswer(answerId);
-        return ResponseEntity.ok("답변이 삭제되었습니다.");
+        return ResponseEntity.ok(new MessageResponse("답변이 삭제되었습니다."));
     }
 
     /**
      * 답변 좋아요 추가
      */
     @PostMapping("/{answer-id}/likes")
-    public ResponseEntity<String> likeToAnswer(
+    public ResponseEntity<MessageResponse> likeToAnswer(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("answer-id") Long answerId) {
 
@@ -77,7 +80,8 @@ public class AnswerController {
 //        String userId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
         LikeServiceRequest request = new LikeServiceRequest(userId, "ANSWER", answerId); // 도메인으로의 의존성을 피하기 위해 문자열로 넘겨줌
         answerService.addLikeToAnswer(request); // 해당 글에 좋아요 1 카운트
-        return ResponseEntity.ok("좋아요가 추가되었습니다.");
+
+        return ResponseEntity.ok(new MessageResponse("좋아요가 추가되었습니다."));
     }
 
 
@@ -85,7 +89,7 @@ public class AnswerController {
      * 답변 좋아요 취소
      */
     @PostMapping("/{answer-id}/cancel-likes")
-    public ResponseEntity<String> cancelLikeToAnswer(
+    public ResponseEntity<MessageResponse> cancelLikeToAnswer(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("answer-id") Long answerId) {
 
@@ -95,6 +99,7 @@ public class AnswerController {
         LikeServiceRequest request = new LikeServiceRequest(userId, "ANSWER", answerId); // 도메인으로의 의존성을 피하기 위해 문자열로 넘겨줌
 
         answerService.cancelLikeToAnswer(request); // 해당 글에 좋아요 1 마이너스
-        return ResponseEntity.ok("좋아요가 취소되었습니다.");
+
+        return ResponseEntity.ok(new MessageResponse("좋아요가 취소되었습니다."));
     }
 }
