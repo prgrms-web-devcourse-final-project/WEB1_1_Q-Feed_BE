@@ -1,6 +1,8 @@
 package com.wsws.moduleapi.group.controller;
 
 import com.wsws.moduleapi.group.dto.GroupPostApiResponse;
+import com.wsws.moduleapplication.group.dto.CreateGroupPostRequest;
+import com.wsws.moduleapplication.group.dto.GroupPostServiceResponse;
 import com.wsws.moduleapplication.group.service.GroupPostService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

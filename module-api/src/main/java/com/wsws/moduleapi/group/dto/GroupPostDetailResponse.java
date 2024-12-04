@@ -8,10 +8,10 @@ public record GroupPostDetailResponse(
         String authorProfile,
         String content,
         LocalDateTime createAt,
-        boolean hasReaction,
-        boolean isFollowing,
-        Integer reactionCount,
-        Integer commentCount,
-        List<CommentDetailResponse> comments
+//        boolean hasReaction,
+        boolean isFollowing
+//        Integer reactionCount,
+//        Integer commentCount,
+//        List<CommentDetailResponse> comments
 ) {
 }
