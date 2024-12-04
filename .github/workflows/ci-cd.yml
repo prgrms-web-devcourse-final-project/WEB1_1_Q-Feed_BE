@@ -104,6 +104,6 @@ jobs:
             echo "MAIL_EMAIL=${{ secrets.MAIL_EMAIL }}" >> .env
             echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
             
-            docker pull ${{ steps.login-ecr.outputs.registry }}/q-feed:latest
+            docker pull ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
             
-            docker run -d --name q-feed-server --env-file ./.env -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/q-feed:latest
+            docker run -d --name q-feed-server --env-file ./.env -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
