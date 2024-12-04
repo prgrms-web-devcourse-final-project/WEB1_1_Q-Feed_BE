@@ -11,13 +11,13 @@ import java.util.Optional;
 
 public interface JpaGroupMemberRepository extends JpaRepository<GroupMemberEntity, Long> {
 
-    Optional<GroupMemberEntity> findByUserIdAndGroupMemberId(String userId, Long groupId);
+    Optional<GroupMemberEntity> findByUserIdAndGroup_GroupId(String userId, Long groupId);
 
-    boolean existsByUserIdAndGroupMemberId(String userId, Long groupId);
+    boolean existsByUserIdAndGroup_GroupId(String userId, Long groupId);
 
     @Query(
             "SELECT new com.wsws.moduledomain.group.dto.GroupMemberDetailDto(" +
-            "gm.groupMemberId,u.nickname,u.profileImage,u.description) " +
+            "gm.groupMemberId,u.id,u.nickname,u.profileImage,u.description) " +
             "FROM GroupMemberEntity gm " +
             "JOIN UserEntity u ON gm.userId = u.id " +
             "WHERE gm.group.groupId = :groupId")
