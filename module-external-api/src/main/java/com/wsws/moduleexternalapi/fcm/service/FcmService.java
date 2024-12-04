@@ -4,9 +4,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
-import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.UserRepository;
-import com.wsws.moduledomain.user.vo.UserId;
 import com.wsws.moduleexternalapi.fcm.dto.FCMRequestDto;
 import com.wsws.moduleinfra.FcmRedis;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +32,7 @@ public class FcmService {
             sendMessage(message);
         }
     }
-    
+
     // 메시지 생성
     public Message makeMessage(FCMRequestDto fcmRequestDto, String token){ // 나중에 토큰도 추가
         Notification.Builder notificationBuilder =
