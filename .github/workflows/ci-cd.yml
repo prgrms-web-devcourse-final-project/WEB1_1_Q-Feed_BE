@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - hotfix/QFEED-111-fix-server-error
 
 jobs:
   deploy:
@@ -73,8 +74,8 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true
           script: |
-            docker stop q-feed-server || true
-            docker rm q-feed-server || true
+            docker stop q-feed || true
+            docker rm q-feed || true
             
             if [ "$(docker ps -q -f name=q-feed-server)" ]; then
               docker stop q-feed-server
