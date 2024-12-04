@@ -76,14 +76,4 @@ public class RedisConfig {
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         return redisTemplate;
     }
-//    @Bean(name = "fcmCustomRedisTemplate")
-//    public RedisTemplate<String, String> redisTemplateForMyLogic(RedisConnectionFactory connectionFactory) {
-//        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
-//        redisTemplate.setConnectionFactory(connectionFactory);
-//        redisTemplate.setKeySerializer(new StringRedisSerializer());
-//        redisTemplate.setValueSerializer(new StringRedisSerializer());
-//        return redisTemplate;
-//    }
-
-
 }
