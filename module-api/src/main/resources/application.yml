@@ -3,9 +3,9 @@ spring:
     name: module-api
   config:
     import:
-      - file:${ABSOLUTE_PATH}/module-infra/src/main/resources/application-infra.yml
-      - file:${ABSOLUTE_PATH}/module-security/src/main/resources/application-security.yml
-      - file:${ABSOLUTE_PATH}/module-external-api/src/main/resources/application-external-api.yml
+      - classpath:application-infra.yml
+      - classpath:application-security.yml
+      - classpath:application-external-api.yml
 
 
 springdoc:
