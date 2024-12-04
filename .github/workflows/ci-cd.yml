@@ -1,0 +1,111 @@
+name: Deploy To EC2
+
+on:
+  push:
+    branches:
+      - main
+      - feature/QFEED-105-CI-CD
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Github Repository 파일 불러오기
+        uses: actions/checkout@v4
+
+      - name: Set dynamic environment variable
+        run: echo "ABSOLUTE_PATH=$(pwd)" >> $GITHUB_ENV
+
+      - name: Use environment variable in subsequent steps
+        env:
+          ABSOLUTE_PATH: ${{ env.ABSOLUTE_PATH }}
+        run: |
+          echo "Current absolute path: $ABSOLUTE_PATH"
+
+      - name: Deploy application
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          REDIS_VECTOR_URI: ${{ secrets.REDIS_VECTOR_URI }}
+          REDIS_VECTOR_PORT: ${{ secrets.REDIS_VECTOR_PORT }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_DRIVER: ${{ secrets.DATABASE_DRIVER }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          ABSOLUTE_PATH: ${{ env.ABSOLUTE_PATH }}
+        run: |
+          echo "Current absolute path: $ABSOLUTE_PATH"
+
+
+      - name: JDK 17버전 설치
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Gradle packages 캐싱
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+
+      - name: 테스트 및 빌드하기
+        run: ./gradlew clean build
+
+      - name: AWS Resource에 접근할 수 있게 AWS credentials 설정
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ap-northeast-2
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: ECR에 로그인하기
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Docker 이미지 생성
+        run: docker build -t q-feed-server .
+
+      - name: Docker 이미지에 Tag 붙이기
+        run: docker tag qfeed-server ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
+
+      - name: ECR에 Docker 이미지 Push하기
+        run: docker push 533267244952.dkr.ecr.ap-northeast-2.amazonaws.com/qfeed-server:latest
+
+      - name: SSH로 EC2에 접속하기
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script_stop: true
+          script: |
+            # Stop and remove the existing container
+            docker stop q-feed-server || true
+            docker rm q-feed-server || true
+            
+            # Remove existing .env file if it exists
+            if [ -f .env ]; then
+              rm .env
+            fi
+            
+            # Write the .env file in the current directory
+            echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env
+            echo "REDIS_VECTOR_URI=${{ secrets.REDIS_VECTOR_URI }}" >> .env
+            echo "REDIS_VECTOR_PORT=${{ secrets.REDIS_VECTOR_PORT }}" >> .env
+            echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+            echo "DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}" >> .env
+            echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
+            echo "DATABASE_DRIVER=${{ secrets.DATABASE_DRIVER }}" >> .env
+            echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
+            echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            
+            # Pull the latest Docker image
+            docker pull ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
+            
+            # Run the Docker container with the .env file
+            docker run -d --name q-feed-server --env-file ./.env -e ABSOLUTE_PATH=$(pwd) -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
