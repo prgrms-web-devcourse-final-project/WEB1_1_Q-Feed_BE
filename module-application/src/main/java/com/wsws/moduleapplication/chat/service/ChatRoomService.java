@@ -11,6 +11,7 @@ import com.wsws.moduledomain.chat.repo.ChatMessageRepository;
 import com.wsws.moduledomain.chat.repo.ChatRoomRepository;
 import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.UserRepository;
+import com.wsws.moduledomain.user.vo.Nickname;
 import com.wsws.moduledomain.user.vo.UserId;
 
 import com.wsws.moduleinfra.repo.chat.ChatRoomRepositoryImpl;
@@ -38,13 +39,19 @@ public class ChatRoomService {
         if (chatRoomRepository.findChatRoomBetweenUsers(req.userId(), req.userId2()).isPresent()) {
             throw AlreadyChatRoomException.EXCEPTION;
         }
+        //사용자 존재 확인
+        getUserById(req.userId());
+        getUserById(req.userId2());
         ChatRoom chatRoom = ChatRoom.create(null,req.userId(), req.userId2(), LocalDateTime.now());
         chatRoomRepository.save(chatRoom);
     }
 
     @Transactional
-    public void deleteChatRoom(Long chatRoomId) {
+    public void deleteChatRoom(Long chatRoomId,String userId) {
         ChatRoom chatRoom = getChatRoomById(chatRoomId);
+        // 채팅방 소유자 확인
+        checkOwnership(chatRoom, userId);
+
         chatRoomRepository.delete(chatRoom);
     }
 
@@ -58,7 +65,7 @@ public class ChatRoomService {
             User otherUser = getOtherUser(chatRoom, userId);
 
             // 마지막 메시지 가져오기
-            ChatMessage lastMessage = getLastMessage(chatRoom);
+            ChatMessage lastMessage = getLastMessage(chatRoom.getId());
 
             // 읽지 않은 메시지 개수 가져오기
             long unreadCount = chatMessageRepository.countUnreadMessages(chatRoom.getId(), otherUser.getId().getValue());
@@ -70,13 +77,14 @@ public class ChatRoomService {
     }
 
     //채팅방 찾기
-    public ChatRoomServiceResponse getChatRoomWithOtherUser(String userId, String userId2) {
-        ChatRoom chatRoom = findChatRoomBetweenUsers(userId, userId2);
+    public ChatRoomServiceResponse getChatRoomWithOtherUser(String userId, String nickname) {
+        // nickname으로 userId 찾기
+        User otherUser = getUserByNickname(nickname);
 
-        User otherUser = getUserById(userId2);
+        ChatRoom chatRoom = findChatRoomBetweenUsers(userId, otherUser.getId().getValue());
 
         // 마지막 메시지 가져오기
-        ChatMessage lastMessage = getLastMessage(chatRoom);
+        ChatMessage lastMessage = getLastMessage(chatRoom.getId());
 
         // 읽지 않은 메시지 개수 가져오기
         long unreadCount = chatMessageRepository.countUnreadMessages(chatRoom.getId(), otherUser.getId().getValue());
@@ -101,6 +109,11 @@ public class ChatRoomService {
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
     }
 
+    public User getUserByNickname(String nickname) {
+        return userRepository.findByNickname(Nickname.from(nickname))
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
+    }
+
     // 다른 사용자의 정보 가져오기
     private User getOtherUser(ChatRoom chatRoom, String userId) {
         String otherUserId = chatRoom.getUserId().equals(userId) ? chatRoom.getUserId2() : chatRoom.getUserId();
@@ -108,9 +121,18 @@ public class ChatRoomService {
     }
 
     // 마지막 메시지 가져오기
-    private ChatMessage getLastMessage(ChatRoom chatRoom) {
-        return chatMessageRepository.findTopByChatRoomOrderByCreatedAtDesc(chatRoom)
+    private ChatMessage getLastMessage(Long chatRoomId) {
+        return chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoomId)
                 .orElse(null);  // 메시지가 없으면 null 반환
+    }
+
+    // 채팅방의 소유자가 현재 사용자인지 확인
+    private void checkOwnership(ChatRoom chatRoom, String userId) {
+        if (!chatRoom.getUserId().equals(userId)) {
+            // 소유자가 아니면 예외를 발생시켜 권한이 없음을 알림
+            throw new IllegalStateException("채팅방을 삭제할 권한이 없습니다.");
+
+        }
     }
 
 

@@ -1,11 +1,15 @@
 package com.wsws.moduleinfra.config;
 
+import com.wsws.moduleinfra.redis.RedisSubscriber;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -41,6 +45,29 @@ public class RedisConfig {
         return redisTemplate;
     }
 
+    // Redis 메시지 리스너 설정
+    @Bean
+    public RedisMessageListenerContainer redisMessageListenerContainer(
+            RedisConnectionFactory redisConnectionFactory,
+            MessageListenerAdapter messageListenerAdapter) {
+        RedisMessageListenerContainer redisMessageListenerContainer = new RedisMessageListenerContainer();
+        redisMessageListenerContainer.setConnectionFactory(redisConnectionFactory);
+        return redisMessageListenerContainer;
+    }
+
+    // 메시지를 처리하는 리스너 어댑터 설정
+    @Bean
+    public MessageListenerAdapter messageListenerAdapter(RedisSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "onMessage");
+    }
+
+//    // 구독할 Redis 채널 설정
+//    @Bean
+//    public ChannelTopic channelTopic() {
+//        return new ChannelTopic("/sub/chat/*");
+//    }
+
+    // Object 타입 데이터를 처리하는 RedisTemplate 설정
     @Bean(name = "customRedisTemplateObject")
     public RedisTemplate<String, Object> redisTemplateObject(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
