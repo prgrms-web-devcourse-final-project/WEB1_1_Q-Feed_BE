@@ -4,7 +4,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
-import com.wsws.moduleexternalapi.fcm.dto.FCMRequestDto;
+import com.wsws.moduleexternalapi.fcm.dto.fcmRequestDto;
 import com.wsws.moduleinfra.FcmRedis;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ public class FcmServiceImpl {
       private final FcmRedis fcmRedis;
 
     @Async("taskExecutor")
-    public void fcmSend(String recipient, FCMRequestDto fcmRequestDto) {
+    public void fcmSend(String recipient, fcmRequestDto fcmRequestDto) {
 
         String fcmRedisKey = getFcmRedisKey(recipient); // Redis 키 생성.
         String fcmToken = fcmRedis.getFcmToken(fcmRedisKey); // Redis에서 FCM 토큰 조회.
@@ -32,7 +32,7 @@ public class FcmServiceImpl {
     }
 
     // 메시지 생성
-    public Message makeMessage(FCMRequestDto fcmRequestDto, String token){ // 나중에 토큰도 추가
+    public Message makeMessage(fcmRequestDto fcmRequestDto, String token){ // 나중에 토큰도 추가
         Notification.Builder notificationBuilder =
                 Notification.builder()
                         .setTitle(fcmRequestDto.title())
@@ -53,8 +53,8 @@ public class FcmServiceImpl {
         }
     }
 
-    public FCMRequestDto makeFcmDTO(String title, String body) {
-        return new FCMRequestDto(title, body);
+    public fcmRequestDto makeFcmDTO(String title, String body) {
+        return new fcmRequestDto(title, body);
     }
 
     private String getFcmRedisKey(String userId) {
