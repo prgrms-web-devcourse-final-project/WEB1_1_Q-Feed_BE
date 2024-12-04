@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface ChatRoomRepository {
     void save(ChatRoom chatRoom);
 
-    void delete(ChatRoom chatRoom);
+    void deleteById(Long chatRoomId);
 
     Optional<ChatRoom> findChatRoomBetweenUsers(String userId, String userId2);
 
