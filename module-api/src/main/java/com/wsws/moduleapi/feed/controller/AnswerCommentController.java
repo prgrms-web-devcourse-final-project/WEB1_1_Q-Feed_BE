@@ -40,7 +40,7 @@ public class AnswerCommentController {
      */
     @Operation(summary = "답변 댓글 추가", description = "답변에 대한 댓글을 작성합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "답변 댓글 작성 성공"),
+            @ApiResponse(responseCode = "201", description = "답변 댓글 작성 성공"),
             @ApiResponse(responseCode = "400", description = "Answer Id가 누락됨", content = @Content),
             @ApiResponse(responseCode = "404", description = "부모 댓글이 요청으로 들어왔는데 없는 경우", content = @Content)
     })
@@ -52,7 +52,7 @@ public class AnswerCommentController {
 //        String userId = "user_id1";
         AnswerCommentCreateServiceResponse answerComment =
                 answerCommentService.createAnswerComment(request.toServiceDto(userId));
-        return ResponseEntity.ok(new AnswerCommentPostApiResponse(answerComment.answerCommentId(), "댓글이 추가되었습니다."));
+        return ResponseEntity.status(201).body(new AnswerCommentPostApiResponse(answerComment.answerCommentId(), "댓글이 추가되었습니다."));
     }
 
 
@@ -65,7 +65,7 @@ public class AnswerCommentController {
             @ApiResponse(responseCode = "404", description = "해당 답변 댓글이 없는 경우", content = @Content)
     })
     @PutMapping("/{comment-id}")
-    public ResponseEntity<MessageResponse> putAnswerComment(@PathVariable("comment-id")Long commentId, AnswerCommentPutApiRequest request) {
+    public ResponseEntity<MessageResponse> putAnswerComment(@PathVariable("comment-id")Long commentId, @RequestBody AnswerCommentPutApiRequest request) {
         answerCommentService.editAnswerComment(request.toServiceDto(commentId));
         return ResponseEntity.ok(new MessageResponse("댓글이 수정되었습니다."));
     }
