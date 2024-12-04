@@ -9,30 +9,23 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      REDIS_VECTOR_URI: ${{ secrets.REDIS_VECTOR_URI }}
+      REDIS_VECTOR_PORT: ${{ secrets.REDIS_VECTOR_PORT }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+      DATABASE_DRIVER: ${{ secrets.DATABASE_DRIVER }}
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
     steps:
       - name: Github Repository 파일 불러오기
         uses: actions/checkout@v4
 
       - name: 동적으로 절대 경로 환경변수 추가
         run: echo "ABSOLUTE_PATH=$(pwd)" >> $GITHUB_ENV
-
-
-      - name: 환경변수 주입
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          REDIS_VECTOR_URI: ${{ secrets.REDIS_VECTOR_URI }}
-          REDIS_VECTOR_PORT: ${{ secrets.REDIS_VECTOR_PORT }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
-          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-          DATABASE_DRIVER: ${{ secrets.DATABASE_DRIVER }}
-          REDIS_HOST: ${{ secrets.REDIS_HOST }}
-          REDIS_PORT: ${{ secrets.REDIS_PORT }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          ABSOLUTE_PATH: ${{ env.ABSOLUTE_PATH }}
-        run: |
-          echo "ABSOLUTE_PATH: $ABSOLUTE_PATH"
-        
 
       - name: 환경변수 디버깅 (Github Actions에서 확인)
         run: env
