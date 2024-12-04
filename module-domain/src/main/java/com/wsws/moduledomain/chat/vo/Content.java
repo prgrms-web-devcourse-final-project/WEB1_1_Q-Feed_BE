@@ -21,7 +21,7 @@ public class Content {
     private String value;
 
     public Content(final String content) {
-        if (!PATTERN.matcher(content).matches()) {
+        if (PATTERN.matcher(content).matches()) {
             throw InvalidChatFormatException.EXCEPTION;
         }
         this.value = content;
