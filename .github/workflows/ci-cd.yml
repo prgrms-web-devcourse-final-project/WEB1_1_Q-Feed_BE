@@ -56,18 +56,21 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: 태그 생성
+        id: create-tag
+        run: echo "IMAGE_TAG=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
       - name: Docker 이미지 생성 및 태그
         run: |
-          IMAGE_TAG=$(date +%Y%m%d%H%M%S)
           docker build -t q-feed-server:${IMAGE_TAG} .
           docker tag q-feed-server:${IMAGE_TAG} ${{ steps.login-ecr.outputs.registry }}/q-feed-server:${IMAGE_TAG}
           docker tag q-feed-server:${IMAGE_TAG} ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
 
       - name: ECR에 Docker 이미지 Push하기
         run: |
-          IMAGE_TAG=$(date +%Y%m%d%H%M%S)
           docker push ${{ steps.login-ecr.outputs.registry }}/q-feed-server:${IMAGE_TAG}
           docker push ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
+
       
 
       - name: SSH로 EC2에 접속하기
