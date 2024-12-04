@@ -69,7 +69,7 @@ jobs:
         run: docker tag qfeed-server ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
 
       - name: ECR에 Docker 이미지 Push하기
-        run: docker push 533267244952.dkr.ecr.ap-northeast-2.amazonaws.com/qfeed-server:latest
+        run: docker push 533267244952.dkr.ecr.ap-northeast-2.amazonaws.com/q-feed-server:latest
 
       - name: SSH로 EC2에 접속하기
         uses: appleboy/ssh-action@v1.0.3
