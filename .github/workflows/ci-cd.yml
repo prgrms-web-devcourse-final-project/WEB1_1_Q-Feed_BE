@@ -46,6 +46,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
+      - name: ABSOLUTE_PATH 맞는지 테스트하기
+        run: cat /home/runner/work/WEB1_1_Q-Feed_BE/WEB1_1_Q-Feed_BE/module-infra/src/main/resources/application-infra.yml
+
       - name: 테스트 및 빌드하기
         run: ./gradlew clean build --stacktrace --scan
 
