@@ -59,6 +59,11 @@ public class AnswerCommentController {
     /**
      * 답변 댓글 수정
      */
+    @Operation(summary = "답변 댓글 수정", description = "답변에 대한 댓글을 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "답변 댓글 수정 성공"),
+            @ApiResponse(responseCode = "404", description = "해당 답변 댓글이 없는 경우", content = @Content)
+    })
     @PutMapping("/{comment-id}")
     public ResponseEntity<MessageResponse> putAnswerComment(@PathVariable("comment-id")Long commentId, AnswerCommentPutApiRequest request) {
         answerCommentService.editAnswerComment(request.toServiceDto(commentId));
