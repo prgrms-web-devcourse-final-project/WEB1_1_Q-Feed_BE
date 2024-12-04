@@ -6,7 +6,7 @@ spring:
     driver-class-name: ${DATABASE_DRIVER}
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   mail:
     host: smtp.gmail.com          # SMTP 서버 호스트
     port: 587                     # SMTP 포트 (TLS)

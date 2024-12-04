@@ -20,7 +20,7 @@ public class ChatMessageMapper {
     }
 
     // Domain -> Entity 변환
-    public static ChatMessageEntity toEntity(ChatMessage chatMessage,ChatRoomEntity chatRoomEntity) {
+    public static ChatMessageEntity toEntity(ChatMessage chatMessage) {
 
         return ChatMessageEntity.create(
                 chatMessage.getContent(),
@@ -29,7 +29,7 @@ public class ChatMessageMapper {
                 chatMessage.isRead(),
                 chatMessage.getCreatedAt(),
                 chatMessage.getUserId(),
-                chatRoomEntity
+                null
         );
     }
 }

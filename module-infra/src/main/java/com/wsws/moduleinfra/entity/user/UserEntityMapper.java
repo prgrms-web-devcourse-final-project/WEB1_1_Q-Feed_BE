@@ -5,12 +5,13 @@ import com.wsws.moduledomain.user.User;
 public class UserEntityMapper {
 
     public static User toDomain(UserEntity entity) {
-        return User.create(
+        return User.transform(
+                entity.getId(),
                 entity.getEmail(),
-                null, // 원본 비밀번호는 알 수 없음
+                entity.getPassword(),
                 entity.getNickname(),
                 entity.getProfileImage(),
-                null // PasswordEncoder는 외부에서 주입받아야 함
+                entity.getDescription()
         );
     }
 

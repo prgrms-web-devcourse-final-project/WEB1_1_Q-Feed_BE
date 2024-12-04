@@ -41,25 +41,6 @@ public class ChatMessageEntity {
     @JoinColumn(name = "chatRoom_id", nullable = false)
     private ChatRoomEntity chatRoom;
 
-//    public ChatMessageEntity(String content, MessageType type, String url, Boolean isRead, LocalDateTime createdAt, String userId, ChatRoomEntity chatRoom) {
-//        this.content = content;
-//        this.type = type;
-//        this.url = url;
-//        this.isRead = isRead;
-//        this.createdAt = createdAt;
-//        this.userId = userId;
-//        this.chatRoom = chatRoom;
-//    }
-//
-//    public static ChatMessageEntity createChatMessage(String content, MessageType type, String url, String userId, ChatRoomEntity chatRoom) {
-//        if (type != MessageType.TEXT && (url == null || url.isEmpty())) {
-//            throw UrlRequiredException.EXCEPTION;
-//        }
-//       // Content chatContent = Content.from(content);
-//
-//        return new ChatMessageEntity(content, type, url, false, LocalDateTime.now(), userId, chatRoom);
-//    }
-
     public static ChatMessageEntity create( Content content, MessageType type, String url, Boolean isRead, LocalDateTime createdAt, UserId userId, ChatRoomEntity chatRoomEntity ){
 
         ChatMessageEntity chatMessageEntity = new ChatMessageEntity();
@@ -73,10 +54,10 @@ public class ChatMessageEntity {
         return chatMessageEntity;
     }
 
-    public void markMessageAsRead() {
-        if (!this.isRead) {
-            this.isRead = true;
-        }
+    // 연관 관계 편의 메서드 (ChatRoom 설정 시 호출)
+    public void setChatRoom(ChatRoomEntity chatRoom) {
+        this.chatRoom = chatRoom;
     }
+
 }
 

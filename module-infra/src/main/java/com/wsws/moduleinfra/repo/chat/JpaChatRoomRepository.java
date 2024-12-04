@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface JpaChatRoomRepository extends JpaRepository<ChatRoomEntity, Long> {
 
-    @Query("SELECT cr FROM ChatRoomEntity cr WHERE cr.userId = :userId AND cr.userId2 = :userId2")
+    @Query("SELECT cr FROM ChatRoomEntity cr WHERE (cr.userId = :userId AND cr.userId2 = :userId2) OR (cr.userId = :userId2 AND cr.userId2 = :userId)")
     Optional<ChatRoomEntity> findChatRoomBetweenUsers(@Param("userId") String userId, @Param("userId2") String userId2);
 
     @Query("SELECT cr FROM ChatRoomEntity cr WHERE cr.userId = :userId OR cr.userId2 = :userId")

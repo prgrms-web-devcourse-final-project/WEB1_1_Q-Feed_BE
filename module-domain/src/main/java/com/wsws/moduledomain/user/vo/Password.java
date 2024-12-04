@@ -24,8 +24,10 @@ public class Password {
     }
 
     public static Password encode(final String rawPassword, final PasswordEncoder passwordEncoder) {
-        validate(rawPassword);
-        return new Password(passwordEncoder.encode(rawPassword));
+        validate(rawPassword); // null 체크 및 검증
+        String encodedPassword = passwordEncoder.encode(rawPassword);
+
+        return new Password(encodedPassword);
     }
 
     public void matches(final String rawPassword, final PasswordEncoder passwordEncoder) {

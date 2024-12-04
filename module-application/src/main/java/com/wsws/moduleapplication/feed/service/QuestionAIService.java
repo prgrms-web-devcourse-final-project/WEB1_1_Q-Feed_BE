@@ -49,7 +49,7 @@ public class QuestionAIService {
                             questionTempStore.get(categoryName),
                             QuestionStatus.CREATED,
                             LocalDateTime.now(),
-                            category.getId()
+                            category.getId().getValue()
                     )
             );
         }

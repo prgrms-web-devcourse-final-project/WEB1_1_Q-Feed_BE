@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface QuestionJpaRepository extends JpaRepository<QuestionEntity, Long>{
+public interface JpaQuestionRepository extends JpaRepository<QuestionEntity, Long>{
     List<QuestionEntity> findByQuestionStatus(QuestionStatus questionStatus);
 
     @Query("select qe from QuestionEntity qe where qe.categoryId = :categoryId and qe.questionStatus = 'ACTIVATED'")

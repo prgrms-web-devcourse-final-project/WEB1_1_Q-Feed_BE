@@ -1,4 +1,4 @@
-package com.wsws.moduleapplication.feed.dto;
+package com.wsws.moduleapplication.feed.dto.question;
 
 import com.wsws.moduledomain.feed.question.Question;
 

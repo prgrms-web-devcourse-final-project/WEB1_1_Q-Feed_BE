@@ -1,6 +1,6 @@
 package com.wsws.moduleapi.feed.dto.answer;
 
-import com.wsws.moduleapplication.feed.dto.AnswerCreateServiceRequest;
+import com.wsws.moduleapplication.feed.dto.answer.AnswerCreateServiceRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 public record AnswerPostApiRequest(

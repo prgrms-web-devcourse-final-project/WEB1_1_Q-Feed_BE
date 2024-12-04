@@ -1,8 +1,8 @@
 package com.wsws.moduleapi.feed.controller;
 
 import com.wsws.moduleapi.feed.dto.question.QuestionApiResponse;
+import com.wsws.moduleapplication.feed.dto.question.QuestionFindServiceResponse;
 import com.wsws.moduleapplication.feed.service.QuestionService;
-import com.wsws.moduleapplication.feed.dto.QuestionFindServiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

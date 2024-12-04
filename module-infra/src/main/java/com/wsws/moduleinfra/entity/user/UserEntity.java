@@ -8,6 +8,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Getter
@@ -42,6 +45,8 @@ public class UserEntity {
     private UserRole userRole;
 
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserInterestEntity> userInterests = new ArrayList<>();
 
     // 엔티티 생성자 (도메인 데이터를 엔티티로 변환)
     public UserEntity(String id, String email, String password, String nickname,
@@ -55,5 +60,12 @@ public class UserEntity {
         this.description = description;
         this.userRole = userRole != null ? userRole : UserRole.ROLE_USER;
     }
+
+    public void updateInterests(List<UserInterestEntity> newInterests) {
+        this.userInterests.clear();
+        this.userInterests.addAll(newInterests);
+        newInterests.forEach(interest -> interest.setUser(this)); // 양방향 관계 설정
+    }
+
 
 }
