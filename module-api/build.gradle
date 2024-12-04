@@ -15,3 +15,13 @@ dependencies {
 
 
 }
+
+
+tasks.register('copyExternalConfigs', Copy) {
+	from(project(':module-infra').file('src/main/resources/application-infra.yml'))
+	from(project(':module-security').file('src/main/resources/application-security.yml'))
+	from(project(':module-external-api').file('src/main/resources/application-external-api.yml'))
+	into(layout.buildDirectory.dir("resources/main"))
+}
+
+processResources.dependsOn(copyExternalConfigs)

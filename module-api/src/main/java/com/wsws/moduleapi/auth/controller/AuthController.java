@@ -72,6 +72,12 @@ public class AuthController {
     @PostMapping("/nickname/check")
     public ResponseEntity<Boolean> checkNickname(@RequestBody String nickname) {
         boolean exists = authService.checkNickname(nickname);
-        return ResponseEntity.ok(exists);
+        return ResponseEntity.ok(!exists);
+    }
+    @Operation(summary = "이메일 중복 체크", description = "사용 가능한 이메일인지 확인합니다.")
+    @PostMapping("/email/check")
+    public ResponseEntity<Boolean> checkEmail(@RequestBody String email) {
+        boolean exists = authService.checkEmail(email);
+        return ResponseEntity.ok(!exists);
     }
 }
