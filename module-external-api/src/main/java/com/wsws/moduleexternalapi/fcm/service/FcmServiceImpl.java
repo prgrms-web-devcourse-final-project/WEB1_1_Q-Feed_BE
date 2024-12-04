@@ -4,7 +4,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
-import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduleexternalapi.fcm.dto.FCMRequestDto;
 import com.wsws.moduleinfra.FcmRedis;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +15,12 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class FcmService {
+public class FcmServiceImpl {
 
       private final FcmRedis fcmRedis;
-      private final UserRepository userRepository;
 
     @Async("taskExecutor")
-    public void FcmSend(String recipient, FCMRequestDto fcmRequestDto) {
+    public void fcmSend(String recipient, FCMRequestDto fcmRequestDto) {
 
         String fcmRedisKey = getFcmRedisKey(recipient); // Redis 키 생성.
         String fcmToken = fcmRedis.getFcmToken(fcmRedisKey); // Redis에서 FCM 토큰 조회.
@@ -55,6 +53,10 @@ public class FcmService {
         }
     }
 
+    public FCMRequestDto makeFcmDTO(String title, String body) {
+        return new FCMRequestDto(title, body);
+    }
+
     private String getFcmRedisKey(String userId) {
         return "FCM_TOKEN_" + userId; // Redis 키 형식 정의
     }
@@ -65,7 +67,7 @@ public class FcmService {
     }
 
     // 팔로우 알림 본문 생성
-    public String makeFollowBody(String sender, String reportMember, String type) {
+    public String makeFollowBody(String sender, String type) {
         return sender
                 + " 님이 회원님을" + type + " 했습니다." ;
     }

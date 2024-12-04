@@ -21,13 +21,13 @@ public class NotificationEntity {
 
     private String type;
 
-//    private String content;
+    private String content;
 
     private String sender;
 
     private String recipient;
 
-//    private LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     private boolean isRead;
 
