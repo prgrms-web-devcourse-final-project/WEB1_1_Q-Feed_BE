@@ -45,7 +45,7 @@ public class AnswerController {
      * 답변 생성
      */
     @PostMapping
-    @Operation(summary = "답변 생성", description = "인증된 사용자의 답변을 생성합니다.")
+    @Operation(summary = "답변 생성", description = "현재 인증된 사용자로 답변을 생성합니다.")
     public ResponseEntity<AnswerPostApiResponse> postAnswers(
             @RequestBody AnswerPostApiRequest answerPostApiRequest
             ,@AuthenticationPrincipal UserPrincipal userPrincipal
@@ -84,7 +84,7 @@ public class AnswerController {
      * 답변 좋아요 추가
      */
     @PostMapping("/{answer-id}/likes")
-    @Operation(summary = "답변 좋아요 추가", description = "인증된 사용자의 답변 좋아요를 추가합니다.")
+    @Operation(summary = "답변 좋아요 추가", description = "현재 인증된 사용자로 답변 좋아요를 추가합니다.")
     public ResponseEntity<MessageResponse> likeToAnswer(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "좋아요를 추가할 답변 ID") @PathVariable("answer-id") Long answerId) {
@@ -102,7 +102,7 @@ public class AnswerController {
      * 답변 좋아요 취소
      */
     @PostMapping("/{answer-id}/cancel-likes")
-    @Operation(summary = "답변 좋아요 취소", description = "인증된 사용자의 답변 좋아요를 취소합니다.")
+    @Operation(summary = "답변 좋아요 취소", description = "현재 인증된 사용자로 답변 좋아요를 취소합니다.")
     public ResponseEntity<MessageResponse> cancelLikeToAnswer(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "좋아요를 취소할 답변 ID") @PathVariable("answer-id") Long answerId) {
