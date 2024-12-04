@@ -1,5 +1,6 @@
 package com.wsws.moduleapi.chat.controller;
 
+import com.wsws.moduleapi.chat.dto.ChatResponse;
 import com.wsws.moduleapi.chat.dto.ChatRoomApiResponse;
 import com.wsws.moduleapplication.chat.dto.ChatRoomServiceRequest;
 import com.wsws.moduleapplication.chat.dto.ChatRoomServiceResponse;
@@ -30,20 +31,20 @@ public class ChatRoomController {
     //채팅방 생성
     @PostMapping
     @Operation(summary = "채팅방 생성", description = "특정 사용자와의 채팅방을 생성합니다.")
-    public ResponseEntity<String> createChatRoom(@RequestBody ChatRoomServiceRequest req) {
+    public ResponseEntity<ChatResponse> createChatRoom(@RequestBody ChatRoomServiceRequest req) {
         chatRoomService.createChatRoom(req);
-        return ResponseEntity.status(201).body("채팅방 생성이 완료되었습니다.");
+        return ResponseEntity.status(201).body(new ChatResponse("채팅방 생성이 완료되었습니다."));
     }
 
     //채팅방 삭제
     @DeleteMapping("/{chatRoomId}")
     @Operation(summary = "채팅방 삭제", description = "특정 사용자와의 채팅방을 삭제합니다.")
-    public ResponseEntity<String> deleteChatRoom(
+    public ResponseEntity<ChatResponse> deleteChatRoom(
             @Parameter(description = "삭제할 채팅방 ID") @PathVariable Long chatRoomId,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         String userId = userPrincipal.getId();
         chatRoomService.deleteChatRoom(chatRoomId,userId);
-        return ResponseEntity.status(200).body("채팅방이 삭제되었습니다.");
+        return ResponseEntity.status(200).body(new ChatResponse("채팅방이 삭제되었습니다."));
     }
 
     //채팅방 목록 조회

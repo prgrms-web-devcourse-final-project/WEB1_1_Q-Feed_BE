@@ -1,6 +1,8 @@
 package com.wsws.moduleapi.chat.controller;
 
+import com.wsws.moduleapi.auth.dto.AuthResponse;
 import com.wsws.moduleapi.chat.dto.ChatMessageApiResponse;
+import com.wsws.moduleapi.chat.dto.ChatResponse;
 import com.wsws.moduleapplication.chat.dto.ChatMessageRequest;
 import com.wsws.moduleapplication.chat.dto.ChatMessageServiceResponse;
 import com.wsws.moduleapplication.chat.service.ChatMessageService;
@@ -29,14 +31,14 @@ public class ChatMessageController {
 
     @PostMapping("/{chatRoomId}/send")
     @Operation(summary = "메세지 전송", description = "특정 채팅방에 메세지를 전송합니다.")
-    public ResponseEntity<String> sendMessage(
+    public ResponseEntity<ChatResponse> sendMessage(
             @Parameter(description = "메세지를 전송할 채팅방 ID") @PathVariable Long chatRoomId,
             @RequestBody ChatMessageRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         // 메시지 전송 처리
         String userId = userPrincipal.getId();
         chatMessageService.sendMessage(chatRoomId,userId,request);
-        return ResponseEntity.status(201).body("메세지가 전송되었습니다.");
+        return ResponseEntity.status(201).body(new ChatResponse("메세지가 전송되었습니다."));
     }
 
     // 채팅방의 메세지 조회 API
@@ -58,9 +60,9 @@ public class ChatMessageController {
 
     @PutMapping("/{chatRoomId}/markasread")
     @Operation(summary = "메세지 읽음처리", description = "특정 채팅방의 읽지않은 모들 메세지를 읽음처리합니다.")
-    public ResponseEntity<String> markMessageAsRead(@Parameter(description = "메세지를 읽음처리할 채팅방 ID") @PathVariable Long chatRoomId) {
+    public ResponseEntity<ChatResponse> markMessageAsRead(@Parameter(description = "메세지를 읽음처리할 채팅방 ID") @PathVariable Long chatRoomId) {
         chatMessageService.markAllMessagesAsRead(chatRoomId);
-        return ResponseEntity.status(200).body("메세지가 읽음 처리 되었습니다.");
+        return ResponseEntity.status(200).body(new ChatResponse("메세지가 읽음 처리 되었습니다."));
     }
 
 
