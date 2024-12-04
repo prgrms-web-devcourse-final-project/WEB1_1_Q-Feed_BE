@@ -24,7 +24,7 @@ public interface JpaChatMessageRepository extends JpaRepository<ChatMessageEntit
             "FROM ChatMessageEntity m " +
             "JOIN UserEntity u ON m.userId = u.id " +
             "WHERE m.chatRoom.id = :chatRoomId " +
-            "ORDER BY m.createdAt DESC")
+            "ORDER BY m.createdAt")
     Page<ChatMessageDTO> findMessagesWithUserDetails(@Param("chatRoomId") Long chatRoomId, Pageable pageable);
 
     @Modifying
@@ -36,5 +36,5 @@ public interface JpaChatMessageRepository extends JpaRepository<ChatMessageEntit
     Optional<ChatMessageEntity> findTopByChatRoomIdOrderByCreatedAtDesc(Long chatRoomId);
 
     @Query("SELECT COUNT(cm) FROM ChatMessageEntity cm WHERE cm.chatRoom.id = :chatRoomId AND cm.isRead = false AND cm.userId = :userId")
-    long countUnreadMessages(@org.springframework.data.repository.query.Param("chatRoomId") Long chatRoomId, @org.springframework.data.repository.query.Param("userId") String userId);
+    long countUnreadMessages(@Param("chatRoomId") Long chatRoomId, @Param("userId") String userId);
 }
