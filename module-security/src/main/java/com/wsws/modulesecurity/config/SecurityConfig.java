@@ -50,6 +50,10 @@ public class SecurityConfig {
                         .requestMatchers("/users/**").permitAll()
 //                        .requestMatchers("/feed/**").permitAll() // 테스트용 임시 추가
                         .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 전용 엔드포인트(나중에 구현)
+                        .requestMatchers(
+                                "/swagger-ui/**", // Swagger UI 경로
+                                "/v3/api-docs/**" // OpenAPI 명세 경로
+                        ).permitAll() // Swagger 관련 경로 허용
                         .anyRequest().authenticated() // 인증 필요
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가

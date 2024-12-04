@@ -8,3 +8,9 @@ spring:
       - file:${ABSOLUTE_PATH}/module-external-api/src/main/resources/application-external-api.yml
 
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+    enabled: true
+
+
