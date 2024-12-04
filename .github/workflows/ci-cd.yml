@@ -20,6 +20,9 @@ jobs:
       REDIS_HOST: ${{ secrets.REDIS_HOST }}
       REDIS_PORT: ${{ secrets.REDIS_PORT }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      MAIL_EMAIL: ${{ secrets.MAIL_EMAIL }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+
     steps:
       - name: Github Repository 파일 불러오기
         uses: actions/checkout@v4
@@ -94,6 +97,8 @@ jobs:
             echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
             echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            echo "MAIL_EMAIL=${{ secrets.MAIL_EMAIL }}" >> .env
+            echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
 
             # Debug: Check .env file content
             echo "Contents of .env file:"
