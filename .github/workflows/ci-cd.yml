@@ -55,14 +55,22 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Docker 이미지 생성
-        run: docker build -t q-feed-server .
+      - name: 태그 생성
+        id: create-tag
+        run: echo "IMAGE_TAG=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
-      - name: Docker 이미지에 Tag 붙이기
-        run: docker tag q-feed-server ${{ steps.login-ecr.outputs.registry }}/q-feed:latest
+      - name: Docker 이미지 생성 및 태그
+        run: |
+          docker build -t q-feed-server:${IMAGE_TAG} .
+          docker tag q-feed-server:${IMAGE_TAG} ${{ steps.login-ecr.outputs.registry }}/q-feed-server:${IMAGE_TAG}
+          docker tag q-feed-server:${IMAGE_TAG} ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
 
       - name: ECR에 Docker 이미지 Push하기
-        run: docker push ${{ steps.login-ecr.outputs.registry }}/q-feed:latest
+        run: |
+          docker push ${{ steps.login-ecr.outputs.registry }}/q-feed-server:${IMAGE_TAG}
+          docker push ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
+
+      
 
       - name: SSH로 EC2에 접속하기
         uses: appleboy/ssh-action@v1.0.3
@@ -72,15 +80,14 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true
           script: |
-            docker stop q-feed || true
-            docker rm q-feed || true
             
             if [ "$(docker ps -q -f name=q-feed-server)" ]; then
               docker stop q-feed-server
               docker rm q-feed-server
             fi
-  
-  
+          
+            docker image prune -af            
+            
             echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env
             echo "REDIS_VECTOR_URI=${{ secrets.REDIS_VECTOR_URI }}" >> .env
             echo "REDIS_VECTOR_PORT=${{ secrets.REDIS_VECTOR_PORT }}" >> .env
@@ -96,6 +103,6 @@ jobs:
             echo "MAIL_EMAIL=${{ secrets.MAIL_EMAIL }}" >> .env
             echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
             
-            docker pull ${{ steps.login-ecr.outputs.registry }}/q-feed:latest
+            docker pull ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
             
-            docker run -d --name q-feed-server --env-file ./.env -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/q-feed:latest
+            docker run -d --name q-feed-server --env-file ./.env -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
