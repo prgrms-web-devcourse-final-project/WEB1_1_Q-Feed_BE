@@ -47,7 +47,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
 
       - name: 테스트 및 빌드하기
-        run: ./gradlew clean build --stacktrace --debug
+        run: ./gradlew clean build --stacktrace --info
 
       - name: AWS Resource에 접근할 수 있게 AWS credentials 설정
         uses: aws-actions/configure-aws-credentials@v4
