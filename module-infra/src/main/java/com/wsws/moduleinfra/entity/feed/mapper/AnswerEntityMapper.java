@@ -6,10 +6,10 @@ import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 public class AnswerEntityMapper {
     public static Answer toDomain(AnswerEntity answerEntity) {
 
-        Long questionId = null;
-        if (answerEntity.getQuestionEntity() != null) {
-            questionId = answerEntity.getQuestionEntity().getId();
-        }
+        Long questionId = answerEntity.getQuestionEntity() != null
+                ? answerEntity.getQuestionEntity().getId()
+                : null;
+
 
         return Answer.create(
                 answerEntity.getId(),
