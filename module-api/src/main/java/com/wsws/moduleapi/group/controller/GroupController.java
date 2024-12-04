@@ -1,7 +1,9 @@
 package com.wsws.moduleapi.group.controller;
 
+import com.wsws.moduleapi.auth.dto.AuthResponse;
 import com.wsws.moduleapi.group.dto.GroupApiResponse;
 import com.wsws.moduleapi.group.dto.GroupDetailApiResponse;
+import com.wsws.moduleapi.group.dto.GroupResponse;
 import com.wsws.moduleapplication.group.dto.CreateGroupRequest;
 import com.wsws.moduleapplication.group.dto.GroupDetailServiceResponse;
 import com.wsws.moduleapplication.group.dto.GroupServiceResponse;
@@ -30,44 +32,44 @@ public class GroupController {
     //그룹 생성
     @PostMapping("/create")
     @Operation(summary = "그룹 생성", description = "원하는 카테고리에 그룹을 생성합니다.")
-    public ResponseEntity<String> createGroup(@RequestBody CreateGroupRequest req, @AuthenticationPrincipal UserPrincipal userPrincipal) {
+    public ResponseEntity<GroupResponse> createGroup(@RequestBody CreateGroupRequest req, @AuthenticationPrincipal UserPrincipal userPrincipal) {
         String adminId = userPrincipal.getId();
         groupService.createGroup(req, adminId);
-        return ResponseEntity.status(201).body("그룹 생성이 완료되었습니다.");
+        return ResponseEntity.status(201).body(new GroupResponse("그룹 생성이 완료되었습니다."));
     }
 
     //그룹 수정
     @PatchMapping("/{groupId}")
     @Operation(summary = "그룹 수정", description = "그룹의 정보를 수정합니다.")
-    public ResponseEntity<String> updateGroup(
+    public ResponseEntity<GroupResponse> updateGroup(
             @Parameter(description = "수정할 그룹 ID") @PathVariable Long groupId,
             @RequestBody UpdateGroupRequest req,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         String adminId = userPrincipal.getId();
         groupService.updateGroup(groupId, req, adminId);
-        return ResponseEntity.status(200).body("그룹 수정이 완료되었습니다.");
+        return ResponseEntity.status(200).body(new GroupResponse("그룹 수정이 완료되었습니다."));
     }
 
     //그룹 삭제
     @DeleteMapping("/{groupId}")
     @Operation(summary = "그룹 삭제", description = "그룹을 삭제합니다.")
-    public ResponseEntity<String> deleteGroup(
+    public ResponseEntity<GroupResponse> deleteGroup(
             @Parameter(description = "삭제할 그룹 ID")@PathVariable Long groupId,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         String adminId = userPrincipal.getId();
         groupService.deleteGroup(groupId, adminId);
-        return ResponseEntity.status(200).body("그룹 삭제가 완료되었습니다.");
+        return ResponseEntity.status(200).body(new GroupResponse("그룹 삭제가 완료되었습니다."));
     }
 
     //그룹 상태 변경
     @PatchMapping("/{groupId}/status")
     @Operation(summary = "그룹 상태 변경", description = "그룹의 상태를 모집완료/모집중으로 변경합니다.")
-    public ResponseEntity<String> ChangeGroupStatus(
+    public ResponseEntity<GroupResponse> ChangeGroupStatus(
             @Parameter(description = "상태를 변경할 그룹 ID") @PathVariable Long groupId,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         String adminId = userPrincipal.getId();
         groupService.ChangeGroupStatus(groupId, adminId);
-        return ResponseEntity.status(200).body("그룹 상태가 변경되었습니다.");
+        return ResponseEntity.status(200).body(new GroupResponse("그룹 상태가 변경되었습니다."));
     }
 
     //카테고리로 그룹 목록 조회
