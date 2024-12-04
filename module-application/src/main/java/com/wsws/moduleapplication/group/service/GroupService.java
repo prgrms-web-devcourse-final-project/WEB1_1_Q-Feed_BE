@@ -110,6 +110,10 @@ public class GroupService {
 
         List<GroupMemberDto> groupMembers = groupRepository.findMembersByGroupId(groupId);
 
+        //여기서 userid와 goupid의 그룹 멤버가 있는지 boolean으로 가져와서
+        //boolean isMember = groupMemberRepository.existsByUserIdAndGroupId(userId, groupId);이런식
+        //있으면 List<GroupMemberDto> memberResponses = isMember ? groupMembers : Collections.emptyList(); 이런식?
+
         return new GroupDetailServiceResponse(groupDetailDto, groupMembers);
     }
 
