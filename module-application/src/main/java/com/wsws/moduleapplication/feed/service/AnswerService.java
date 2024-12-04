@@ -64,7 +64,7 @@ public class AnswerService {
 
         Answer saved = null; // 저장
         try {
-            saved = answerRepository.save(answer, question);
+            saved = answerRepository.save(answer);
         } catch (RuntimeException e) {
             throw QuestionNotFoundException.EXCEPTION;
         }
