@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,10 +43,9 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepository {
     }
 
     @Override
-    public List<ChatMessageDTO> findMessagesWithUserDetails(Long chatRoomId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ChatMessageDTO> resultPage = jpaChatMessageRepository.findMessagesWithUserDetails(chatRoomId, pageable);
-        return resultPage.getContent();
+    public List<ChatMessageDTO> findMessagesWithUserDetails(Long chatRoomId, LocalDateTime cursor, int size) {
+        Pageable pageable = PageRequest.of(0, size);
+        return jpaChatMessageRepository.findMessagesWithUserDetails(chatRoomId, cursor,  pageable);
     }
 
     @Override
