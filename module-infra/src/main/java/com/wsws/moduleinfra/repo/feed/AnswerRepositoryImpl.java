@@ -49,9 +49,10 @@ public class AnswerRepositoryImpl implements AnswerRepository {
      */
     @Override
     public void edit(Answer answer) {
-        AnswerEntity answerEntity = jpaAnswerRepository.findById(answer.getAnswerId().getValue())
-                .orElseThrow(RuntimeException::new);
-        answerEntity.editQuestionEntity(answer.getContent(), answer.getVisibility(), answer.getUrl(), answer.getReactionCount());
+        Optional<AnswerEntity> answerEntity = jpaAnswerRepository.findById(answer.getAnswerId().getValue());
+        answerEntity
+                .ifPresent(entity -> entity.editQuestionEntity(answer.getContent(), answer.getVisibility(), answer.getUrl(), answer.getReactionCount()));
+
     }
 
     /**

@@ -127,11 +127,7 @@ public class AnswerService {
         answer.cancelReactionCount();// Answer의 reactionCount 1 감소
 
         // 수정 반영
-        try {
-            answerRepository.edit(answer);
-        } catch (RuntimeException e) {
-            throw AnswerNotFoundException.EXCEPTION;
-        }
+        answerRepository.edit(answer);
     }
 
 

@@ -57,7 +57,7 @@ public class AnswerController {
     })
     public ResponseEntity<AnswerPostApiResponse> postAnswers(
             @Valid @RequestBody AnswerPostApiRequest answerPostApiRequest
-            ,@AuthenticationPrincipal UserPrincipal userPrincipal
+            , @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         String userId = userPrincipal.getId(); // 사용자 아이디를 가져온다.
 //        String userId = "user_id1";

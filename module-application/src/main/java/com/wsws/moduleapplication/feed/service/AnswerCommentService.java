@@ -8,17 +8,14 @@ import com.wsws.moduleapplication.feed.exception.ParentAnswerCommentNotFoundExce
 import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.user.exception.NotLikedException;
-import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.comment.repo.AnswerCommentRepository;
 import com.wsws.moduledomain.user.Like;
-import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.LikeRepository;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.TargetType;
-import com.wsws.moduledomain.user.vo.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,7 +81,7 @@ public class AnswerCommentService {
      * TODO: 추후 레디스로 분산락 적용해 동시성 해결
      * TODO: 중복코드 발생. 추후 패서드 패턴 적용
      */
-    public void addLikeToAnswer(LikeServiceRequest request) {
+    public void addLikeToAnswerComment(LikeServiceRequest request) {
 
         createLike(request); // like 객체 생성
 
@@ -97,12 +94,24 @@ public class AnswerCommentService {
     }
 
 
-
-    /* private 메서드 */
-
     /**
      * 답변 댓글 좋아요 취소
      */
+    public void cancelLikeToCommentAnswer(LikeServiceRequest request) {
+        AnswerComment answerComment = answerCommentRepository.findById(request.targetId())
+                .orElseThrow(() -> AnswerCommentNotFoundException.EXCEPTION);
+
+        deleteLike(request); // 기존 좋아요 객체 삭제
+
+        answerComment.cancelReactionCount(); // AnswerComment의 reactionCount 1감소
+
+        answerCommentRepository.edit(answerComment); // 수정 반영
+
+    }
+
+
+
+    /* private 메서드 */
 
     private Answer getRelatedAnswer(Long answerId) {
         return answerRepository.findById(answerId)

@@ -36,4 +36,8 @@ public class AnswerComment {
     public void addReactionCount() {
         this.reactionCount++;
     }
+
+    public void cancelReactionCount() {
+        this.reactionCount--;
+    }
 }
