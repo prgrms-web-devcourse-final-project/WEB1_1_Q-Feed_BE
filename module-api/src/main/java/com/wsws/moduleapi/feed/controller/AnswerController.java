@@ -10,6 +10,9 @@ import com.wsws.moduleapplication.feed.service.AnswerService;
 import com.wsws.modulesecurity.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +50,11 @@ public class AnswerController {
      */
     @PostMapping
     @Operation(summary = "답변 생성", description = "현재 인증된 사용자로 답변을 생성합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "답변 작성 성공"),
+            @ApiResponse(responseCode = "400", description = "필수입력값 - questionId, visibility가 누락됐을 때 "),
+            @ApiResponse(responseCode = "404", description = "없는 질문일 때", content = @Content)
+    })
     public ResponseEntity<AnswerPostApiResponse> postAnswers(
             @Valid @RequestBody AnswerPostApiRequest answerPostApiRequest
             ,@AuthenticationPrincipal UserPrincipal userPrincipal
@@ -63,6 +71,11 @@ public class AnswerController {
      */
     @PatchMapping("/{answer-id}")
     @Operation(summary = "답변 수정", description = "답변을 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "답변 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "필수 입력값 - visibility가 누락됐을 때"),
+            @ApiResponse(responseCode = "404", description = "없는 답변 일 때", content = @Content)
+    })
     public ResponseEntity<MessageResponse> patchAnswer(
             @Parameter(description = "수정할 답변 ID") @PathVariable("answer-id") Long answerId,
             @Valid @RequestBody AnswerPatchApiRequest answerPatchApiRequest) {
@@ -86,6 +99,11 @@ public class AnswerController {
      */
     @PostMapping("/{answer-id}/likes")
     @Operation(summary = "답변 좋아요 추가", description = "현재 인증된 사용자로 답변 좋아요를 추가합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "답변 좋아요 성공"),
+            @ApiResponse(responseCode = "400", description = "이미 좋아요를 누른적이 있는 글일 때", content = @Content),
+            @ApiResponse(responseCode = "404", description = "없는 답변일 때", content = @Content)
+    })
     public ResponseEntity<MessageResponse> likeToAnswer(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "좋아요를 추가할 답변 ID") @PathVariable("answer-id") Long answerId) {
@@ -98,12 +116,16 @@ public class AnswerController {
         return ResponseEntity.ok(new MessageResponse("좋아요가 추가되었습니다."));
     }
 
-
     /**
      * 답변 좋아요 취소
      */
     @PostMapping("/{answer-id}/cancel-likes")
     @Operation(summary = "답변 좋아요 취소", description = "현재 인증된 사용자로 답변 좋아요를 취소합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "답변 좋아요 취소 성공"),
+            @ApiResponse(responseCode = "400", description = "좋아요를 누른적이 없는 글일 때", content = @Content),
+            @ApiResponse(responseCode = "404", description = "없는 답변일 때", content = @Content)
+    })
     public ResponseEntity<MessageResponse> cancelLikeToAnswer(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "좋아요를 취소할 답변 ID") @PathVariable("answer-id") Long answerId) {
@@ -117,4 +139,5 @@ public class AnswerController {
 
         return ResponseEntity.ok(new MessageResponse("좋아요가 취소되었습니다."));
     }
+
 }
