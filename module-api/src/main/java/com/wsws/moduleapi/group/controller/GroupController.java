@@ -89,12 +89,15 @@ public class GroupController {
     @GetMapping("/{groupId}/detail")
     @Operation(summary = "그룹 상세 조회", description = "해당 그룹을 상세 조회합니다.")
     public ResponseEntity<GroupDetailApiResponse> getGroupDetail(
-            @Parameter(description = "상세 조회할 그룹 ID") @PathVariable Long groupId) {
-        GroupDetailServiceResponse response = groupService.getGroupDetail(groupId);
+            @Parameter(description = "상세 조회할 그룹 ID") @PathVariable Long groupId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        String userId = userPrincipal.getId();
+        GroupDetailServiceResponse response = groupService.getGroupDetail(groupId,userId);
         //변환작업
         GroupDetailApiResponse apiResponse = new GroupDetailApiResponse(response);
         return ResponseEntity.ok(apiResponse);
     }
+
 
 
 }
