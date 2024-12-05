@@ -18,6 +18,7 @@ public class AnswerCommentEntityMapper {
                 answerCommentEntity.getContent(),
                 answerCommentEntity.getDepth(),
                 answerCommentEntity.getLikeCount(),
+                answerCommentEntity.getCreatedAt(),
                 answerId,
                 answerCommentEntity.getUserId(),
                 parentCommentId
@@ -29,6 +30,7 @@ public class AnswerCommentEntityMapper {
                 answerComment.getContent(),
                 answerComment.getDepth(),
                 answerComment.getLikeCount(),
+                answerComment.getCreatedAt(),
                 null,
                 answerComment.getUserId().getValue(),
                 null

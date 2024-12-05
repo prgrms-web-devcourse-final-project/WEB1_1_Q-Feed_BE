@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -19,6 +20,7 @@ public class AnswerCommentEntity {
     private String content;
     private int depth;
     private int likeCount;
+    private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "answer_id")
@@ -34,11 +36,12 @@ public class AnswerCommentEntity {
     @OneToMany(mappedBy = "parentCommentEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnswerCommentEntity> childrenCommentEntity;
 
-    public static AnswerCommentEntity create(String content, int depth, int reactionCount, AnswerEntity answerEntity, String userId, AnswerCommentEntity parentCommentEntity) {
+    public static AnswerCommentEntity create(String content, int depth, int likeCount, LocalDateTime createdAt, AnswerEntity answerEntity, String userId, AnswerCommentEntity parentCommentEntity) {
         AnswerCommentEntity answerCommentEntity = new AnswerCommentEntity();
         answerCommentEntity.content = content;
         answerCommentEntity.depth = depth;
-        answerCommentEntity.likeCount = reactionCount;
+        answerCommentEntity.likeCount = likeCount;
+        answerCommentEntity.createdAt = createdAt;
         answerCommentEntity.answerEntity = answerEntity;
         answerCommentEntity.userId = userId;
         answerCommentEntity.parentCommentEntity = parentCommentEntity;

@@ -3,6 +3,7 @@ package com.wsws.moduleinfra.entity.feed;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class AnswerEntity {
     Boolean visibility;
     String url;
     int likeCount;
+    LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
@@ -29,12 +31,13 @@ public class AnswerEntity {
     @Column(nullable = false)
     String userId;
 
-    public static AnswerEntity create(String content, Boolean visibility, String url, int reactionCount, QuestionEntity questionEntity, String userId) {
+    public static AnswerEntity create(String content, Boolean visibility, String url, int likeCount, LocalDateTime createdAt, QuestionEntity questionEntity, String userId) {
         AnswerEntity answerEntity = new AnswerEntity();
         answerEntity.content = content;
         answerEntity.visibility = visibility;
         answerEntity.url = url;
-        answerEntity.likeCount = reactionCount;
+        answerEntity.likeCount = likeCount;
+        answerEntity.createdAt = createdAt;
         answerEntity.questionEntity = questionEntity;
         answerEntity.userId = userId;
         return answerEntity;

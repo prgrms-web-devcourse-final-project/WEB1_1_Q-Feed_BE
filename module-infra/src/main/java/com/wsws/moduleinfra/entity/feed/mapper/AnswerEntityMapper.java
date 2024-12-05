@@ -17,6 +17,7 @@ public class AnswerEntityMapper {
                 answerEntity.getVisibility(),
                 answerEntity.getUrl(),
                 answerEntity.getLikeCount(),
+                answerEntity.getCreatedAt(),
                 questionId,
                 answerEntity.getUserId()
         );
@@ -28,6 +29,7 @@ public class AnswerEntityMapper {
                 answer.getVisibility(),
                 answer.getUrl(),
                 answer.getLikeCount(),
+                answer.getCreatedAt(),
                 null,
                 answer.getUserId().getValue()
         );
