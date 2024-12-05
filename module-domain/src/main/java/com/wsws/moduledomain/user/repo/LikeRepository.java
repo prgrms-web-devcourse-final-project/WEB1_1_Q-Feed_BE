@@ -8,7 +8,7 @@ public interface LikeRepository {
     /**
      * Like 저장
      */
-    Like save(Like like, User user);
+    Like save(Like like);
 
     /**
      * 특정 사용자가 특정 글에 좋아요를 눌렀는지

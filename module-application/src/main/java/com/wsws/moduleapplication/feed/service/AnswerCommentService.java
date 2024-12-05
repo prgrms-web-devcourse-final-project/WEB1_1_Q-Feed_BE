@@ -114,9 +114,6 @@ public class AnswerCommentService {
      */
     private void createLike(LikeServiceRequest request) {
 
-        User user = userRepository.findById(UserId.of(request.userId()))
-                .orElseThrow(() -> UserNotFoundException.EXCEPTION);// 연관 맺을 User 찾아오기
-
         if (isAlreadyLike(request.targetId(), request.userId(), TargetType.valueOf(request.targetType()))) // 좋아요를 누른적이 있다면 예외
             throw AlreadyLikedException.EXCEPTION;
 
@@ -127,7 +124,7 @@ public class AnswerCommentService {
                 request.targetId(),
                 request.userId()
         );
-        likeRepository.save(like, user);
+        likeRepository.save(like);
     }
 
     /**

@@ -18,8 +18,8 @@ public class LikeRepositoryImpl implements LikeRepository {
     private final JpaUserRepository jpaUserRepository;
 
     @Override
-    public Like save(Like like, User user) {
-        UserEntity userEntity = jpaUserRepository.findById(user.getId().getValue())
+    public Like save(Like like) {
+        UserEntity userEntity = jpaUserRepository.findById(like.getUserId().getValue())
                 .orElse(null);
 
         LikeEntity likeEntity = LikeEntityMapper.toEntity(like);
