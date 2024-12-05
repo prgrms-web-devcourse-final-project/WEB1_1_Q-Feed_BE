@@ -74,6 +74,10 @@ public class AnswerCommentController {
     /**
      * 답변 댓글 삭제
      */
+    @Operation(summary = "답변 댓글 삭제", description = "답변에 대한 댓글을 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "답변 댓글 삭제 성공")
+    })
     @DeleteMapping("/{comment-id}")
     public ResponseEntity<MessageResponse> deleteAnswerComment(@PathVariable("comment-id") Long commentId) {
         answerCommentService.deleteAnswerComment(commentId);
