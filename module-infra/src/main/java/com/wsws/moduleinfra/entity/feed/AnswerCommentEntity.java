@@ -22,6 +22,7 @@ public class AnswerCommentEntity {
     @JoinColumn(name = "answer_id")
     private AnswerEntity answerEntity;
 
+    @Column(nullable = false)
     private String userId;
 
     @ManyToOne(fetch = FetchType.LAZY)

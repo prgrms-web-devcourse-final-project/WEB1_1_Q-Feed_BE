@@ -20,6 +20,7 @@ public class AnswerEntity {
     @JoinColumn(name = "question_id", nullable = false)
     QuestionEntity questionEntity;
 
+    @Column(nullable = false)
     String userId;
 
     public static AnswerEntity create(String content, Boolean visibility, String url, int reactionCount, QuestionEntity questionEntity, String userId) {

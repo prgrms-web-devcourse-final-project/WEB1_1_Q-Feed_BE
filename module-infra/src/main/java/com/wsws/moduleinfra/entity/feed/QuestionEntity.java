@@ -21,6 +21,7 @@ public class QuestionEntity {
     private QuestionStatus questionStatus;
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
     private Long categoryId;
 
 
