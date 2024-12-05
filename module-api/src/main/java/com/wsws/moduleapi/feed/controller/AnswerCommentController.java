@@ -89,12 +89,18 @@ public class AnswerCommentController {
     /**
      * 답변 댓글 좋아요
      */
+    @Operation(summary = "답변 댓글 좋아요 추가", description = "답변 댓글에 좋아요를 추가합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "답변 댓글 좋아요 추가 성공"),
+            @ApiResponse(responseCode = "400", description = "이미 좋아요를 누른적이 있는 댓글일 때"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 댓글일 때")
+    })
     @PostMapping("/{comment-id}/likes")
     public ResponseEntity<MessageResponse> addLikeToAnswerComment(
-//            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("comment-id") Long commentId) {
-//        String userId = userPrincipal.getId();
-                String userId = "user_id1";
+        String userId = userPrincipal.getId();
+//                String userId = "user_id1";
         answerCommentService.addLikeToAnswer(new LikeServiceRequest(userId, "ANSWER_COMMENT", commentId));
 
         return ResponseEntity.ok(new MessageResponse("좋아요가 추가되었습니다."));
