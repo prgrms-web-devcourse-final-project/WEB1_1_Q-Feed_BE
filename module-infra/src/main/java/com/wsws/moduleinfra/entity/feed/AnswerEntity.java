@@ -3,6 +3,9 @@ package com.wsws.moduleinfra.entity.feed;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "Answer")
 @Getter
@@ -19,6 +22,9 @@ public class AnswerEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
     QuestionEntity questionEntity;
+
+    @OneToMany(mappedBy = "answerEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<AnswerCommentEntity> answerCommentEntities = new ArrayList<>();
 
     @Column(nullable = false)
     String userId;

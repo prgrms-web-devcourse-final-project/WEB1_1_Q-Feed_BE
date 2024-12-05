@@ -44,6 +44,7 @@ public class AnswerCommentEntity {
     /* 연관관계 편의 메서드 */
     public void setAnswerEntity(AnswerEntity answerEntity) {
         this.answerEntity = answerEntity;
+        answerEntity.getAnswerCommentEntities().add(this);
     }
 
     public void setParentCommentEntity(AnswerCommentEntity parentCommentEntity) {
