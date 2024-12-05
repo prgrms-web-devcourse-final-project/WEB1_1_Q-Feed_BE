@@ -7,6 +7,7 @@ import com.wsws.moduleapi.feed.dto.answer_comment.AnswerCommentPutApiRequest;
 import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateServiceRequest;
 import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateServiceResponse;
 import com.wsws.moduleapplication.feed.service.AnswerCommentService;
+import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
 import com.wsws.modulesecurity.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -43,7 +44,7 @@ public class AnswerCommentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "답변 댓글 작성 성공"),
             @ApiResponse(responseCode = "400", description = "Answer Id가 누락됨", content = @Content),
-            @ApiResponse(responseCode = "404", description = "부모 댓글이 요청으로 들어왔는데 없는 경우", content = @Content)
+            @ApiResponse(responseCode = "404", description = "부모 댓글이 요청으로 들어왔는데 해당 댓글이 없는 경우", content = @Content)
     })
     @PostMapping
     public ResponseEntity<AnswerCommentPostApiResponse> postAnswerComment(
@@ -66,7 +67,7 @@ public class AnswerCommentController {
             @ApiResponse(responseCode = "404", description = "해당 답변 댓글이 없는 경우", content = @Content)
     })
     @PutMapping("/{comment-id}")
-    public ResponseEntity<MessageResponse> putAnswerComment(@PathVariable("comment-id")Long commentId, @RequestBody AnswerCommentPutApiRequest request) {
+    public ResponseEntity<MessageResponse> putAnswerComment(@PathVariable("comment-id") Long commentId, @RequestBody AnswerCommentPutApiRequest request) {
         answerCommentService.editAnswerComment(request.toServiceDto(commentId));
         return ResponseEntity.ok(new MessageResponse("댓글이 수정되었습니다."));
     }
@@ -89,8 +90,14 @@ public class AnswerCommentController {
      * 답변 댓글 좋아요
      */
     @PostMapping("/{comment-id}/likes")
-    public ResponseEntity<?> addLikeToAnswerComment() {
-        return null;
+    public ResponseEntity<MessageResponse> addLikeToAnswerComment(
+//            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("comment-id") Long commentId) {
+//        String userId = userPrincipal.getId();
+                String userId = "user_id1";
+        answerCommentService.addLikeToAnswer(new LikeServiceRequest(userId, "ANSWER_COMMENT", commentId));
+
+        return ResponseEntity.ok(new MessageResponse("좋아요가 추가되었습니다."));
     }
 
 

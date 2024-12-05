@@ -162,7 +162,7 @@ public class AnswerService {
         User user = userRepository.findById(UserId.of(request.userId()))
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);// 연관 맺을 User 찾아오기
 
-        if (isAlreadyLike(request.targetId(), request.userId())) // 좋아요를 누른적이 있다면 예외
+        if (isAlreadyLike(request.targetId(), request.userId(), TargetType.valueOf(request.targetType()))) // 좋아요를 누른적이 있다면 예외
             throw AlreadyLikedException.EXCEPTION;
 
 
@@ -172,18 +172,14 @@ public class AnswerService {
                 request.targetId(),
                 request.userId()
         );
-        try {
-            likeRepository.save(like, user);
-        } catch (RuntimeException e) { // 연관관계 맺는 과정 중 예외처리
-            throw UserNotFoundException.EXCEPTION;
-        }
+        likeRepository.save(like, user);
     }
 
     /**
      * Like 삭제
      */
     private void deleteLike(LikeServiceRequest request) {
-        if (!isAlreadyLike(request.targetId(), request.userId())) // 좋아요를 누른적이 없다면 예외
+        if (!isAlreadyLike(request.targetId(), request.userId(), TargetType.valueOf(request.targetType()))) // 좋아요를 누른적이 없다면 예외
             throw NotLikedException.EXCEPTION;
 
         likeRepository.deleteByTargetIdAndUserId(request.targetId(), request.userId()); // 해당 좋아요 정보 삭제
@@ -193,7 +189,7 @@ public class AnswerService {
     /**
      * 같은 글에 좋아요를 누른적이 있는지 확인
      */
-    private boolean isAlreadyLike(Long targetId, String userId) {
-        return likeRepository.existsByTargetIdAndUserId(targetId, userId);
+    private boolean isAlreadyLike(Long targetId, String userId, TargetType targetType) {
+        return likeRepository.existsByTargetIdAndUserIdAndTargetType(targetId, userId, targetType);
     }
 }

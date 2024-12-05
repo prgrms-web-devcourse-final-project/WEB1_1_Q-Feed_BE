@@ -32,4 +32,8 @@ public class AnswerComment {
     public void editAnswerComment(String content) {
         this.content = content;
     }
+
+    public void addReactionCount() {
+        this.reactionCount++;
+    }
 }

@@ -3,6 +3,7 @@ package com.wsws.moduleinfra.repo.user;
 import com.wsws.moduledomain.user.Like;
 import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.LikeRepository;
+import com.wsws.moduledomain.user.vo.TargetType;
 import com.wsws.moduleinfra.entity.user.LikeEntity;
 import com.wsws.moduleinfra.entity.user.LikeEntityMapper;
 import com.wsws.moduleinfra.entity.user.UserEntity;
@@ -19,7 +20,7 @@ public class LikeRepositoryImpl implements LikeRepository {
     @Override
     public Like save(Like like, User user) {
         UserEntity userEntity = jpaUserRepository.findById(user.getId().getValue())
-                .orElseThrow(RuntimeException::new);
+                .orElse(null);
 
         LikeEntity likeEntity = LikeEntityMapper.toEntity(like);
         likeEntity.setUserEntity(userEntity);
@@ -28,8 +29,8 @@ public class LikeRepositoryImpl implements LikeRepository {
     }
 
     @Override
-    public boolean existsByTargetIdAndUserId(Long targetId, String userId) {
-        return jpaLikeUserRepository.existsByTargetIdAndUserId(targetId, userId);
+    public boolean existsByTargetIdAndUserIdAndTargetType(Long targetId, String userId, TargetType targetType) {
+        return jpaLikeUserRepository.existsByTargetIdAndUserIdAndTargetType(targetId, userId, targetType);
     }
 
     @Override

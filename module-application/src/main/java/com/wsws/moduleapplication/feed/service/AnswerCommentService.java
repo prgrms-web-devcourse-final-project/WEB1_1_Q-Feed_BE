@@ -4,10 +4,21 @@ import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateSer
 import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateServiceResponse;
 import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentEditServiceRequest;
 import com.wsws.moduleapplication.feed.exception.AnswerCommentNotFoundException;
+import com.wsws.moduleapplication.feed.exception.ParentAnswerCommentNotFoundException;
+import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
+import com.wsws.moduleapplication.user.exception.AlreadyLikedException;
+import com.wsws.moduleapplication.user.exception.NotLikedException;
+import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.comment.repo.AnswerCommentRepository;
+import com.wsws.moduledomain.user.Like;
+import com.wsws.moduledomain.user.User;
+import com.wsws.moduledomain.user.repo.LikeRepository;
+import com.wsws.moduledomain.user.repo.UserRepository;
+import com.wsws.moduledomain.user.vo.TargetType;
+import com.wsws.moduledomain.user.vo.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +30,8 @@ public class AnswerCommentService {
 
     private final AnswerCommentRepository answerCommentRepository;
     private final AnswerRepository answerRepository;
+    private final UserRepository userRepository;
+    private final LikeRepository likeRepository;
 
     /**
      * 답변 댓글 추가
@@ -29,7 +42,7 @@ public class AnswerCommentService {
         AnswerComment parentAnswerComment = null;
         if(parentCommentId != null) {
             parentAnswerComment = answerCommentRepository.findById(parentCommentId)
-                    .orElseThrow(() -> AnswerCommentNotFoundException.EXCEPTION); // 부모 댓글 불러오기
+                    .orElseThrow(() -> ParentAnswerCommentNotFoundException.EXCEPTION); // 부모 댓글 불러오기
             depth = parentAnswerComment.getDepth() + 1;// 부모 댓글의 depth + 1
         }
         AnswerComment answerComment = AnswerComment.create(
@@ -66,10 +79,72 @@ public class AnswerCommentService {
         answerCommentRepository.deleteById(answerCommentId);
     }
 
+    /**
+     * 답변 댓글 좋아요 추가
+     * TODO: 추후 레디스로 분산락 적용해 동시성 해결
+     * TODO: 중복코드 발생. 추후 패서드 패턴 적용
+     */
+    public void addLikeToAnswer(LikeServiceRequest request) {
+
+        createLike(request); // like 객체 생성
+
+        AnswerComment answerComment = answerCommentRepository.findById(request.targetId())
+                .orElseThrow(() -> AnswerCommentNotFoundException.EXCEPTION);
+
+        answerComment.addReactionCount(); // 좋아요 1 추가
+
+        answerCommentRepository.edit(answerComment); // 수정사항 반영
+    }
+
+
+
+    /* private 메서드 */
+
+    /**
+     * 답변 댓글 좋아요 취소
+     */
 
     private Answer getRelatedAnswer(Long answerId) {
         return answerRepository.findById(answerId)
                 .orElseThrow(() -> AnswerCommentNotFoundException.EXCEPTION);
     }
 
+    /**
+     * Like 저장 생성 및 저장
+     */
+    private void createLike(LikeServiceRequest request) {
+
+        User user = userRepository.findById(UserId.of(request.userId()))
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION);// 연관 맺을 User 찾아오기
+
+        if (isAlreadyLike(request.targetId(), request.userId(), TargetType.valueOf(request.targetType()))) // 좋아요를 누른적이 있다면 예외
+            throw AlreadyLikedException.EXCEPTION;
+
+
+        Like like = Like.create(
+                null,
+                TargetType.valueOf(request.targetType()),
+                request.targetId(),
+                request.userId()
+        );
+        likeRepository.save(like, user);
+    }
+
+    /**
+     * Like 삭제
+     */
+    private void deleteLike(LikeServiceRequest request) {
+        if (!isAlreadyLike(request.targetId(), request.userId(), TargetType.valueOf(request.targetType()))) // 좋아요를 누른적이 없다면 예외
+            throw NotLikedException.EXCEPTION;
+
+        likeRepository.deleteByTargetIdAndUserId(request.targetId(), request.userId()); // 해당 좋아요 정보 삭제
+    }
+
+
+    /**
+     * 같은 글에 좋아요를 누른적이 있는지 확인
+     */
+    private boolean isAlreadyLike(Long targetId, String userId, TargetType targetType) {
+        return likeRepository.existsByTargetIdAndUserIdAndTargetType(targetId, userId, targetType);
+    }
 }
