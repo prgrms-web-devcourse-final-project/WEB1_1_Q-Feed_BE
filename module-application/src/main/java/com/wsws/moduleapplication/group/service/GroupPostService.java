@@ -25,20 +25,22 @@ public class GroupPostService {
 
     // 게시물 생성
     @Transactional
-    public void createGroupPost(CreateGroupPostRequest request) {
+    public void createGroupPost(CreateGroupPostRequest request,Long groupId, String userId) {
 
-        String groupImageUrl = processGroupPostImage(request.url());
+        String groupPostImageUrl = processGroupPostImage(request.url());
 
         GroupPost post = GroupPost.create(
-                null,
+                groupId,
                 request.content(),
-                groupImageUrl
+                groupPostImageUrl,
+                userId
         );
+
         groupPostRepository.save(post);
     }
 
     // 게시물 목록 조회
-    public List<GroupPostServiceResponse>getGroupPostsList(String groupId) {
+    public List<GroupPostServiceResponse>getGroupPostsList(Long groupId) {
         List<GroupPostDto> posts = groupPostRepository.findByGroupId(groupId);
         return posts.stream()
                 .map(GroupPostServiceResponse::new)
@@ -47,7 +49,7 @@ public class GroupPostService {
 
     // 게시물 삭제
     @Transactional
-    public void deleteGroupPost(Long groupPostId) {
+    public void deleteGroupPost(Long groupPostId, String userId) {
         groupPostRepository.findById(groupPostId)
                 .ifPresentOrElse(
                         groupPost -> groupPostRepository.delete(groupPostId), // 엔티티 삭제
