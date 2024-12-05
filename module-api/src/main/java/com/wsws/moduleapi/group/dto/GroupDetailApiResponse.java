@@ -15,6 +15,7 @@ public record GroupDetailApiResponse(
         String adminId,
         LocalDateTime createdAt,
         List<GroupMemberApiResponse> members
+        //List<GroupPostApiResponse> posts
 ) {
     public GroupDetailApiResponse(GroupDetailServiceResponse serviceResponse) {
         this(
@@ -28,6 +29,9 @@ public record GroupDetailApiResponse(
                 serviceResponse.members().stream() // GroupMemberServiceResponse ->GroupMemberApiResponse
                         .map(GroupMemberApiResponse::new)
                         .collect(Collectors.toList())
+//                serviceResponse.posts().stream()
+//                        .map(GroupPostApiResponse::new)
+//                        .collect(Collectors.toList())
         );
     }
 }

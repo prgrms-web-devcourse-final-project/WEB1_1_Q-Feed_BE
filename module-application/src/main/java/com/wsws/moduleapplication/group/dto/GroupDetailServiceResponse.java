@@ -17,6 +17,7 @@ public record GroupDetailServiceResponse(
         String adminId,
         LocalDateTime createdAt,
         List<GroupMemberServiceResponse> members
+        //List<GroupPostServiceResponse> posts
 ) {
     public GroupDetailServiceResponse(GroupDetailDto group, List<GroupMemberDto> members) {
         this(
@@ -30,6 +31,10 @@ public record GroupDetailServiceResponse(
                 members.stream() // GroupMemberDto-> GroupMemberServiceResponse
                         .map(GroupMemberServiceResponse::new)
                         .collect(Collectors.toList())
+//                posts.stream()
+//                        .map(GroupPostServiceResponse::new)
+//                        .collect(Collectors.toList())
+
         );
     }
 }
