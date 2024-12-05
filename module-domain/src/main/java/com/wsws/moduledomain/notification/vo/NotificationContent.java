@@ -1,5 +1,7 @@
 package com.wsws.moduledomain.notification.vo;
 
+import com.wsws.modulecommon.exception.DomainException;
+import com.wsws.moduledomain.notification.exception.EmptyNotificationException;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -16,7 +18,7 @@ public class NotificationContent {
 
     public NotificationContent(String content) {
         if (content == null || content.isBlank()){
-            throw new IllegalArgumentException("알림 내용은 비어 있습니다.");
+            throw EmptyNotificationException.EXCEPTION;
         }
         this.content = content;
     }
