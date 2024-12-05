@@ -4,6 +4,7 @@ import com.wsws.moduleapi.auth.dto.AuthResponse;
 import com.wsws.moduleapi.user.dto.UserProfileApiResponse;
 import com.wsws.moduleapplication.user.dto.PasswordChangeServiceDto;
 import com.wsws.moduleapplication.user.dto.RegisterUserRequest;
+import com.wsws.moduleapplication.user.dto.UpdateFcmTokenRequest;
 import com.wsws.moduleapplication.user.dto.UpdateProfileServiceDto;
 import com.wsws.moduleapplication.user.service.UserQueryService;
 import com.wsws.moduleapplication.user.service.UserService;
@@ -103,5 +104,15 @@ public class UserController {
             @Parameter(description = "관심사를 조회할 사용자의 ID") @PathVariable String userId) {
         List<String> interests = userService.getUserInterests(userId);
         return ResponseEntity.ok(interests);
+    }
+
+    @PostMapping("/fcmTokenSaves")
+    public ResponseEntity<String> saveFcmToken(
+            UpdateFcmTokenRequest request,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ){
+        String userId = userPrincipal.getId();
+        userService.saveFcmToken(request, userId);
+        return ResponseEntity.ok("FCM 토큰 저장 OK");
     }
 }
