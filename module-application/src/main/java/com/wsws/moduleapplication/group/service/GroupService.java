@@ -16,7 +16,6 @@ import com.wsws.moduledomain.group.dto.GroupMemberDto;
 import com.wsws.moduledomain.group.repo.GroupMemberRepository;
 import com.wsws.moduledomain.group.repo.GroupRepository;
 import com.wsws.moduledomain.group.vo.GroupId;
-import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -92,8 +91,9 @@ public class GroupService {
         groupRepository.changeStatus(group);
     }
 
-    public List<GroupServiceResponse> getGroupsByCategory(Long categoryId){
-        List<GroupDto> groups = groupRepository.findByCategoryIdWithMemberCount(categoryId);
+    //그룹 목록 조회
+    public List<GroupServiceResponse> getGroupsByCategory(Long categoryId,LocalDateTime cursor, int size){
+        List<GroupDto> groups = groupRepository.findByCategoryIdWithMemberCount(categoryId, cursor, size);
 
         //domaindto->serviceresponse
         return groups.stream()

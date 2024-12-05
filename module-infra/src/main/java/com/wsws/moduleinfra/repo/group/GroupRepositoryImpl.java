@@ -7,12 +7,14 @@ import com.wsws.moduledomain.group.dto.GroupDto;
 import com.wsws.moduledomain.group.dto.GroupMemberDto;
 import com.wsws.moduledomain.group.repo.GroupRepository;
 import com.wsws.moduledomain.group.vo.GroupId;
-import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import com.wsws.moduleinfra.entity.group.GroupEntity;
 import com.wsws.moduleinfra.repo.group.mapper.GroupMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,8 +59,9 @@ public class GroupRepositoryImpl implements GroupRepository {
     }
 
     @Override
-    public List<GroupDto> findByCategoryIdWithMemberCount(Long categoryId) {
-        return jpaGroupRepository.findByCategoryIdWithMemberCount(categoryId);
+    public List<GroupDto> findByCategoryIdWithMemberCount(Long categoryId, LocalDateTime cursor, int size) {
+        Pageable pageable = PageRequest.of(0, size);
+        return jpaGroupRepository.findByCategoryIdWithMemberCount(categoryId,  cursor,  pageable);
     }
 
     //카테고리 이름을 얻어 그룹 목록 반환
