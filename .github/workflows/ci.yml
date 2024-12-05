@@ -21,6 +21,9 @@ jobs:
       JWT_REFRESH_EXPIRATION: ${{ secrets.JWT_REFRESH_EXPIRATION }}
       MAIL_EMAIL: ${{ secrets.MAIL_EMAIL }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+      FCM_FIREBASE_CONFIG_PATH: ${{ secrets.FCM_FIREBASE_CONFIG_PATH }}
+
+
     name: 빌드 및 분석
     runs-on: ubuntu-latest
     steps:
