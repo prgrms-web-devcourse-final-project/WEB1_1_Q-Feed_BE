@@ -21,7 +21,7 @@ public class ChatMessageEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "content", nullable = false, unique = true, length = 100)
+    @Column(name = "content", nullable = false, length = 100)
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -41,15 +41,15 @@ public class ChatMessageEntity {
     @JoinColumn(name = "chatRoom_id", nullable = false)
     private ChatRoomEntity chatRoom;
 
-    public static ChatMessageEntity create( Content content, MessageType type, String url, Boolean isRead, LocalDateTime createdAt, UserId userId, ChatRoomEntity chatRoomEntity ){
+    public static ChatMessageEntity create( String content, MessageType type, String url, Boolean isRead, LocalDateTime createdAt, String userId, ChatRoomEntity chatRoomEntity ){
 
         ChatMessageEntity chatMessageEntity = new ChatMessageEntity();
-        chatMessageEntity.content = content.toString();
+        chatMessageEntity.content = content;
         chatMessageEntity.type = type;
         chatMessageEntity.url = url;
         chatMessageEntity.isRead = isRead;
         chatMessageEntity.createdAt = createdAt;
-        chatMessageEntity.userId = userId.getValue();
+        chatMessageEntity.userId = userId;
         chatMessageEntity.chatRoom = chatRoomEntity;
         return chatMessageEntity;
     }

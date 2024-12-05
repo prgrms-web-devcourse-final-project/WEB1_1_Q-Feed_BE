@@ -52,7 +52,7 @@ public class ChatRoomService {
         // 채팅방 소유자 확인
         checkOwnership(chatRoom, userId);
 
-        chatRoomRepository.delete(chatRoom);
+        chatRoomRepository.deleteById(chatRoomId);
     }
 
     //채팅방 목록 조회
@@ -128,7 +128,7 @@ public class ChatRoomService {
 
     // 채팅방의 소유자가 현재 사용자인지 확인
     private void checkOwnership(ChatRoom chatRoom, String userId) {
-        if (!chatRoom.getUserId().equals(userId)) {
+        if (!chatRoom.getUserId().equals(userId) && !chatRoom.getUserId2().equals(userId)) {
             // 소유자가 아니면 예외를 발생시켜 권한이 없음을 알림
             throw new IllegalStateException("채팅방을 삭제할 권한이 없습니다.");
 

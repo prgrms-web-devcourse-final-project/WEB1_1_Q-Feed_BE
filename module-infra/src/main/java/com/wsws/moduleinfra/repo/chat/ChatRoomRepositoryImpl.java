@@ -24,9 +24,9 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
     }
 
     @Override
-    public void delete(ChatRoom chatRoom) {
-        ChatRoomEntity entity = ChatRoomMapper.toEntity(chatRoom);
-        jpaChatRoomRepository.delete(entity);
+    public void deleteById(Long chatRoomId) {
+        //hatRoomEntity entity = ChatRoomMapper.toEntity(chatRoom);
+        jpaChatRoomRepository.deleteById(chatRoomId);
     }
 
     @Override

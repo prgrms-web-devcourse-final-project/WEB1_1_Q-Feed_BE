@@ -10,9 +10,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GroupRepository {
-    void save(Group group);
+    Group save(Group group);
 
-    void delete(Group group);
+    void deleteById(Long groupId);
+
+    void edit(Group group);
+
+    void changeStatus(Group group);
 
     Optional<Group> findById(GroupId groupId);
 

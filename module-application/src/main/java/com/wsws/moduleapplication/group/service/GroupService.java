@@ -1,5 +1,6 @@
 package com.wsws.moduleapplication.group.service;
 
+import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.group.dto.CreateGroupRequest;
 import com.wsws.moduleapplication.group.dto.GroupDetailServiceResponse;
 import com.wsws.moduleapplication.group.dto.GroupServiceResponse;
@@ -8,6 +9,7 @@ import com.wsws.moduleapplication.user.exception.ProfileImageProcessingException
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.group.Group;
+import com.wsws.moduledomain.group.GroupMember;
 import com.wsws.moduledomain.group.dto.GroupDetailDto;
 import com.wsws.moduledomain.group.dto.GroupDto;
 import com.wsws.moduledomain.group.dto.GroupMemberDto;
@@ -47,7 +49,9 @@ public class GroupService {
                 groupImageUrl,
                 req.isOpen()
         );
-        groupRepository.save(group);
+        Group saveGroup = groupRepository.save(group);
+        GroupMember groupMember = GroupMember.create(null,adminId, saveGroup.getGroupId().getValue());
+        groupMemberRepository.save(groupMember);
     }
 
     @Transactional
@@ -64,13 +68,18 @@ public class GroupService {
 
         //그룹 정보 수정
         group.updateGroupInfro(req.groupName(),req.description(),groupImageUrl);
+        try {
+            groupRepository.edit(group);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("그룹이 존재하지않습니다.");
+        }
     }
 
     @Transactional
     public void deleteGroup(Long groupId, String adminId){
         Group group = findGroupById(groupId);
         validateAdminPermission(group, adminId);
-        groupRepository.delete(group);
+        groupRepository.deleteById(groupId);
     }
 
     @Transactional
@@ -80,7 +89,7 @@ public class GroupService {
 
         //(true -> false, false -> true)
         group.changeVisibility(!group.isOpen());
-        groupRepository.save(group);
+        groupRepository.changeStatus(group);
     }
 
     public List<GroupServiceResponse> getGroupsByCategory(Long categoryId){
@@ -101,6 +110,10 @@ public class GroupService {
 
         List<GroupMemberDto> groupMembers = groupRepository.findMembersByGroupId(groupId);
 
+        //여기서 userid와 goupid의 그룹 멤버가 있는지 boolean으로 가져와서
+        //boolean isMember = groupMemberRepository.existsByUserIdAndGroupId(userId, groupId);이런식
+        //있으면 List<GroupMemberDto> memberResponses = isMember ? groupMembers : Collections.emptyList(); 이런식?
+
         return new GroupDetailServiceResponse(groupDetailDto, groupMembers);
     }
 
@@ -111,7 +124,7 @@ public class GroupService {
 
     private void validateAdminPermission(Group group, String adminId) {
         if (!group.getAdminId().equals(UserId.of(adminId))) {
-            throw new IllegalStateException("수정 권한이 없습니다. 관리자만 수정할 수 있습니다.");
+            throw new IllegalStateException("권한이 없습니다. 관리자만 수정할 수 있습니다.");
         }
     }
 

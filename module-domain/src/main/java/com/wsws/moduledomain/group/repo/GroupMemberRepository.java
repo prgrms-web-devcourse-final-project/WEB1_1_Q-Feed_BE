@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface GroupMemberRepository {
     void save(GroupMember groupMember);
 
-    void delete(GroupMember groupMember);
+    void deleteById(Long groupMemberId);
 
     Optional<GroupMember> findById(Long groupId);
 

@@ -32,12 +32,9 @@ public class GroupMemberRepositoryImpl implements GroupMemberRepository {
     }
 
     @Override
-    public void delete(GroupMember groupMember) {
-        GroupEntity groupEntity = jpaGroupRepository.findById(groupMember.getGroupId().getValue())
-                .orElseThrow();
-
-        GroupMemberEntity groupMemberEntity = GroupMemberMapper.toEntity(groupMember);
-        jpaGroupMemberRepository.delete(groupMemberEntity);
+    public void deleteById(Long groupMemberId) {
+        //GroupMemberEntity groupMemberEntity = GroupMemberMapper.toEntity(groupMember);
+        jpaGroupMemberRepository.deleteById(groupMemberId);
     }
 
     @Override
@@ -48,13 +45,13 @@ public class GroupMemberRepositoryImpl implements GroupMemberRepository {
 
     @Override
     public Optional<GroupMember> findByUserIdAndGroupId(String userId, Long groupId) {
-        return jpaGroupMemberRepository.findByUserIdAndGroupMemberId(userId, groupId)
+        return jpaGroupMemberRepository.findByUserIdAndGroup_GroupId(userId, groupId)
                 .map(GroupMemberMapper::toDomain);
     }
 
     @Override
     public boolean existsByUserIdAndGroupId(String userId, Long groupId) {
-        return jpaGroupMemberRepository.existsByUserIdAndGroupMemberId(userId, groupId);
+        return jpaGroupMemberRepository.existsByUserIdAndGroup_GroupId(userId, groupId);
     }
 
     @Override

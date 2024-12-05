@@ -19,7 +19,8 @@ public interface JpaGroupRepository extends JpaRepository<GroupEntity, Long> {
             "FROM GroupEntity g " +
             "LEFT JOIN g.groupMembers gm " +
             "WHERE g.categoryId = :categoryId " +
-            "GROUP BY g.groupId")
+            "GROUP BY g.groupId "+
+            "ORDER BY g.createdAt DESC")
     List<GroupDto> findByCategoryIdWithMemberCount(@Param("categoryId") Long categoryId);
 
     @Query("SELECT new com.wsws.moduledomain.group.dto.GroupDetailDto(" +
