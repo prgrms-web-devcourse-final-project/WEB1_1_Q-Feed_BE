@@ -9,9 +9,8 @@ public record GroupPostApiResponse (
         String nickname,
         String profile,
         String content,
-        LocalDateTime createAt,
+        LocalDateTime createAt
 //        boolean hasReaction,
-        boolean isFollowing
 //        Long reactionCount,
 //        Long commentCount
 ) {
@@ -21,9 +20,7 @@ public record GroupPostApiResponse (
                 serviceResponse.nickname(),
                 serviceResponse.profile(),
                 serviceResponse.content(),
-                serviceResponse.createAt(),
-                serviceResponse.isFollowing()
-        );
+                serviceResponse.createAt() );
 
     }
 }

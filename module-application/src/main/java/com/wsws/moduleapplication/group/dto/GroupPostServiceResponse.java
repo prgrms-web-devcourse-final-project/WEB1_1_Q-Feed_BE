@@ -10,8 +10,8 @@ public record GroupPostServiceResponse (
         String profile,
         String content,
         LocalDateTime createAt,
+        String userId
 //        boolean hasReaction,
-        boolean isFollowing
 //        Long reactionCount,
 //        Long commentCount
 ) {
@@ -22,8 +22,8 @@ public record GroupPostServiceResponse (
              dto.profile(),
              dto.content(),
              dto.createAt(),
+             dto.userId()
 //             dto.hasReaction(),
-             dto.isFollowing()
 //             dto.reactionCount(),
 //             dto.commentCount()
      );

@@ -11,16 +11,17 @@ public class GroupPost {
     private Long groupPostId;
     private String content;
     private LocalDateTime createdAt;
-    private String groupId;
+    private Long groupId;
     private String userId;
     private String url;
     private long likeCount = 0;
 
-    public static GroupPost create( String groupId, String content,String url) {
+    public static GroupPost create( Long groupId, String content,String url, String userId) {
         GroupPost post = new GroupPost();
         post.groupId = groupId;
         post.content = content;
         post.url = url;
+        post.userId = userId;
         post.createdAt = LocalDateTime.now();
         post.likeCount = 0;
         return post;

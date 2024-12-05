@@ -8,8 +8,8 @@ public record GroupPostDto(
         String profile,
         String content,
         LocalDateTime createAt,
+        String userId
 //        boolean hasReaction,
-        boolean isFollowing
 //        Long reactionCount,
 //        Long commentCount
 ) {
