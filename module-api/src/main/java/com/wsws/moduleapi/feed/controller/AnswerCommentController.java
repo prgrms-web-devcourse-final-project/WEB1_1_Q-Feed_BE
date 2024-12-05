@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -74,8 +75,9 @@ public class AnswerCommentController {
      * 답변 댓글 삭제
      */
     @DeleteMapping("/{comment-id}")
-    public ResponseEntity<?> deleteAnswerComment() {
-        return null;
+    public ResponseEntity<MessageResponse> deleteAnswerComment(@PathVariable("comment-id") Long commentId) {
+        answerCommentService.deleteAnswerComment(commentId);
+        return ResponseEntity.ok(new MessageResponse("댓글이 삭제되었습니다."));
     }
 
 

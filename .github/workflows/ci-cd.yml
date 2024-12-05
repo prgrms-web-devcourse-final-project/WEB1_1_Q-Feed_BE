@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - feature/QFEED-101-comment-api
 jobs:
   deploy:
     runs-on: ubuntu-latest

@@ -59,6 +59,13 @@ public class AnswerCommentService {
     }
 
 
+    /**
+     * 답변 댓글 삭제
+     */
+    public void deleteAnswerComment(Long answerCommentId) {
+        answerCommentRepository.deleteById(answerCommentId);
+    }
+
 
     private Answer getRelatedAnswer(Long answerId) {
         return answerRepository.findById(answerId)

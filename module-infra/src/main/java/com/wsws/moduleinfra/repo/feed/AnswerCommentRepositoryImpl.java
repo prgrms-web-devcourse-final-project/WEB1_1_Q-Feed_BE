@@ -49,4 +49,9 @@ public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
         answerCommentEntity
                 .ifPresent(entity -> entity.editAnswerCommentEntity(answerComment.getContent(), answerComment.getReactionCount()));
     }
+
+    @Override
+    public void deleteById(Long id) {
+        jpaAnswerCommentRepository.deleteById(id);
+    }
 }
