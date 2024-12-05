@@ -23,6 +23,8 @@ jobs:
       JWT_REFRESH_EXPIRATION: ${{ secrets.JWT_REFRESH_EXPIRATION }}
       MAIL_EMAIL: ${{ secrets.MAIL_EMAIL }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+      FCM_FIREBASE_CONFIG_PATH: ${{ secrets.FCM_FIREBASE_CONFIG_PATH }}
+
 
     steps:
       - name: Github Repository 파일 불러오기
@@ -102,6 +104,8 @@ jobs:
             echo "JWT_REFRESH_EXPIRATION=${{ secrets.JWT_REFRESH_EXPIRATION }}" >> .env
             echo "MAIL_EMAIL=${{ secrets.MAIL_EMAIL }}" >> .env
             echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
+            echo "FCM_FIREBASE_CONFIG_PATH=${{ secrets.FCM_FIREBASE_CONFIG_PATH }}" >> .env
+            
             
             docker pull ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
             
