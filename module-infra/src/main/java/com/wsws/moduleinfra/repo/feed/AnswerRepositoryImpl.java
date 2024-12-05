@@ -35,7 +35,7 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     @Transactional
     public Answer save(Answer answer) {
         QuestionEntity questionEntity = jpaQuestionRepository.findById(answer.getQuestionId().getValue())
-                .orElseThrow(RuntimeException::new);
+                .orElse(null);
         AnswerEntity answerEntity = AnswerEntityMapper.toEntity(answer);
         answerEntity.setQuestionEntity(questionEntity); // 연관관계 설정
 

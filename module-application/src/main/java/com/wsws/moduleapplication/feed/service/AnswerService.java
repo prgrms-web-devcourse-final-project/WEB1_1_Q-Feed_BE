@@ -63,11 +63,7 @@ public class AnswerService {
         );
 
         Answer saved = null; // 저장
-        try {
-            saved = answerRepository.save(answer);
-        } catch (RuntimeException e) {
-            throw QuestionNotFoundException.EXCEPTION;
-        }
+        saved = answerRepository.save(answer);
 
         return new AnswerCreateServiceResponse(saved.getAnswerId().getValue());
     }
@@ -166,7 +162,7 @@ public class AnswerService {
         User user = userRepository.findById(UserId.of(request.userId()))
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);// 연관 맺을 User 찾아오기
 
-        if(isAlreadyLike(request.targetId(), request.userId())) // 좋아요를 누른적이 있다면 예외
+        if (isAlreadyLike(request.targetId(), request.userId())) // 좋아요를 누른적이 있다면 예외
             throw AlreadyLikedException.EXCEPTION;
 
 
@@ -182,11 +178,12 @@ public class AnswerService {
             throw UserNotFoundException.EXCEPTION;
         }
     }
+
     /**
      * Like 삭제
      */
     private void deleteLike(LikeServiceRequest request) {
-        if(!isAlreadyLike(request.targetId(), request.userId())) // 좋아요를 누른적이 없다면 예외
+        if (!isAlreadyLike(request.targetId(), request.userId())) // 좋아요를 누른적이 없다면 예외
             throw NotLikedException.EXCEPTION;
 
         likeRepository.deleteByTargetIdAndUserId(request.targetId(), request.userId()); // 해당 좋아요 정보 삭제
