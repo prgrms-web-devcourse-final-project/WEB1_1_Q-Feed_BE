@@ -53,18 +53,19 @@ public class UserService {
         // 프로필 이미지 처리
         String profileImageUrl = processProfileImage(request.profileImageFile());
 
-
-
         // 사용자 생성
         User user = User.create(
                 request.email(),
                 request.password(),
                 request.nickname(),
+                request.description(),
                 profileImageUrl,
                 passwordEncoder
         );
 
         userRepository.save(user);
+
+        createInterests(user.getId().getValue(), request.interestCategoryNames()); //
 
     }
 

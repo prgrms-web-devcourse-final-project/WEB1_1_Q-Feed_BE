@@ -10,6 +10,8 @@ public record RegisterUserRequest(
         String email,
         String password,
         String nickname,
-        MultipartFile profileImageFile
+        MultipartFile profileImageFile,
+        String description,
+        List<String> interestCategoryNames
 ) {
 }
