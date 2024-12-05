@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "answer_comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,6 +30,9 @@ public class AnswerCommentEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")
     private AnswerCommentEntity parentCommentEntity;
+
+    @OneToMany(mappedBy = "parentCommentEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AnswerCommentEntity> childrenCommentEntity;
 
     public static AnswerCommentEntity create(String content, int depth, int reactionCount, AnswerEntity answerEntity, String userId, AnswerCommentEntity parentCommentEntity) {
         AnswerCommentEntity answerCommentEntity = new AnswerCommentEntity();
