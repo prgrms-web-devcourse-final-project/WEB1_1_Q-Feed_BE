@@ -12,7 +12,7 @@ public record AnswerCommentFindServiceResponse(
         String authorNickname,
         String profile_image,
         String content,
-        int reactionCount,
+        int likeCount,
         LocalDateTime createdAt,
         Boolean isLike,
         Boolean isFollow,

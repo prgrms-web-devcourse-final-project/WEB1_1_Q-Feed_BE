@@ -92,7 +92,7 @@ public class AnswerService {
         Answer answer = answerRepository.findById(request.targetId())
                 .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
 
-        answer.addLikeCount();// Answer의 reactionCount 1증가
+        answer.addLikeCount();// Answer의 likeCount 1증가
 
         // 수정 반영
         try {
@@ -113,7 +113,7 @@ public class AnswerService {
 
         deleteLike(request); // 기존 좋아요 객체 삭제
 
-        answer.cancelLikeCount();// Answer의 reactionCount 1 감소
+        answer.cancelLikeCount();// Answer의 likeCount 1 감소
 
         // 수정 반영
         answerRepository.edit(answer);

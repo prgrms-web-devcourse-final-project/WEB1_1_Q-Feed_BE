@@ -103,7 +103,7 @@ public class AnswerCommentService {
 
         deleteLike(request); // 기존 좋아요 객체 삭제
 
-        answerComment.cancelLikeCount(); // AnswerComment의 reactionCount 1감소
+        answerComment.cancelLikeCount(); // AnswerComment의 likeCount 1감소
 
         answerCommentRepository.edit(answerComment); // 수정 반영
 
