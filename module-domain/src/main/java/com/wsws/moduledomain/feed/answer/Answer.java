@@ -1,7 +1,6 @@
 package com.wsws.moduledomain.feed.answer;
 
 import com.wsws.moduledomain.feed.answer.vo.AnswerId;
-import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduledomain.feed.question.vo.QuestionId;
 import com.wsws.moduledomain.user.vo.UserId;
 import lombok.AccessLevel;
@@ -15,7 +14,7 @@ public class Answer {
     String content;
     Boolean visibility;
     String url;
-    int reactionCount;
+    int likeCount;
 
     QuestionId questionId;
     UserId userId;
@@ -26,7 +25,7 @@ public class Answer {
         answer.content = content;
         answer.visibility = visibility;
         answer.url = url;
-        answer.reactionCount = reactionCount;
+        answer.likeCount = reactionCount;
         answer.questionId = QuestionId.of(questionId);
         answer.userId = UserId.of(userId);
         return answer;
@@ -39,11 +38,11 @@ public class Answer {
         this.url = url;
     }
 
-    public void addReactionCount() {
-        this.reactionCount++;
+    public void addLikeCount() {
+        this.likeCount++;
     }
 
-    public void cancelReactionCount() {
-        this.reactionCount--;
+    public void cancelLikeCount() {
+        this.likeCount--;
     }
 }

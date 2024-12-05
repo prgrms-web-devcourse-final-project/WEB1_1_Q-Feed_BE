@@ -14,7 +14,7 @@ public class AnswerEntity {
     String content;
     Boolean visibility;
     String url;
-    int reactionCount;
+    int likeCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
@@ -27,7 +27,7 @@ public class AnswerEntity {
         answerEntity.content = content;
         answerEntity.visibility = visibility;
         answerEntity.url = url;
-        answerEntity.reactionCount = reactionCount;
+        answerEntity.likeCount = reactionCount;
         answerEntity.questionEntity = questionEntity;
         answerEntity.userId = userId;
         return answerEntity;
@@ -43,11 +43,11 @@ public class AnswerEntity {
     /**
      * 수정 로직
      */
-    public void editQuestionEntity(String content, Boolean visibility, String url, int reactionCount) {
+    public void editQuestionEntity(String content, Boolean visibility, String url, int likeCount) {
         this.content = content;
         this.visibility = visibility;
         this.url = url;
-        this.reactionCount = reactionCount;
+        this.likeCount = likeCount;
     }
 
 }

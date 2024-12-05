@@ -88,7 +88,7 @@ public class AnswerCommentService {
         AnswerComment answerComment = answerCommentRepository.findById(request.targetId())
                 .orElseThrow(() -> AnswerCommentNotFoundException.EXCEPTION);
 
-        answerComment.addReactionCount(); // 좋아요 1 추가
+        answerComment.addLikeCount(); // 좋아요 1 추가
 
         answerCommentRepository.edit(answerComment); // 수정사항 반영
     }
@@ -103,7 +103,7 @@ public class AnswerCommentService {
 
         deleteLike(request); // 기존 좋아요 객체 삭제
 
-        answerComment.cancelReactionCount(); // AnswerComment의 reactionCount 1감소
+        answerComment.cancelLikeCount(); // AnswerComment의 reactionCount 1감소
 
         answerCommentRepository.edit(answerComment); // 수정 반영
 

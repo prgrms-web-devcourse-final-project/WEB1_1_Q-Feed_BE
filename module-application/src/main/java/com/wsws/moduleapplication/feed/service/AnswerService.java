@@ -7,7 +7,6 @@ import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.user.exception.NotLikedException;
 import com.wsws.moduleapplication.user.exception.ProfileImageProcessingException;
-import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduleapplication.util.FileValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.feed.answer.Answer;
@@ -15,11 +14,8 @@ import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
 import com.wsws.moduledomain.user.Like;
-import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.LikeRepository;
-import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.TargetType;
-import com.wsws.moduledomain.user.vo.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,15 +28,8 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
     private final LikeRepository likeRepository;
-    private final UserRepository userRepository;
 
     private final FileStorageService fileStorageService;
-
-    public AnswerFindServiceResponse findAnswerByAnswerId(Long answerId) {
-        Answer answer = answerRepository.findById(answerId).orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
-
-        return null;
-    }
 
     /**
      * 답변 생성
@@ -103,7 +92,7 @@ public class AnswerService {
         Answer answer = answerRepository.findById(request.targetId())
                 .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
 
-        answer.addReactionCount();// Answer의 reactionCount 1증가
+        answer.addLikeCount();// Answer의 reactionCount 1증가
 
         // 수정 반영
         try {
@@ -124,7 +113,7 @@ public class AnswerService {
 
         deleteLike(request); // 기존 좋아요 객체 삭제
 
-        answer.cancelReactionCount();// Answer의 reactionCount 1 감소
+        answer.cancelLikeCount();// Answer의 reactionCount 1 감소
 
         // 수정 반영
         answerRepository.edit(answer);

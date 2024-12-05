@@ -47,7 +47,7 @@ public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
         Optional<AnswerCommentEntity> answerCommentEntity = jpaAnswerCommentRepository.findById(answerComment.getAnswerCommentId().getValue());
 
         answerCommentEntity
-                .ifPresent(entity -> entity.editAnswerCommentEntity(answerComment.getContent(), answerComment.getReactionCount()));
+                .ifPresent(entity -> entity.editAnswerCommentEntity(answerComment.getContent(), answerComment.getLikeCount()));
     }
 
     @Override

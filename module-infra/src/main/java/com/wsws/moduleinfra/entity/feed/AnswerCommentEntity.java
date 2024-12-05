@@ -16,7 +16,7 @@ public class AnswerCommentEntity {
 
     private String content;
     private int depth;
-    private int reactionCount;
+    private int likeCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "answer_id")
@@ -32,7 +32,7 @@ public class AnswerCommentEntity {
         AnswerCommentEntity answerCommentEntity = new AnswerCommentEntity();
         answerCommentEntity.content = content;
         answerCommentEntity.depth = depth;
-        answerCommentEntity.reactionCount = reactionCount;
+        answerCommentEntity.likeCount = reactionCount;
         answerCommentEntity.answerEntity = answerEntity;
         answerCommentEntity.userId = userId;
         answerCommentEntity.parentCommentEntity = parentCommentEntity;
@@ -51,8 +51,8 @@ public class AnswerCommentEntity {
 
 
      /* 수정 로직 */
-    public void editAnswerCommentEntity(String content, int reactionCount) {
+    public void editAnswerCommentEntity(String content, int likeCount) {
         this.content = content;
-        this.reactionCount = reactionCount;
+        this.likeCount = likeCount;
     }
 }

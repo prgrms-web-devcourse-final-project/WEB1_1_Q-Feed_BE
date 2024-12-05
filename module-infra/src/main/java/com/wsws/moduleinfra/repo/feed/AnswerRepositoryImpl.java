@@ -51,7 +51,7 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     public void edit(Answer answer) {
         Optional<AnswerEntity> answerEntity = jpaAnswerRepository.findById(answer.getAnswerId().getValue());
         answerEntity
-                .ifPresent(entity -> entity.editQuestionEntity(answer.getContent(), answer.getVisibility(), answer.getUrl(), answer.getReactionCount()));
+                .ifPresent(entity -> entity.editQuestionEntity(answer.getContent(), answer.getVisibility(), answer.getUrl(), answer.getLikeCount()));
 
     }
 

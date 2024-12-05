@@ -10,7 +10,7 @@ public class AnswerComment {
     private AnswerCommentId answerCommentId;
     private String content;
     private int depth;
-    private int reactionCount;
+    private int likeCount;
 
     private AnswerId answerId;
     private UserId userId;
@@ -21,7 +21,7 @@ public class AnswerComment {
         answerComment.answerCommentId = AnswerCommentId.of(commentId);
         answerComment.content = content;
         answerComment.depth = depth;
-        answerComment.reactionCount = reactionCount;
+        answerComment.likeCount = reactionCount;
         answerComment.answerId = AnswerId.of(answerId);
         answerComment.userId = UserId.of(userId);
         answerComment.parentAnswerCommentId = AnswerCommentId.of(parentCommentId);
@@ -33,11 +33,11 @@ public class AnswerComment {
         this.content = content;
     }
 
-    public void addReactionCount() {
-        this.reactionCount++;
+    public void addLikeCount() {
+        this.likeCount++;
     }
 
-    public void cancelReactionCount() {
-        this.reactionCount--;
+    public void cancelLikeCount() {
+        this.likeCount--;
     }
 }
