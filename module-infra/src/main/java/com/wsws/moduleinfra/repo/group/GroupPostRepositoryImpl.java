@@ -36,7 +36,7 @@ public class GroupPostRepositoryImpl implements GroupPostRepository {
 //    }
 
     @Override
-    public List<GroupPostDto> findByGroupId(String groupId) {
+    public List<GroupPostDto> findByGroupId(Long groupId) {
        return jpaGroupPostRepository.findByGroupId(groupId);
     }
 

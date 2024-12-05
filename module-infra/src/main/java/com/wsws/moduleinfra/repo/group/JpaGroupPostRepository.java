@@ -11,14 +11,13 @@ import java.util.List;
 public interface JpaGroupPostRepository extends JpaRepository<GroupPostEntity, Long> {
 
     //그룹 ID로 게시글 조회
-    @Query("SELECT new com.wsws.moduledomain.group.dto.GroupPostDto(" +
-            "g.groupPostId, u.nickname, u.profileImage, g.content, g.createAt, " +
-            "CASE WHEN f IS NOT NULL THEN true ELSE false END) " +
+    @Query("SELECT new com.wsws.moduledomain.group.dto.GroupPostDto( " +
+            "g.groupPostId, u.nickname, u.profileImage, g.content, g.createAt, g.userId) " +
             "FROM GroupPostEntity g " +
             "JOIN UserEntity u ON u.id = g.userId " +
-            "LEFT JOIN FollowEntity f ON f.id.followeeId = g.userId AND f.id.followerId = :currentUserId " +
             "WHERE g.groupId = :groupId")
-    List<GroupPostDto> findByGroupId(@Param("groupId") String groupId);
+    List<GroupPostDto> findByGroupId(@Param("groupId") Long groupId);
+
 
     //postId로 게시물 상세 조회
 

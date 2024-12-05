@@ -11,7 +11,7 @@ public interface GroupPostRepository {
     void save(GroupPost groupPost);
     void delete(Long groupPostId);
 //    Optional<GroupPostDetailDto> findById(Long groupPostId);
-    List<GroupPostDto> findByGroupId(String groupId);
+    List<GroupPostDto> findByGroupId(Long groupId);
     void delete(GroupPost groupPost);
     Optional<Object> findById(Long groupPostId);
 }
