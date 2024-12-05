@@ -112,10 +112,16 @@ public class AnswerCommentController {
     /**
      * 답변 댓글 좋아요 취소
      */
+    @Operation(summary = "답변 댓글 좋아요 취소", description = "현재 인증된 사용자로 답변 댓글 좋아요를 취소합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "답변 댓글 좋아요 취소 성공"),
+            @ApiResponse(responseCode = "400", description = "좋아요를 누른적이 없는 답변 댓글일 때", content = @Content),
+            @ApiResponse(responseCode = "404", description = "없는 답변 댓글 일 때", content = @Content)
+    })
     @PostMapping("/{comment-id}/cancel-likes")
     public ResponseEntity<MessageResponse> cancelLikeToAnswerComment(
-       @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("comment-id") Long commentId
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(description = "좋아요를 취소할 답변 댓글 ID") @PathVariable("comment-id") Long commentId
     ) {
         String userId = userPrincipal.getId();
 //        String userId = "user_id1";
