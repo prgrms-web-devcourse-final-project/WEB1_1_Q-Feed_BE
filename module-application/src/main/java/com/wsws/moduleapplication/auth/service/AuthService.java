@@ -5,6 +5,7 @@ import com.wsws.moduleapplication.auth.exception.EmailNotFoundException;
 import com.wsws.moduleapplication.auth.exception.InvalidVerificationCodeException;
 import com.wsws.moduleapplication.auth.exception.RefreshTokenExpiredException;
 import com.wsws.moduleapplication.user.dto.AuthServiceResponse;
+import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.auth.repo.EmailService;
 import com.wsws.moduledomain.auth.RefreshToken;
 import com.wsws.moduledomain.auth.repo.TokenProvider;
@@ -16,6 +17,7 @@ import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.Email;
 import com.wsws.moduledomain.user.vo.Nickname;
+import com.wsws.moduledomain.user.vo.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -130,12 +132,16 @@ public class AuthService {
 
         user.resetPassword(dto.newPassword(), passwordEncoder);
 
-
+        userRepository.save(user);
     }
 
     public boolean checkNickname(String nickname) {
-        return userRepository.findByNickname(Nickname.from(nickname)).isPresent();
+        return userRepository.existsByNickname(Nickname.from(nickname));
 
+    }
+
+    public boolean checkEmail(String email) {
+        return userRepository.existsByEmail(Email.from(email));
     }
 
 
@@ -177,7 +183,9 @@ public class AuthService {
         if (!userRepository.existsByEmail(Email.from(email))) {
             throw EmailNotFoundException.EXCEPTION;
         }
+
     }
+
 
 
 }

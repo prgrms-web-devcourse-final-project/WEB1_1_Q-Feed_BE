@@ -6,6 +6,24 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      REDIS_VECTOR_URI: ${{ secrets.REDIS_VECTOR_URI }}
+      REDIS_VECTOR_PORT: ${{ secrets.REDIS_VECTOR_PORT }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+      DATABASE_DRIVER: ${{ secrets.DATABASE_DRIVER }}
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_EXPIRATION: ${{ secrets.JWT_EXPIRATION }}
+      JWT_REFRESH_EXPIRATION: ${{ secrets.JWT_REFRESH_EXPIRATION }}
+      MAIL_EMAIL: ${{ secrets.MAIL_EMAIL }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+      FCM_FIREBASE_CONFIG_PATH: ${{ secrets.FCM_FIREBASE_CONFIG_PATH }}
+
+
     name: 빌드 및 분석
     runs-on: ubuntu-latest
     steps:
@@ -34,4 +52,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build sonar --info -x test
+        run: ./gradlew build sonar --info

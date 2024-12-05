@@ -21,3 +21,6 @@ spring:
         index: qfeedV-index
         prefix: qfeedV
         initialize-schema: true
+
+fcm:
+  firebase_config_path: ${FCM_FIREBASE_CONFIG_PATH}

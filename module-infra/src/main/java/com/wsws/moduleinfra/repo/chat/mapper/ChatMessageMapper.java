@@ -23,12 +23,12 @@ public class ChatMessageMapper {
     public static ChatMessageEntity toEntity(ChatMessage chatMessage) {
 
         return ChatMessageEntity.create(
-                chatMessage.getContent(),
+                chatMessage.getContent().getValue(),
                 chatMessage.getType(),
                 chatMessage.getUrl(),
                 chatMessage.isRead(),
                 chatMessage.getCreatedAt(),
-                chatMessage.getUserId(),
+                chatMessage.getUserId().getValue(),
                 null
         );
     }

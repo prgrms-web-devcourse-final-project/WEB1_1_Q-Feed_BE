@@ -14,4 +14,5 @@ public interface UserRepository {
     User save(User user);
     void delete(User user);
     Boolean existsByEmail(Email email);
+    Boolean existsByNickname(Nickname nickname);
 }
