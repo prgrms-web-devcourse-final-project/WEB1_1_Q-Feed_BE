@@ -21,6 +21,8 @@ jobs:
       JWT_REFRESH_EXPIRATION: ${{ secrets.JWT_REFRESH_EXPIRATION }}
       MAIL_EMAIL: ${{ secrets.MAIL_EMAIL }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+      KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+      KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
       FCM_FIREBASE_CONFIG_PATH: ${{ secrets.FCM_FIREBASE_CONFIG_PATH }}
 
 
