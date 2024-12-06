@@ -16,7 +16,6 @@ import com.wsws.moduledomain.group.dto.GroupMemberDto;
 import com.wsws.moduledomain.group.repo.GroupMemberRepository;
 import com.wsws.moduledomain.group.repo.GroupRepository;
 import com.wsws.moduledomain.group.vo.GroupId;
-import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,8 +92,9 @@ public class GroupService {
         groupRepository.changeStatus(group);
     }
 
-    public List<GroupServiceResponse> getGroupsByCategory(Long categoryId){
-        List<GroupDto> groups = groupRepository.findByCategoryIdWithMemberCount(categoryId);
+    //그룹 목록 조회
+    public List<GroupServiceResponse> getGroupsByCategory(Long categoryId,LocalDateTime cursor, int size){
+        List<GroupDto> groups = groupRepository.findByCategoryIdWithMemberCount(categoryId, cursor, size);
 
         //domaindto->serviceresponse
         return groups.stream()
@@ -111,8 +112,9 @@ public class GroupService {
         List<GroupMemberDto> groupMembers = groupRepository.findMembersByGroupId(groupId);
 
         //여기서 userid와 goupid의 그룹 멤버가 있는지 boolean으로 가져와서
-        //boolean isMember = groupMemberRepository.existsByUserIdAndGroupId(userId, groupId);이런식
-        //있으면 List<GroupMemberDto> memberResponses = isMember ? groupMembers : Collections.emptyList(); 이런식?
+        //boolean isMember = groupMemberRepository.existsByUserIdAndGroupId(userId, groupId);
+        //있으면
+        //List<GroupMemberDto> memberResponses = isMember ? groupMembers : Collections.emptyList();
 
         return new GroupDetailServiceResponse(groupDetailDto, groupMembers);
     }

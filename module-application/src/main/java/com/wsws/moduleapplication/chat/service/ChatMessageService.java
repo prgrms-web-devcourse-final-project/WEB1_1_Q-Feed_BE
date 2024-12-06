@@ -71,8 +71,8 @@ public class ChatMessageService {
     }
 
     //채팅방의 메세지 조회
-    public List<ChatMessageServiceResponse> getChatMessages(Long chatRoomId,int page, int size ) {
-        List<ChatMessageDTO> chatMessages = chatMessageRepository.findMessagesWithUserDetails(chatRoomId, page, size);
+    public List<ChatMessageServiceResponse> getChatMessages(Long chatRoomId, LocalDateTime cursor, int size ) {
+        List<ChatMessageDTO> chatMessages = chatMessageRepository.findMessagesWithUserDetails(chatRoomId, cursor, size);
 
         // ChatMessageDTO를 ChatMessageServiceResponse로 변환
         return chatMessages.stream()

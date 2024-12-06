@@ -21,7 +21,7 @@ public class ChatMessageEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "content", nullable = false, length = 100)
+    @Column(name = "content", length = 100)
     private String content;
 
     @Enumerated(EnumType.STRING)

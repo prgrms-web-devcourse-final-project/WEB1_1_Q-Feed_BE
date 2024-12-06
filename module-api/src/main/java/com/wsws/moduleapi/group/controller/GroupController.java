@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @RestController
@@ -76,8 +78,19 @@ public class GroupController {
     @GetMapping("/{categoryId}")
     @Operation(summary = "그룹 목록 조회", description = "원하는 카테고리의 그룹 목록들을 조회합니다.")
     public ResponseEntity<List<GroupApiResponse>> getGroupsByCategory(
-            @Parameter(description = "그룹 목록을 조회하려는 카테고리 ID") @PathVariable Long categoryId) {
-        List<GroupServiceResponse> groups = groupService.getGroupsByCategory(categoryId);
+            @Parameter(description = "그룹 목록을 조회할 카테고리 ID") @PathVariable Long categoryId,
+            @Parameter(description = "커서로 사용할 마지막 팔로워의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String cursor,
+            @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size) {
+        LocalDateTime parsedCursor;
+
+        // cursor가 null이거나 잘못된 형식일 경우 기본 값 처리
+        try {
+            parsedCursor = cursor != null ? LocalDateTime.parse(cursor) : LocalDateTime.now();
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid cursor format. Please use the correct ISO format (e.g. 2024-01-01T00:00:00)");
+        }
+
+        List<GroupServiceResponse> groups = groupService.getGroupsByCategory(categoryId, parsedCursor, size);
         //변환작업
         List<GroupApiResponse> apiResponses = groups.stream()
                 .map(GroupApiResponse::new)
