@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +38,13 @@ public class AnswerReadService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    /**
+     * 답변 목록 조회
+     */
+    public void findAnswerListWithCursor() {
+
+    }
+
 
     /**
      * <h3> 답변 상세 조회 </h3>
@@ -51,18 +57,18 @@ public class AnswerReadService {
      * <h5> 2. 댓글 관련 </h5> <
      * - User(댓글 작성자): authorUserId, nickname, profileImage<br>
      * - AnswerComment: 댓글 총 갯수(부모 댓글)<br>
-     * - AnswerComment: 부모 댓글 리스트(무한스크롤) - commentId, content, likeCount, childCommentCount, createdAt<br>
+     * - AnswerComment: 부모 댓글 리스트(무한스크롤 페이징 적용) - commentId, content, likeCount, childCommentCount, createdAt<br>
      * - AnswerComment: 대 댓글 리스트 - commentId, content, likeCount, createdAt<br>
      * - Like: 해당 사용자가 해당 댓글/대댓글에 좋아요를 눌렀는지 여부<br>
      * - Follow: 요청한 사용자가 댓글/대댓글 작성자를 팔로우 했는지 여부<br>
      */
-    public AnswerFindServiceResponse findOneAnswerWithCursor(AnswerFindServiceRequest request, LocalDateTime commentCursor, int size) {
+    public AnswerFindServiceResponse findOneAnswerWithCursor(AnswerFindServiceRequest request) {
         AnswerFindServiceResponseBuilder answerResponseBuilder = AnswerFindServiceResponse.builder();
         // Answer 정보 세팅
         buildAnswer(request, answerResponseBuilder);
 
         // AnswerComment 정보 세팅
-        buildAnswerComment(request, answerResponseBuilder, commentCursor, size);
+        buildAnswerComment(request, answerResponseBuilder);
 
         return answerResponseBuilder.build();
     }
@@ -100,9 +106,9 @@ public class AnswerReadService {
     /**
      * Answer Comment 정보를 세팅
      */
-    private void buildAnswerComment(AnswerFindServiceRequest request, AnswerFindServiceResponseBuilder answerResponseBuilder, LocalDateTime commentCursor, int size) {
+    private void buildAnswerComment(AnswerFindServiceRequest request, AnswerFindServiceResponseBuilder answerResponseBuilder) {
         // Answer에 대한 부모 Answer Comment를 페이징으로 가져오기
-        List<AnswerComment> parentComments = answerCommentRepository.findParentCommentsByAnswerIdWithCursor(request.answerId(), commentCursor, size);
+        List<AnswerComment> parentComments = answerCommentRepository.findParentCommentsByAnswerIdWithCursor(request.answerId(), request.commentCursor(), request.size());
 
         // 부모 Comment ID 추출
         List<Long> parentIds = parentComments.stream()
