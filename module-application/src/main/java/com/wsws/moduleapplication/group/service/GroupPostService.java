@@ -10,7 +10,6 @@ import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.group.GroupPost;
-import com.wsws.moduledomain.group.dto.GroupPostDto;
 import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduledomain.user.Like;
 import com.wsws.moduledomain.user.User;
@@ -37,25 +36,16 @@ public class GroupPostService {
     // 게시물 생성
     @Transactional
     public void createGroupPost(CreateGroupPostRequest request, Long groupId, String userId) {
-
-        String groupPostImageUrl = processGroupPostImage(request.url());
-
         GroupPost post = GroupPost.create(
-                0L,
-                groupId,
-                request.content(),
-                groupPostImageUrl,
-                userId,
-                0L
+                0L, groupId, request.content(),
+                processGroupPostImage(request.url()), userId, 0L
         );
-
         groupPostRepository.save(post);
     }
 
     // 게시물 목록 조회
     public List<GroupPostServiceResponse> getGroupPostsList(Long groupId) {
-        List<GroupPostDto> posts = groupPostRepository.findByGroupId(groupId);
-        return posts.stream()
+        return groupPostRepository.findByGroupId(groupId).stream()
                 .map(GroupPostServiceResponse::new)
                 .toList();
     }
@@ -72,6 +62,74 @@ public class GroupPostService {
                 );
     }
 
+
+//    //게시물 상세 조회
+//    @Transactional
+//    public GroupPostDetailResponse getGroupPostDetail(Long groupPostId) {
+//        GroupPostDetailDto groupPostDetailDto = groupPostRepository.findById(groupPostId)
+//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+//        return new GroupPostDetailResponse(groupPostDetailDto);
+//    }
+
+    @Transactional
+    public void addLikeToGroupPost(LikeServiceRequest request) {
+        handleLikeAction(request, true); // 좋아요 추가 처리
+    }
+
+    @Transactional
+    public void cancelLikeToGroupPost(LikeServiceRequest request) {
+        handleLikeAction(request, false); // 좋아요 취소 처리
+    }
+
+    // 좋아요 추가/취소 처리 통합 메서드
+    private void handleLikeAction(LikeServiceRequest request, boolean isAddLike) {
+        GroupPost post = groupPostRepository.findById(request.targetId())
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        if (isAddLike) {
+            createLikeIfNotExists(request); // 좋아요 추가
+            post.incrementLike();
+        } else {
+            deleteLikeIfExists(request); // 좋아요 삭제
+            post.decrementLike();
+        }
+
+        groupPostRepository.edit(post); // 변경된 게시글 저장
+    }
+
+    // 좋아요 생성 처리
+    private void createLikeIfNotExists(LikeServiceRequest request) {
+        User user = userRepository.findById(UserId.of(request.userId()))
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
+
+        if (isAlreadyLiked(request.targetId(), request.userId())) {
+            throw AlreadyLikedException.EXCEPTION; // 이미 좋아요를 누른 경우 예외
+        }
+
+        Like like = Like.create(
+                null,
+                TargetType.valueOf(request.targetType()),
+                request.targetId(),
+                request.userId()
+        );
+
+        likeRepository.save(like, user); // 좋아요 저장
+    }
+
+    // 좋아요 삭제 처리
+    private void deleteLikeIfExists(LikeServiceRequest request) {
+        if (!isAlreadyLiked(request.targetId(), request.userId())) {
+            throw NotLikedException.EXCEPTION; // 좋아요를 누른 적이 없는 경우 예외
+        }
+
+        likeRepository.deleteByTargetIdAndUserId(request.targetId(), request.userId()); // 좋아요 정보 삭제
+    }
+
+    // 좋아요 중복 확인
+    private boolean isAlreadyLiked(Long targetId, String userId) {
+        return likeRepository.existsByTargetIdAndUserId(targetId, userId);
+    }
+
     // 게시글 이미지
     private String processGroupPostImage(MultipartFile groupImageFile) {
         if (groupImageFile != null && !groupImageFile.isEmpty()) {
@@ -83,79 +141,5 @@ public class GroupPostService {
             }
         }
         return null;
-    }
-
-//    //게시물 상세 조회
-//    @Transactional
-//    public GroupPostDetailResponse getGroupPostDetail(Long groupPostId) {
-//        GroupPostDetailDto groupPostDetailDto = groupPostRepository.findById(groupPostId)
-//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
-//        return new GroupPostDetailResponse(groupPostDetailDto);
-//    }
-
-    // 게시글 좋아요 추가
-    @Transactional
-    public void addLikeToGroupPost(LikeServiceRequest request) {
-
-        createLike(request);
-
-        GroupPost post = groupPostRepository.findById(request.targetId())
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
-
-        post.incrementLike();
-
-       groupPostRepository.edit(post);
-
-    }
-
-    //좋아요 취소
-    @Transactional
-    public void cancelLikeToGroupPost(LikeServiceRequest request) {
-
-         GroupPost post = groupPostRepository.findById(request.targetId())
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
-
-        deleteLike(request);
-
-        post.decrementLike();
-        groupPostRepository.edit(post);
-
-    }
-
-    // 좋아요 생성
-    private void createLike(LikeServiceRequest request) {
-
-        User user = userRepository.findById(UserId.of(request.userId()))
-                .orElseThrow(() -> UserNotFoundException.EXCEPTION);// 연관 맺을 User 찾아오기
-
-        if (isAlreadyLike(request.targetId(), request.userId())) // 좋아요를 누른적이 있다면 예외
-            throw AlreadyLikedException.EXCEPTION;
-
-
-        Like like = Like.create(
-                null,
-                TargetType.valueOf(request.targetType()),
-                request.targetId(),
-                request.userId()
-        );
-        try {
-            likeRepository.save(like, user);
-        } catch (RuntimeException e) {
-            throw UserNotFoundException.EXCEPTION;
-        }
-
-    }
-
-    // 좋아요 삭제
-    private void deleteLike (LikeServiceRequest request){
-        if (!isAlreadyLike(request.targetId(), request.userId())) // 좋아요를 누른적이 없다면 예외
-            throw NotLikedException.EXCEPTION;
-
-        likeRepository.deleteByTargetIdAndUserId(request.targetId(), request.userId()); // 해당 좋아요 정보 삭제
-    }
-
-    // 좋아요 중복 확인
-    private boolean isAlreadyLike(Long targetId, String userId) {
-        return likeRepository.existsByTargetIdAndUserId(targetId, userId);
     }
 }
