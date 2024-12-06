@@ -27,6 +27,6 @@ public interface JpaLikeUserRepository extends JpaRepository<LikeEntity, Long> {
     /**
      * 특정 사용자가 누른 글
      */
-    @Query("SELECT l FROM LikeEntity l WHERE l.userEntity.id =: userId")
+    @Query("SELECT l FROM LikeEntity l WHERE l.userEntity.id = :userId")
     List<LikeEntity> findByUserId(String userId);
 }
