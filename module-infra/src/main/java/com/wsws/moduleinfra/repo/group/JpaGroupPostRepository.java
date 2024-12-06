@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface JpaGroupPostRepository extends JpaRepository<GroupPostEntity, Long> {
 
-    //그룹 ID로 게시글 조회
+    // 그룹 ID로 게시글 조회
     @Query("SELECT new com.wsws.moduledomain.group.dto.GroupPostDto( " +
-            "g.groupPostId, u.nickname, u.profileImage, g.content, g.createAt, g.userId) " +
+            "g.groupPostId, u.nickname, u.profileImage, g.content, g.createAt, g.userId, g.likeCount) " + // likeCount 추가
             "FROM GroupPostEntity g " +
             "JOIN UserEntity u ON u.id = g.userId " +
             "WHERE g.groupId = :groupId")

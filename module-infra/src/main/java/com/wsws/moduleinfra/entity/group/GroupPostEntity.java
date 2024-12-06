@@ -1,5 +1,6 @@
 package com.wsws.moduleinfra.entity.group;
 
+import com.wsws.moduledomain.group.GroupPost;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -34,20 +35,36 @@ public class GroupPostEntity {
     private String url; // 이미지 URL
 
     @Column(name = "like_count", nullable = false)
-    private Integer likeCount;
+    private long likeCount;
 
 //    @OneToMany(mappedBy = "groupPost", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<GroupComment> comments;
 
-        public static GroupPostEntity create(String content, Long groupId, String userId, String url) {
+
+        public static GroupPostEntity create(String content, Long groupId, String userId, String url, Long likeCount) {
             GroupPostEntity entity = new GroupPostEntity();
             entity.content = content;
             entity.groupId = groupId;
             entity.userId = userId;
             entity.url = url;
             entity.createAt = LocalDateTime.now();
-            entity.likeCount = 0;
+            entity.likeCount = likeCount;
             return entity;
         }
 
+    public void editEntity(long likeCount) {
+            this.likeCount = likeCount;
     }
+
+    // 좋아요 증가
+    public void incrementLike() {
+        this.likeCount += 1;
+    }
+
+    // 좋아요 감소
+    public void decrementLike() {
+        if (this.likeCount > 0) {
+            this.likeCount -= 1;
+        }
+    }
+}

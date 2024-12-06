@@ -8,9 +8,9 @@ public record GroupPostDto(
         String profile,
         String content,
         LocalDateTime createAt,
-        String userId
+        String userId,
 //        boolean hasReaction,
-//        Long reactionCount,
+        Long likeCount
 //        Long commentCount
 ) {
 }

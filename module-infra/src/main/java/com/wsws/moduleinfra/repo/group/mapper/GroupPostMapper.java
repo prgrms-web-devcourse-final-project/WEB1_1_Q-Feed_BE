@@ -11,10 +11,12 @@ public class GroupPostMapper {
             return null;
         }
         return GroupPost.create(
+                entity.getGroupPostId(),
                 entity.getGroupId(),
                 entity.getContent(),
                 entity.getUrl(),
-                entity.getUserId()
+                entity.getUserId(),
+                entity.getLikeCount()
         );
     }
 
@@ -27,7 +29,8 @@ public class GroupPostMapper {
                 domain.getContent(),
                 domain.getGroupId(),
                 domain.getUserId(),
-                domain.getUrl()
+                domain.getUrl(),
+                domain.getLikeCount()
         );
     }
 }
