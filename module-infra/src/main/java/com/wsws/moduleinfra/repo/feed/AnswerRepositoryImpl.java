@@ -2,14 +2,19 @@ package com.wsws.moduleinfra.repo.feed;
 
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
+import com.wsws.moduledomain.feed.comment.AnswerComment;
+import com.wsws.moduleinfra.entity.feed.AnswerCommentEntity;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import com.wsws.moduleinfra.entity.feed.QuestionEntity;
+import com.wsws.moduleinfra.entity.feed.mapper.AnswerCommentEntityMapper;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,6 +32,19 @@ public class AnswerRepositoryImpl implements AnswerRepository {
         return jpaAnswerRepository.findById(id)
                 .map(AnswerEntityMapper::toDomain);
     }
+
+//    @Override
+//    public Optional<Answer> findByIdWithComments(Long id) {
+//        return jpaAnswerRepository.findByIdWithComments(id)
+//                .map(answerEntity -> {
+//                    List<AnswerComment> answerComments = answerEntity.getAnswerCommentEntities().stream()
+//                            .map(AnswerCommentEntityMapper::toDomain)
+//                            .toList(); // AnswerCommentEntity -> AnswerComment
+//                    Answer answer = AnswerEntityMapper.toDomain(answerEntity);
+//                    answerComments.forEach(answer::addComments);  // 답변 댓글 추가
+//                    return answer;
+//                });
+//    }
 
     /**
      * 답변 저장

@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface JpaLikeUserRepository extends JpaRepository<LikeEntity, Long> {
 
@@ -21,4 +23,10 @@ public interface JpaLikeUserRepository extends JpaRepository<LikeEntity, Long> {
     @Modifying
     @Query("DELETE FROM LikeEntity l WHERE l.targetId = :targetId AND l.userEntity.id = :userId")
     void deleteByTargetIdAndUserId(Long targetId, String userId);
+
+    /**
+     * 특정 사용자가 누른 글
+     */
+    @Query("SELECT l FROM LikeEntity l WHERE l.userEntity.id =: userId")
+    List<LikeEntity> findByUserId(String userId);
 }

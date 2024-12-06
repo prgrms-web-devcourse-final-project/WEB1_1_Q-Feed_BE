@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -47,6 +49,7 @@ public class AnswerCommentService {
                 request.content(),
                 depth,
                 0,
+                LocalDateTime.now(),
                 request.answerId(),
                 request.userId(),
                 parentCommentId

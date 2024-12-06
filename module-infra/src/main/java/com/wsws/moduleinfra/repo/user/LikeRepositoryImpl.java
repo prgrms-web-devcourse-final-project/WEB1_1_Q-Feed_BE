@@ -11,6 +11,8 @@ import com.wsws.moduleinfra.entity.user.UserEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class LikeRepositoryImpl implements LikeRepository {
@@ -36,5 +38,12 @@ public class LikeRepositoryImpl implements LikeRepository {
     @Override
     public void deleteByTargetIdAndUserId(Long targetId, String userId) {
         jpaLikeUserRepository.deleteByTargetIdAndUserId(targetId, userId);
+    }
+
+    @Override
+    public List<Like> findByUserId(String userId) {
+        return jpaLikeUserRepository.findByUserId(userId).stream()
+                .map(LikeEntityMapper::toDomain)
+                .toList();
     }
 }

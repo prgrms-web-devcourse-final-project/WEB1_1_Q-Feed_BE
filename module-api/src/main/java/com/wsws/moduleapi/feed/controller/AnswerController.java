@@ -1,10 +1,14 @@
 package com.wsws.moduleapi.feed.controller;
 
 import com.wsws.moduleapi.feed.dto.MessageResponse;
+import com.wsws.moduleapi.feed.dto.answer.AnswerGetApiResponse;
 import com.wsws.moduleapi.feed.dto.answer.AnswerPatchApiRequest;
 import com.wsws.moduleapi.feed.dto.answer.AnswerPostApiRequest;
 import com.wsws.moduleapi.feed.dto.answer.AnswerPostApiResponse;
 import com.wsws.moduleapplication.feed.dto.answer.AnswerCreateServiceResponse;
+import com.wsws.moduleapplication.feed.dto.answer.AnswerFindServiceRequest;
+import com.wsws.moduleapplication.feed.dto.answer.AnswerFindServiceResponse;
+import com.wsws.moduleapplication.feed.service.AnswerReadService;
 import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.feed.service.AnswerService;
 import com.wsws.modulesecurity.security.UserPrincipal;
@@ -29,6 +33,7 @@ import java.util.Map;
 public class AnswerController {
 
     private final AnswerService answerService;
+    private final AnswerReadService answerReadService;
 
     /**
      * 답변 목록 조회
@@ -39,10 +44,13 @@ public class AnswerController {
      */
     @Operation(summary = "답변 상세 조회", description = "답변의 상세목록을 조회합니다.")
     @GetMapping("/{answer-id}")
-    public ResponseEntity<?> getAnswers(
+    public ResponseEntity<AnswerGetApiResponse> getAnswers(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "답변 상세를 조회할 답변 ID") @PathVariable("answer-id") Long answerId) {
-        answerService.findAnswerByAnswerId(answerId);
-        return null;
+        String userId = userPrincipal.getId();
+        AnswerFindServiceResponse serviceResponse = answerReadService.findAnswerByAnswerId(new AnswerFindServiceRequest(userId, answerId));
+
+        return ResponseEntity.ok(AnswerGetApiResponse.toApiResponse(serviceResponse));
     }
 
     /**
@@ -60,7 +68,7 @@ public class AnswerController {
             , @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         String userId = userPrincipal.getId(); // 사용자 아이디를 가져온다.
-//        String userId = "user_id1";
+//        String authorUserId = "user_id1";
         AnswerCreateServiceResponse serviceResponse = answerService.createAnswer(answerPostApiRequest.toServiceDto(userId)); // 답변 생성
 
         return ResponseEntity.status(201).body(new AnswerPostApiResponse(serviceResponse));
@@ -109,7 +117,7 @@ public class AnswerController {
             @Parameter(description = "좋아요를 추가할 답변 ID") @PathVariable("answer-id") Long answerId) {
 
         String userId = userPrincipal.getId(); // 좋아요 누른 사용자 아이디 받아오기
-//        String userId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
+//        String authorUserId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
         LikeServiceRequest request = new LikeServiceRequest(userId, "ANSWER", answerId); // 도메인으로의 의존성을 피하기 위해 문자열로 넘겨줌
         answerService.addLikeToAnswer(request); // 해당 글에 좋아요 1 카운트
 
@@ -131,7 +139,7 @@ public class AnswerController {
             @Parameter(description = "좋아요를 취소할 답변 ID") @PathVariable("answer-id") Long answerId) {
 
         String userId = userPrincipal.getId(); // 좋아요 누른 사용자 아이디 받아오기
-//        String userId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
+//        String authorUserId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
 
         LikeServiceRequest request = new LikeServiceRequest(userId, "ANSWER", answerId); // 도메인으로의 의존성을 피하기 위해 문자열로 넘겨줌
 

@@ -3,6 +3,7 @@ package com.wsws.moduledomain.feed.comment.repo;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -11,6 +12,16 @@ public interface AnswerCommentRepository {
      * id로 답변 댓글 찾아오기
      */
     Optional<AnswerComment> findById(Long id);
+
+    /**
+     * 특정 답변의 부모 댓글 찾아오기
+     */
+    List<AnswerComment> findParentCommentsByAnswerId(Long answerId);
+
+    /**
+     * 특정 부모 댓글들의 하위 댓글 조회
+     */
+    List<AnswerComment> findChildCommentsByParentsId(List<Long> parentIds);
 
     /**
      * 답변 댓글 저장

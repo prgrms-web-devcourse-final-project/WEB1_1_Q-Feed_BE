@@ -13,4 +13,5 @@ import java.util.Optional;
 @Repository
 public interface JpaFollowRepository extends JpaRepository<FollowEntity, FollowIdEmbeddable> {
     Optional<FollowEntity> findById_FollowerIdAndId_FolloweeId(String followerId, String followeeId);
+    List<FollowEntity> findById_FollowerId(String followerId);
 }

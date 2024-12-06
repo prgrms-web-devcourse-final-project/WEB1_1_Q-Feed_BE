@@ -8,6 +8,7 @@ import com.wsws.moduleinfra.entity.feed.mapper.AnswerCommentEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,6 +22,21 @@ public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
     public Optional<AnswerComment> findById(Long id) {
         return jpaAnswerCommentRepository.findById(id)
                 .map(AnswerCommentEntityMapper::toDomain);
+    }
+
+    @Override
+    public List<AnswerComment> findParentCommentsByAnswerId(Long answerId) {
+        return jpaAnswerCommentRepository.findParentCommentsByAnswerId(answerId).stream()
+                .map(AnswerCommentEntityMapper::toDomain)
+                .toList();
+
+    }
+
+    @Override
+    public List<AnswerComment> findChildCommentsByParentsId(List<Long> parentIds) {
+        return jpaAnswerCommentRepository.findChildCommentsByParentsId(parentIds).stream()
+                .map(AnswerCommentEntityMapper::toDomain)
+                .toList();
     }
 
     @Override

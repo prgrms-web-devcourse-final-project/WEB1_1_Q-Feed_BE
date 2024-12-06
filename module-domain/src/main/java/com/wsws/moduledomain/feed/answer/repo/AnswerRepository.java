@@ -12,6 +12,11 @@ public interface AnswerRepository {
      */
     Optional<Answer> findById(Long id);
 
+//    /**
+//     * 답변을 Id를 기준으로 댓글과 함께 찾기
+//     */
+//    Optional<Answer> findByIdWithComments(Long id);
+
     /**
      * 답변 저장
      */

@@ -10,12 +10,12 @@ public record AnswerCommentFindServiceResponse(
         Long commentId,
         String userId,
         String authorNickname,
-        String profile_image,
+        String profileImage,
         String content,
         int likeCount,
         LocalDateTime createdAt,
         Boolean isLike,
-        Boolean isFollow,
+        Boolean isFollowing,
         int childCommentCount,
         List<AnswerCommentFindServiceResponse> children
 ) {

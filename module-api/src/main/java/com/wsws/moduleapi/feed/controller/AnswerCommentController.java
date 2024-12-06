@@ -29,14 +29,6 @@ public class AnswerCommentController {
     private final AnswerCommentService answerCommentService;
 
     /**
-     * 답변 대댓글 조회
-     */
-    @GetMapping("/{parent-comment-id}")
-    public ResponseEntity<?> getAnswerCommentReply() {
-        return null;
-    }
-
-    /**
      * 답변 댓글 추가
      */
     @Operation(summary = "답변 댓글 추가", description = "답변에 대한 댓글을 작성합니다.")
@@ -50,7 +42,7 @@ public class AnswerCommentController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody AnswerCommentPostApiRequest request) {
         String userId = userPrincipal.getId();
-//        String userId = "user_id1";
+//        String authorUserId = "user_id1";
         AnswerCommentCreateServiceResponse answerComment =
                 answerCommentService.createAnswerComment(request.toServiceDto(userId));
         return ResponseEntity.status(201).body(new AnswerCommentPostApiResponse(answerComment.answerCommentId(), "댓글이 추가되었습니다."));
@@ -102,7 +94,7 @@ public class AnswerCommentController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "좋아요를 추가할 답변 댓글 ID") @PathVariable("comment-id") Long commentId) {
         String userId = userPrincipal.getId();
-//                String userId = "user_id1";
+//                String authorUserId = "user_id1";
         answerCommentService.addLikeToAnswerComment(new LikeServiceRequest(userId, "ANSWER_COMMENT", commentId));
 
         return ResponseEntity.ok(new MessageResponse("좋아요가 추가되었습니다."));
@@ -124,7 +116,7 @@ public class AnswerCommentController {
             @Parameter(description = "좋아요를 취소할 답변 댓글 ID") @PathVariable("comment-id") Long commentId
     ) {
         String userId = userPrincipal.getId();
-//        String userId = "user_id1";
+//        String authorUserId = "user_id1";
         LikeServiceRequest request = new LikeServiceRequest(userId, "ANSWER_COMMENT", commentId);
         answerCommentService.cancelLikeToCommentAnswer(request);
 

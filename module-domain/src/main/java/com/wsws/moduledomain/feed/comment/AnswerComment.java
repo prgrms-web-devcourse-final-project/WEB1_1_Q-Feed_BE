@@ -22,7 +22,7 @@ public class AnswerComment {
     private AnswerId answerId;
     private UserId userId;
     private AnswerCommentId parentAnswerCommentId;
-    private List<AnswerComment> childrenComment = new ArrayList<>();
+
 
     public static AnswerComment create(Long commentId, String content, int depth, int likeCount, LocalDateTime createdAt, Long answerId, String userId, Long parentCommentId) {
         AnswerComment answerComment = new AnswerComment();
