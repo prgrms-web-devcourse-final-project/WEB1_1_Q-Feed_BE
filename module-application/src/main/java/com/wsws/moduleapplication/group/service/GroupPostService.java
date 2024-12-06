@@ -1,6 +1,5 @@
 package com.wsws.moduleapplication.group.service;
 
-import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.group.dto.CreateGroupPostRequest;
 import com.wsws.moduleapplication.group.dto.GroupPostServiceResponse;
 import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
@@ -10,7 +9,6 @@ import com.wsws.moduleapplication.user.exception.ProfileImageProcessingException
 import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
-import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.group.GroupPost;
 import com.wsws.moduledomain.group.dto.GroupPostDto;
 import com.wsws.moduledomain.group.repo.GroupPostRepository;

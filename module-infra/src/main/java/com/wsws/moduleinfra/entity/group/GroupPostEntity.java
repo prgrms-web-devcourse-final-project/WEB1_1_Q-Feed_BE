@@ -1,6 +1,5 @@
 package com.wsws.moduleinfra.entity.group;
 
-import com.wsws.moduledomain.group.GroupPost;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -56,15 +55,4 @@ public class GroupPostEntity {
             this.likeCount = likeCount;
     }
 
-    // 좋아요 증가
-    public void incrementLike() {
-        this.likeCount += 1;
-    }
-
-    // 좋아요 감소
-    public void decrementLike() {
-        if (this.likeCount > 0) {
-            this.likeCount -= 1;
-        }
-    }
 }

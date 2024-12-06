@@ -3,7 +3,6 @@ package com.wsws.moduleinfra.repo.group;
 import com.wsws.moduledomain.group.GroupPost;
 import com.wsws.moduledomain.group.dto.GroupPostDto;
 import com.wsws.moduledomain.group.repo.GroupPostRepository;
-import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import com.wsws.moduleinfra.entity.group.GroupPostEntity;
 import com.wsws.moduleinfra.repo.group.mapper.GroupPostMapper;
 import jakarta.transaction.Transactional;
