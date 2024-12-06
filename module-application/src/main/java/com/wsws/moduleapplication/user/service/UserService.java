@@ -58,8 +58,8 @@ public class UserService {
                 request.email(),
                 request.password(),
                 request.nickname(),
-                request.description(),
                 profileImageUrl,
+                request.description(),
                 passwordEncoder
         );
 

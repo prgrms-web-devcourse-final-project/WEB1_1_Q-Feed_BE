@@ -34,7 +34,7 @@ public class UserController {
 
     @Operation(summary = "회원가입", description = "새로운 사용자를 등록합니다.")
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> signup(@RequestBody RegisterUserRequest request) {
+    public ResponseEntity<AuthResponse> signup(@ModelAttribute RegisterUserRequest request) {
         userService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse("회원가입이 완료되었습니다."));
     }
@@ -65,7 +65,7 @@ public class UserController {
     @PatchMapping
     public ResponseEntity<AuthResponse> updateProfile(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestBody UpdateProfileServiceDto dto) {
+            @ModelAttribute UpdateProfileServiceDto dto) {
         String userId = userPrincipal.getId();
         userService.updateProfile(dto, userId);
         return ResponseEntity.ok(new AuthResponse("사용자 정보 수정이 완료되었습니다."));
