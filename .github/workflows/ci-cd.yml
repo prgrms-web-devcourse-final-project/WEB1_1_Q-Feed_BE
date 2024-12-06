@@ -25,6 +25,9 @@ jobs:
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
       KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID}}
       KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI}}
+      FCM_FIREBASE_CONFIG_PATH: ${{ secrets.FCM_FIREBASE_CONFIG_PATH }}
+
+
 
     steps:
       - name: Github Repository 파일 불러오기
@@ -106,6 +109,8 @@ jobs:
             echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
             echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID}}" >> .env
             echo "KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI}}" >> .env
+            echo "FCM_FIREBASE_CONFIG_PATH=${{ secrets.FCM_FIREBASE_CONFIG_PATH }}" >> .env
+            
             
             docker pull ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
             

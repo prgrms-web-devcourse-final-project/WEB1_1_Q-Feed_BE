@@ -43,7 +43,7 @@ public class GroupMemberService {
         GroupMember groupMember = groupMemberRepository.findByUserIdAndGroupId(userId, groupId)
                 .orElseThrow(() -> new IllegalArgumentException("그룹에서 해당 멤버를 찾을 수 없습니다."));
 
-        groupMemberRepository.delete(groupMember);
+        groupMemberRepository.deleteById(groupMember.getGroupMemberId());
     }
 
     public List<GroupMemberDetailServiceResponse> getGroupMembers(Long groupId) {
@@ -64,10 +64,10 @@ public class GroupMemberService {
         validateAdminPermission(group, adminId);
 
         GroupMember groupMember = findMemberById(memberId);
-        //그룹 멤버 확인
-        validateGroupMembers(groupMember, groupId);
+//        //그룹 멤버 확인
+//        validateGroupMembers(groupMember, groupId);
 
-        groupMemberRepository.delete(groupMember);
+        groupMemberRepository.deleteById(groupMember.getGroupMemberId());
     }
 
 

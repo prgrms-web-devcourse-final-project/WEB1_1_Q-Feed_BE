@@ -25,9 +25,11 @@ public class ChatRoom {
             throw new SelfSelectionNotAllowedException();
         }
         if (userId.compareTo(userId2) > 0) {
+            String temp = userId;
             userId = userId2;
-            userId2 = userId;
+            userId2 = temp;
         }
+
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.id = id;
         chatRoom.userId = userId;

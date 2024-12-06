@@ -86,7 +86,7 @@ public class GroupController {
     }
 
     //그룹 상세 조회
-    @GetMapping("/{groupId}")
+    @GetMapping("/{groupId}/detail")
     @Operation(summary = "그룹 상세 조회", description = "해당 그룹을 상세 조회합니다.")
     public ResponseEntity<GroupDetailApiResponse> getGroupDetail(
             @Parameter(description = "상세 조회할 그룹 ID") @PathVariable Long groupId) {
