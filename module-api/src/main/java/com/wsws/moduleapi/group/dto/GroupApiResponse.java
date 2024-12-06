@@ -1,6 +1,7 @@
 package com.wsws.moduleapi.group.dto;
 
 import com.wsws.moduleapplication.group.dto.GroupServiceResponse;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ public record GroupApiResponse(
         String groupName,
         String description,
         boolean isOpen,
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         LocalDateTime createdAt,
         Long membersCount
 ) {

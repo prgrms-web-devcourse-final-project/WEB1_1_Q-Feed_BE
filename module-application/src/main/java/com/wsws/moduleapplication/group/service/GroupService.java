@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -103,7 +104,7 @@ public class GroupService {
 
     //그룹 상세조회
     @Transactional(readOnly = true)
-    public GroupDetailServiceResponse getGroupDetail(Long groupId) {
+    public GroupDetailServiceResponse getGroupDetail(Long groupId,String userId) {
 
         GroupDetailDto groupDetailDto = groupRepository.findGroupWithCategory(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
@@ -111,10 +112,11 @@ public class GroupService {
         List<GroupMemberDto> groupMembers = groupRepository.findMembersByGroupId(groupId);
 
         //여기서 userid와 goupid의 그룹 멤버가 있는지 boolean으로 가져와서
-        //boolean isMember = groupMemberRepository.existsByUserIdAndGroupId(userId, groupId);이런식
-        //있으면 List<GroupMemberDto> memberResponses = isMember ? groupMembers : Collections.emptyList(); 이런식?
+        boolean isMember = groupMemberRepository.existsByUserIdAndGroupId(userId, groupId);
+        //있으면
+        List<GroupMemberDto> memberResponses = isMember ? groupMembers : Collections.emptyList();
 
-        return new GroupDetailServiceResponse(groupDetailDto, groupMembers);
+        return new GroupDetailServiceResponse(groupDetailDto, groupMembers,memberResponses);
     }
 
     private Group findGroupById(Long groupId) {
