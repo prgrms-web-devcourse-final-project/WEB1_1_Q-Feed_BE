@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "user_groups")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GroupEntity {
@@ -51,6 +53,16 @@ public class GroupEntity {
         groupEntity.url = url;
         groupEntity.isOpen = isOpen;
         return groupEntity;
+    }
+
+    public void editEntity(String groupName, String description, String image){
+        this.groupName = groupName;
+        this.description = description;
+        this.url = image;
+    }
+
+    public void changeStatus(boolean isOpen) {
+        this.isOpen = isOpen;
     }
 
 

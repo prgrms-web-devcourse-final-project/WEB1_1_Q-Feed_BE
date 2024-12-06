@@ -33,7 +33,7 @@ public class User {
 
 
     // 사용자 생성
-    public static User create(String email, String rawPassword, String nickname, String profileImage, PasswordEncoder passwordEncoder) {
+    public static User create(String email, String rawPassword, String nickname, String profileImage, String description,PasswordEncoder passwordEncoder) {
 
 
 
@@ -43,6 +43,7 @@ public class User {
         user.password = Password.encode(rawPassword, passwordEncoder); // Password VO 생성 및 암호화
         user.nickname = Nickname.from(nickname); // Nickname VO 생성 및 유효성 검증
         user.profileImage = profileImage != null ? profileImage : ""; // 프로필 이미지가 없으면 기본값 설정
+        user.description = description;
         user.isUsable = true; // 기본 활성 상태
         user.userRole = UserRole.ROLE_USER; // 기본 역할
         return user;

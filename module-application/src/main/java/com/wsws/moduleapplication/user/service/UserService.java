@@ -2,6 +2,7 @@ package com.wsws.moduleapplication.user.service;
 
 import com.wsws.moduleapplication.user.dto.PasswordChangeServiceDto;
 import com.wsws.moduleapplication.user.dto.RegisterUserRequest;
+import com.wsws.moduleapplication.user.dto.UpdateFcmTokenRequest;
 import com.wsws.moduleapplication.user.dto.UpdateProfileServiceDto;
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
@@ -21,11 +22,13 @@ import com.wsws.moduledomain.user.vo.Email;
 import com.wsws.moduledomain.user.vo.Nickname;
 import com.wsws.moduledomain.user.vo.UserId;
 import com.wsws.moduledomain.user.vo.UserInterest;
+import com.wsws.moduleinfra.FcmRedis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Duration;
 import java.util.List;
 
 @Service
@@ -38,6 +41,7 @@ public class UserService {
     private final CategoryRepository categoryRepository;
     private final FileStorageService fileStorageService;
     private final UserInterestRepository userInterestRepository;
+    private final FcmRedis fcmRedis;
 
 
 
@@ -49,18 +53,19 @@ public class UserService {
         // 프로필 이미지 처리
         String profileImageUrl = processProfileImage(request.profileImageFile());
 
-
-
         // 사용자 생성
         User user = User.create(
                 request.email(),
                 request.password(),
                 request.nickname(),
+                request.description(),
                 profileImageUrl,
                 passwordEncoder
         );
 
         userRepository.save(user);
+
+        createInterests(user.getId().getValue(), request.interestCategoryNames()); //
 
     }
 
@@ -196,5 +201,12 @@ public class UserService {
         return null; // 이미지가 없는 경우
     }
 
+    public void saveFcmToken(UpdateFcmTokenRequest request, String userId) {
+        User user = userRepository.findById(UserId.of(userId))
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        String value = request.fcmToken();
+        Duration twoMonths = Duration.ofDays(60); // 2달
+        fcmRedis.saveFcmToken(String.valueOf(user.getId()), value, twoMonths);
+    }
 
 }
