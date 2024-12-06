@@ -28,7 +28,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GroupPostService {
     private final GroupPostRepository groupPostRepository;
-    private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
     private final LikeRepository likeRepository;
 
@@ -99,10 +98,8 @@ public class GroupPostService {
 
     // 좋아요 생성 처리
     private void createLikeIfNotExists(LikeServiceRequest request) {
-        User user = userRepository.findById(UserId.of(request.userId()))
-                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
-        if (isAlreadyLiked(request.targetId(), request.userId())) {
+        if (isAlreadyLiked(request.targetId(), request.userId(), TargetType.valueOf(request.targetType()))) {
             throw AlreadyLikedException.EXCEPTION; // 이미 좋아요를 누른 경우 예외
         }
 
@@ -113,12 +110,12 @@ public class GroupPostService {
                 request.userId()
         );
 
-        likeRepository.save(like, user); // 좋아요 저장
+        likeRepository.save(like); // 좋아요 저장
     }
 
     // 좋아요 삭제 처리
     private void deleteLikeIfExists(LikeServiceRequest request) {
-        if (!isAlreadyLiked(request.targetId(), request.userId())) {
+        if (!isAlreadyLiked(request.targetId(), request.userId(), TargetType.valueOf(request.targetType()))) {
             throw NotLikedException.EXCEPTION; // 좋아요를 누른 적이 없는 경우 예외
         }
 
@@ -126,8 +123,8 @@ public class GroupPostService {
     }
 
     // 좋아요 중복 확인
-    private boolean isAlreadyLiked(Long targetId, String userId) {
-        return likeRepository.existsByTargetIdAndUserId(targetId, userId);
+    private boolean isAlreadyLiked(Long targetId, String userId, TargetType targetType) {
+        return likeRepository.existsByTargetIdAndUserIdAndTargetType(targetId, userId, targetType);
     }
 
     // 게시글 이미지
