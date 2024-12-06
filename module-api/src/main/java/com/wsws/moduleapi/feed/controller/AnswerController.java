@@ -24,7 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,14 +42,26 @@ public class AnswerController {
     /**
      * 답변 상세 조회
      */
-    @Operation(summary = "답변 상세 조회", description = "답변의 상세목록을 조회합니다.")
     @GetMapping("/{answer-id}")
+    @Operation(summary = "답변 상세 조회", description = "답변의 상세목록을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "답변 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "없는 답변 일 때", content = @Content),
+            @ApiResponse(responseCode = "404", description = "작성자 정보를 찾을 수 없을 때", content = @Content)
+    })
     public ResponseEntity<AnswerGetApiResponse> getAnswers(
-//            @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @Parameter(description = "답변 상세를 조회할 답변 ID") @PathVariable("answer-id") Long answerId) {
-//        String userId = userPrincipal.getId();
-        String userId = "user_id1";
-        AnswerFindServiceResponse serviceResponse = answerReadService.findAnswerByAnswerId(new AnswerFindServiceRequest(userId, answerId));
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(description = "답변 상세를 조회할 답변 ID") @PathVariable("answer-id") Long answerId,
+            @Parameter(description = "커서로 사용할 마지막 댓글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String commentCursor,
+            @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size
+    ) {
+        String userId = userPrincipal.getId();
+//        String userId = "user_id1";
+
+        LocalDateTime parsedCursor = commentCursor != null ? LocalDateTime.parse(commentCursor) : LocalDateTime.now();
+
+        AnswerFindServiceResponse serviceResponse =
+                answerReadService.findOneAnswerWithCursor(new AnswerFindServiceRequest(userId, answerId), parsedCursor, size);
 
         return ResponseEntity.ok(AnswerGetApiResponse.toApiResponse(serviceResponse));
     }
@@ -66,10 +78,10 @@ public class AnswerController {
     })
     public ResponseEntity<AnswerPostApiResponse> postAnswers(
             @Valid @RequestBody AnswerPostApiRequest answerPostApiRequest
-//            , @AuthenticationPrincipal UserPrincipal userPrincipal
+            , @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-//        String userId = userPrincipal.getId(); // 사용자 아이디를 가져온다.
-        String userId = "user_id1";
+        String userId = userPrincipal.getId(); // 사용자 아이디를 가져온다.
+//        String userId = "user_id1";
         AnswerCreateServiceResponse serviceResponse = answerService.createAnswer(answerPostApiRequest.toServiceDto(userId)); // 답변 생성
 
         return ResponseEntity.status(201).body(new AnswerPostApiResponse(serviceResponse));
@@ -140,7 +152,7 @@ public class AnswerController {
             @Parameter(description = "좋아요를 취소할 답변 ID") @PathVariable("answer-id") Long answerId) {
 
         String userId = userPrincipal.getId(); // 좋아요 누른 사용자 아이디 받아오기
-//        String authorUserId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
+//        String userId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
 
         LikeServiceRequest request = new LikeServiceRequest(userId, "ANSWER", answerId); // 도메인으로의 의존성을 피하기 위해 문자열로 넘겨줌
 

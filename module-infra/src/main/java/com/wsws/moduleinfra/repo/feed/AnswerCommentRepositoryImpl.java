@@ -6,8 +6,11 @@ import com.wsws.moduleinfra.entity.feed.AnswerCommentEntity;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerCommentEntityMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,8 +28,9 @@ public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
     }
 
     @Override
-    public List<AnswerComment> findParentCommentsByAnswerId(Long answerId) {
-        return jpaAnswerCommentRepository.findParentCommentsByAnswerId(answerId).stream()
+    public List<AnswerComment> findParentCommentsByAnswerIdWithCursor(Long answerId, LocalDateTime commentCursor, int size) {
+        Pageable pageable = PageRequest.of(0, size);
+        return jpaAnswerCommentRepository.findParentCommentsByAnswerIdWithCursor(answerId, commentCursor, pageable).stream()
                 .map(AnswerCommentEntityMapper::toDomain)
                 .toList();
 

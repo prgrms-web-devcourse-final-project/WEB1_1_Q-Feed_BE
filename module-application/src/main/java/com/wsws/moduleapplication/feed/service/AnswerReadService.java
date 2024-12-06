@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -55,13 +56,13 @@ public class AnswerReadService {
      * - Like: 해당 사용자가 해당 댓글/대댓글에 좋아요를 눌렀는지 여부<br>
      * - Follow: 요청한 사용자가 댓글/대댓글 작성자를 팔로우 했는지 여부<br>
      */
-    public AnswerFindServiceResponse findAnswerByAnswerId(AnswerFindServiceRequest request) {
+    public AnswerFindServiceResponse findOneAnswerWithCursor(AnswerFindServiceRequest request, LocalDateTime commentCursor, int size) {
         AnswerFindServiceResponseBuilder answerResponseBuilder = AnswerFindServiceResponse.builder();
         // Answer 정보 세팅
         buildAnswer(request, answerResponseBuilder);
 
         // AnswerComment 정보 세팅
-        buildAnswerComment(request, answerResponseBuilder);
+        buildAnswerComment(request, answerResponseBuilder, commentCursor, size);
 
         return answerResponseBuilder.build();
     }
@@ -99,9 +100,9 @@ public class AnswerReadService {
     /**
      * Answer Comment 정보를 세팅
      */
-    private void buildAnswerComment(AnswerFindServiceRequest request, AnswerFindServiceResponseBuilder answerResponseBuilder) {
-        // Answer에 대한 부모 Answer Comment 가져오기
-        List<AnswerComment> parentComments = answerCommentRepository.findParentCommentsByAnswerId(request.answerId());
+    private void buildAnswerComment(AnswerFindServiceRequest request, AnswerFindServiceResponseBuilder answerResponseBuilder, LocalDateTime commentCursor, int size) {
+        // Answer에 대한 부모 Answer Comment를 페이징으로 가져오기
+        List<AnswerComment> parentComments = answerCommentRepository.findParentCommentsByAnswerIdWithCursor(request.answerId(), commentCursor, size);
 
         // 부모 Comment ID 추출
         List<Long> parentIds = parentComments.stream()
