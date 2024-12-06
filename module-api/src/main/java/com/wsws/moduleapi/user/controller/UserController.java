@@ -34,7 +34,7 @@ public class UserController {
 
     @Operation(summary = "회원가입", description = "새로운 사용자를 등록합니다.")
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> signup(@RequestBody RegisterUserRequest request) {
+    public ResponseEntity<AuthResponse> signup(@ModelAttribute RegisterUserRequest request) {
         userService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse("회원가입이 완료되었습니다."));
     }
