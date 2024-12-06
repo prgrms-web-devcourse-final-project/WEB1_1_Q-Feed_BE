@@ -13,7 +13,9 @@ import com.wsws.moduledomain.group.GroupMember;
 import com.wsws.moduledomain.group.dto.GroupDetailDto;
 import com.wsws.moduledomain.group.dto.GroupDto;
 import com.wsws.moduledomain.group.dto.GroupMemberDto;
+import com.wsws.moduledomain.group.dto.GroupPostDto;
 import com.wsws.moduledomain.group.repo.GroupMemberRepository;
+import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduledomain.group.repo.GroupRepository;
 import com.wsws.moduledomain.group.vo.GroupId;
 import com.wsws.moduledomain.user.vo.UserId;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 public class GroupService {
     private final GroupMemberRepository groupMemberRepository;
     private final GroupRepository groupRepository;
+    private final GroupPostRepository groupPostRepository;
     private final FileStorageService fileStorageService;
 
     @Transactional
@@ -104,19 +107,20 @@ public class GroupService {
 
     //그룹 상세조회
     @Transactional(readOnly = true)
-    public GroupDetailServiceResponse getGroupDetail(Long groupId) {
+    public GroupDetailServiceResponse getGroupDetail(Long groupId,String userId) {
 
         GroupDetailDto groupDetailDto = groupRepository.findGroupWithCategory(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
 
         List<GroupMemberDto> groupMembers = groupRepository.findMembersByGroupId(groupId);
 
-        //여기서 userid와 goupid의 그룹 멤버가 있는지 boolean으로 가져와서
-        //boolean isMember = groupMemberRepository.existsByUserIdAndGroupId(userId, groupId);
-        //있으면
-        //List<GroupMemberDto> memberResponses = isMember ? groupMembers : Collections.emptyList();
+        List<GroupPostDto> posts = groupPostRepository.findByGroupId(groupId);
 
-        return new GroupDetailServiceResponse(groupDetailDto, groupMembers);
+        //여기서 userid와 goupid의 그룹 멤버가 있는지 boolean으로 가져와서
+        boolean isMember = groupMemberRepository.existsByUserIdAndGroupId(userId, groupId);
+        //있으면 이런식으로 그룹 포스트 처리해주기
+        List<GroupPostDto> groupPosts = isMember ? posts : Collections.emptyList();
+        return new GroupDetailServiceResponse(groupDetailDto, groupMembers, groupPosts);
     }
 
     private Group findGroupById(Long groupId) {

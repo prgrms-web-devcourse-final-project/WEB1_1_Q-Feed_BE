@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.wsws.moduledomain.group.dto.GroupDetailDto;
 import com.wsws.moduledomain.group.dto.GroupMemberDto;
+import com.wsws.moduledomain.group.dto.GroupPostDto;
 
 
 public record GroupDetailServiceResponse(
@@ -16,9 +17,10 @@ public record GroupDetailServiceResponse(
         String description,
         String adminId,
         LocalDateTime createdAt,
-        List<GroupMemberServiceResponse> members
+        List<GroupMemberServiceResponse> members,
+        List<GroupPostServiceResponse> posts
 ) {
-    public GroupDetailServiceResponse(GroupDetailDto group, List<GroupMemberDto> members) {
+    public GroupDetailServiceResponse(GroupDetailDto group, List<GroupMemberDto> members, List<GroupPostDto> posts) {
         this(
                 group.groupId(),
                 group.categoryName().name(), // CategoryName 가져오기
@@ -29,6 +31,9 @@ public record GroupDetailServiceResponse(
                 group.createdAt(),
                 members.stream() // GroupMemberDto-> GroupMemberServiceResponse
                         .map(GroupMemberServiceResponse::new)
+                        .collect(Collectors.toList()),
+                posts.stream()
+                        .map(GroupPostServiceResponse::new)
                         .collect(Collectors.toList())
         );
     }
