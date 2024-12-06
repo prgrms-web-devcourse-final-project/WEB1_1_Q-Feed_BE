@@ -60,6 +60,7 @@ public class User {
         return user;
     }
 
+
     //사용자 관심사 추가
     public void addInterest(CategoryId categoryId) {
         UserInterest interest = UserInterest.create(categoryId);
@@ -102,6 +103,19 @@ public class User {
         Password.validate(newPassword);
 
         this.password = Password.encode(newPassword, passwordEncoder);
+    }
+
+    public static User createSocialLoginUser(String email, String nickname, String profileImageUrl) {
+        User user = new User();
+        user.id = UserId.create();
+        user.email = Email.from(email);
+        user.password = null; // 비밀번호는 null
+        user.nickname = Nickname.from(nickname);
+        user.profileImage = profileImageUrl; // 기본값
+        user.description = ""; // 기본값
+        user.isUsable = true; // 기본 활성 상태
+        user.userRole = UserRole.ROLE_USER; // 기본 역할
+        return user;
     }
 
     // 사용자 상태 변경
