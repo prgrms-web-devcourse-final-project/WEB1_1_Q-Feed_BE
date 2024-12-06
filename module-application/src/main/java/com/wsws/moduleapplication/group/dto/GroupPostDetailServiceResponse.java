@@ -8,10 +8,7 @@ public record GroupPostDetailServiceResponse (
         String authorNickName,
         String authorProfile,
         String content,
-        LocalDateTime createAt,
-//        boolean hasReaction,
-        boolean isFollowing
-//        Integer reactionCount,
+        LocalDateTime createAt
 //        Integer commentCount
 //        List<CommentDetailResponse> comments
 ){
@@ -20,8 +17,7 @@ public record GroupPostDetailServiceResponse (
                 groupPost.authorNickname(),
                 groupPost.authorProfile(),
                 groupPost.content(),
-                groupPost.createdAt(),
-                groupPost.isFollowing()
+                groupPost.createdAt()
         );
     }
 }

@@ -6,11 +6,7 @@ public record GroupPostDetailDto(
         String authorNickname,  // 작성자 닉네임
         String authorProfile,   // 작성자 프로필 이미지
         String content,         // 게시글 내용
-        LocalDateTime createdAt, // 작성일
-//        boolean hasReaction,    // 좋아요 여부
-        boolean isFollowing    // 팔로우 여부
-//        int reactionCount,      // 반응 수
-//        int commentCount,       // 댓글 수
+        LocalDateTime createdAt // 작성일
 //        List<GroupCommentResponseDto> comments // 댓글 리스트
 ) {
 }

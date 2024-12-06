@@ -9,7 +9,6 @@ public record GroupPostDto(
         String content,
         LocalDateTime createAt,
         String userId,
-//        boolean hasReaction,
         Long likeCount
 //        Long commentCount
 ) {
