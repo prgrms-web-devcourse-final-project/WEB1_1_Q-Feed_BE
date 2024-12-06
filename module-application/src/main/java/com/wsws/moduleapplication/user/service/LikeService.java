@@ -25,7 +25,7 @@
 //     */
 //    public void createLike(LikeServiceRequest request) {
 //
-//        User user = userRepository.findById(UserId.of(request.userId()))
+//        User user = userRepository.findById(UserId.of(request.authorUserId()))
 //                .orElseThrow(() -> UserNotFoundException.EXCEPTION);// 연관 맺을 User 찾아오기
 //
 //        if(isAlreadyLike(request.targetId(), user)) // 좋아요를 누른적이 있는지 확인
@@ -36,7 +36,7 @@
 //                null,
 //                TargetType.valueOf(request.targetType()),
 //                request.targetId(),
-//                request.userId()
+//                request.authorUserId()
 //        );
 //        try {
 //            likeRepository.save(like, user);

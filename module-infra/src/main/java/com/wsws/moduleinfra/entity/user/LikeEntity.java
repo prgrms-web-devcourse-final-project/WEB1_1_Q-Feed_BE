@@ -1,10 +1,6 @@
 package com.wsws.moduleinfra.entity.user;
 
-import com.wsws.moduledomain.user.vo.LikeId;
-import com.wsws.moduledomain.user.vo.LikeTargetId;
 import com.wsws.moduledomain.user.vo.TargetType;
-import com.wsws.moduledomain.user.vo.UserId;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -18,6 +14,7 @@ public class LikeEntity {
     @Enumerated(EnumType.STRING)
     private TargetType targetType;
 
+    @Column(nullable = false)
     private Long targetId;
 
     @ManyToOne(fetch = FetchType.LAZY)

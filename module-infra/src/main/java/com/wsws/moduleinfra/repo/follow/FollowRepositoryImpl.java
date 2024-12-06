@@ -8,6 +8,7 @@ import com.wsws.moduleinfra.entity.follow.FollowEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -20,6 +21,13 @@ public class FollowRepositoryImpl implements FollowRepository {
     public Optional<Follow> findByFollowerIdAndFolloweeId(String followerId, String followeeId) {
         return jpaFollowRepository.findById_FollowerIdAndId_FolloweeId(followerId, followeeId)
                 .map(FollowEntityMapper::toFollow); // 엔티티를 도메인 객체로 변환
+    }
+
+    @Override
+    public List<Follow> findByFollowerId(String followerId) {
+        return jpaFollowRepository.findById_FollowerId(followerId).stream()
+                .map(FollowEntityMapper::toFollow)
+                .toList();
     }
 
     @Override

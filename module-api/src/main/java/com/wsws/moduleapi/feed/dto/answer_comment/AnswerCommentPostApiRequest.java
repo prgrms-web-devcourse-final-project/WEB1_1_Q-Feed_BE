@@ -1,5 +1,6 @@
 package com.wsws.moduleapi.feed.dto.answer_comment;
 
+import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateServiceRequest;
 import jakarta.validation.constraints.NotNull;
 
 public record AnswerCommentPostApiRequest(
@@ -8,4 +9,7 @@ public record AnswerCommentPostApiRequest(
         Long parentCommentId,
         String content
 ) {
+    public AnswerCommentCreateServiceRequest toServiceDto(String userId) {
+        return new AnswerCommentCreateServiceRequest(userId, answerId, parentCommentId, content);
+    }
 }
