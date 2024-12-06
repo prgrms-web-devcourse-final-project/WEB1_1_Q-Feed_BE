@@ -1,9 +1,7 @@
 package com.wsws.moduleapplication.feed.service;
 
-import com.wsws.moduleapplication.feed.dto.answer.AnswerCommentFindServiceResponse;
+import com.wsws.moduleapplication.feed.dto.answer.*;
 import com.wsws.moduleapplication.feed.dto.answer.AnswerCommentFindServiceResponse.AnswerCommentFindServiceResponseBuilder;
-import com.wsws.moduleapplication.feed.dto.answer.AnswerFindServiceRequest;
-import com.wsws.moduleapplication.feed.dto.answer.AnswerFindServiceResponse;
 import com.wsws.moduleapplication.feed.dto.answer.AnswerFindServiceResponse.AnswerFindServiceResponseBuilder;
 import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.user.exception.UserNotFoundException;
@@ -39,10 +37,11 @@ public class AnswerReadService {
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
     /**
-     * 답변 목록 조회
+     * 답변 목록 조회 (무한 스크롤 페이징 적용)
      */
-    public void findAnswerListWithCursor() {
+    public AnswerListFindServiceResponse findAnswerListWithCursor(AnswerFindServiceRequest request) {
 
+        return null;
     }
 
 
@@ -64,11 +63,19 @@ public class AnswerReadService {
      */
     public AnswerFindServiceResponse findOneAnswerWithCursor(AnswerFindServiceRequest request) {
         AnswerFindServiceResponseBuilder answerResponseBuilder = AnswerFindServiceResponse.builder();
+
+        // 답변 정보 받아오기
+        Answer answer = answerRepository.findById(request.answerId())
+                .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
+
         // Answer 정보 세팅
-        buildAnswer(request, answerResponseBuilder);
+        buildAnswer(answer, request.userId(), answerResponseBuilder);
+
+        // Answer에 대한 부모 Answer Comment를 페이징으로 가져오기
+        List<AnswerComment> parentComments = answerCommentRepository.findParentCommentsByAnswerIdWithCursor(request.answerId(), request.commentCursor(), request.size());
 
         // AnswerComment 정보 세팅
-        buildAnswerComment(request, answerResponseBuilder);
+        buildAnswerComment(parentComments, request.userId(), answerResponseBuilder);
 
         return answerResponseBuilder.build();
     }
@@ -76,20 +83,17 @@ public class AnswerReadService {
     /**
      * Answer 정보를 세팅
      */
-    private void buildAnswer(AnswerFindServiceRequest request, AnswerFindServiceResponseBuilder answerResponseBuilder) {
-        // 답변 정보 받아오기
-        Answer answer = answerRepository.findById(request.answerId())
-                .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
+    private void buildAnswer(Answer answer, String reqUserId, AnswerFindServiceResponseBuilder answerResponseBuilder) {
 
         // 해당 답변을 작성한 사용자 정보 받아오기
         User answerAuthor = userRepository.findById(UserId.of(answer.getUserId().getValue()))
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
         // 해당 사용자가 해당 답변에 좋아요를 눌렀는지
-        boolean isLike = buildIsLike(request.userId(), request.answerId());
+        boolean isLike = buildIsLike(reqUserId, answer.getAnswerId().getValue());
 
         // 해당 사용자가 특정 작성자(작성자 ID)를 팔로우 했는지 확인
-        boolean isFollowing = buildIsFollowing(request.userId(), answerAuthor.getId().getValue());
+        boolean isFollowing = buildIsFollowing(reqUserId, answerAuthor.getId().getValue());
 
         answerResponseBuilder
                 .answerId(answer.getAnswerId().getValue())
@@ -106,9 +110,7 @@ public class AnswerReadService {
     /**
      * Answer Comment 정보를 세팅
      */
-    private void buildAnswerComment(AnswerFindServiceRequest request, AnswerFindServiceResponseBuilder answerResponseBuilder) {
-        // Answer에 대한 부모 Answer Comment를 페이징으로 가져오기
-        List<AnswerComment> parentComments = answerCommentRepository.findParentCommentsByAnswerIdWithCursor(request.answerId(), request.commentCursor(), request.size());
+    private void buildAnswerComment(List<AnswerComment> parentComments, String reqUserId, AnswerFindServiceResponseBuilder answerResponseBuilder) {
 
         // 부모 Comment ID 추출
         List<Long> parentIds = parentComments.stream()
@@ -134,7 +136,7 @@ public class AnswerReadService {
                 // 조건을 만족하는 경우 계층 구조 빌드
                 .map(parent -> buildCommentHierarchy(
                         AnswerCommentFindServiceResponse.builder(),
-                        request,
+                        reqUserId,
                         parent,
                         childrenMap,
                         processedComments
@@ -173,15 +175,15 @@ public class AnswerReadService {
     /**
      * 부모 댓글 정보를 세팅
      */
-    private void buildParentComment(AnswerCommentFindServiceResponseBuilder commentResponseBuilder, AnswerComment parent, AnswerFindServiceRequest request) {
+    private void buildParentComment(AnswerCommentFindServiceResponseBuilder commentResponseBuilder, AnswerComment parent, String reqUserId) {
 
         // 해당 답변을 작성한 사용자 정보 받아오기
         User commentAuthor = userRepository.findById(UserId.of(parent.getUserId().getValue()))
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
-        boolean isLike = buildIsLike(request.userId(), parent.getParentAnswerCommentId().getValue());
+        boolean isLike = buildIsLike(reqUserId, parent.getParentAnswerCommentId().getValue());
 
-        boolean isFollowing = buildIsFollowing(request.userId(), commentAuthor.getId().getValue());
+        boolean isFollowing = buildIsFollowing(reqUserId, commentAuthor.getId().getValue());
 
         commentResponseBuilder
                 .commentId(parent.getAnswerCommentId().getValue())
@@ -200,7 +202,7 @@ public class AnswerReadService {
      */
     private AnswerCommentFindServiceResponseBuilder buildCommentHierarchy(
             AnswerCommentFindServiceResponseBuilder commentResponseBuilder,
-            AnswerFindServiceRequest request,
+            String reqUserId,
             AnswerComment parent,
             Map<Long, List<AnswerComment>> childrenMap,
             Set<Long> processedComments) {
@@ -209,7 +211,7 @@ public class AnswerReadService {
         processedComments.add(parent.getAnswerCommentId().getValue());
 
         // 부모 댓글 정보 설정
-        buildParentComment(commentResponseBuilder, parent, request);
+        buildParentComment(commentResponseBuilder, parent, reqUserId);
 
         // 자식 댓글 가져오기
         List<AnswerComment> children = childrenMap.get(parent.getAnswerCommentId().getValue());
@@ -221,7 +223,7 @@ public class AnswerReadService {
                     children.stream()
                             .map(child -> buildCommentHierarchy(
                                     AnswerCommentFindServiceResponse.builder(),
-                                    request,
+                                    reqUserId,
                                     child,
                                     childrenMap,
                                     processedComments
