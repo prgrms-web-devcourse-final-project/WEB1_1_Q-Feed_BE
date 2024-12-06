@@ -22,8 +22,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,6 +66,9 @@ public class AnswerReadService {
         return answerResponseBuilder.build();
     }
 
+    /**
+     * Answer 정보를 세팅
+     */
     private void buildAnswer(AnswerFindServiceRequest request, AnswerFindServiceResponseBuilder answerResponseBuilder) {
         // 답변 정보 받아오기
         Answer answer = answerRepository.findById(request.answerId())
@@ -91,8 +96,11 @@ public class AnswerReadService {
                 .isFollowing(isFollowing);
     }
 
+    /**
+     * Answer Comment 정보를 세팅
+     */
     private void buildAnswerComment(AnswerFindServiceRequest request, AnswerFindServiceResponseBuilder answerResponseBuilder) {
-        // Answer에 대한 Answer Comment 가져오기 TODO: 페이징 추가
+        // Answer에 대한 부모 Answer Comment 가져오기
         List<AnswerComment> parentComments = answerCommentRepository.findParentCommentsByAnswerId(request.answerId());
 
         // 부모 Comment ID 추출
@@ -105,20 +113,36 @@ public class AnswerReadService {
 
         // 부모 댓글과 자식 댓글 매핑
         Map<Long, List<AnswerComment>> childrenMap = childComments.stream()
-                .collect(Collectors.groupingBy(answerComment -> answerComment.getParentAnswerCommentId().getValue()));
+                .collect(Collectors.groupingBy(
+                        answerComment -> answerComment.getParentAnswerCommentId().getValue()
+                ));
 
-        AnswerCommentFindServiceResponseBuilder commentResponseBuilder = AnswerCommentFindServiceResponse.builder();
+        // 중복 제거를 위한 Set : 부모댓글이자 자식댓글도 되는 댓글이 중복추가되는 현상 해결
+        Set<Long> processedComments = new HashSet<>();
 
+        // 부모 댓글 기반으로 계층 구조 형성
         List<AnswerCommentFindServiceResponse> commentResponses = parentComments.stream()
+                // processedComments에 포함되지 않은 경우만 처리
+                .filter(parent -> !processedComments.contains(parent.getAnswerCommentId().getValue()))
+                // 조건을 만족하는 경우 계층 구조 빌드
                 .map(parent -> buildCommentHierarchy(
-                        commentResponseBuilder, request, parent, childrenMap).build())
+                        AnswerCommentFindServiceResponse.builder(),
+                        request,
+                        parent,
+                        childrenMap,
+                        processedComments
+                ).build())
                 .toList();
 
         answerResponseBuilder
-                .commentCount(parentComments.size())
+                .commentCount(commentResponses.size())
                 .comments(commentResponses);
     }
 
+
+    /**
+     * 좋아요 여부 정보를 세팅
+     */
     private boolean buildIsLike(String currentUserId, Long targetId) {
         // 조회 요청한 사용자가 좋아요 누른 답변 및 답변 댓글 정보 다 가져오기
         List<Like> likes = likeRepository.findByUserId(currentUserId);
@@ -128,6 +152,9 @@ public class AnswerReadService {
                 .anyMatch(like -> like.getTargetId().getValue().equals(targetId));
     }
 
+    /**
+     * 팔로우 여부 정보를 세팅
+     */
     private boolean buildIsFollowing(String currentUserId, String authorId) {
         // 조회 요청한 사용자가 팔로우한 사용자 정보 다 가져오기
         List<Follow> followers = followRepository.findByFollowerId(currentUserId);
@@ -136,6 +163,9 @@ public class AnswerReadService {
                 .anyMatch(follow -> follow.getId().getFollowerId().equals(authorId));
     }
 
+    /**
+     * 부모 댓글 정보를 세팅
+     */
     private void buildParentComment(AnswerCommentFindServiceResponseBuilder commentResponseBuilder, AnswerComment parent, AnswerFindServiceRequest request) {
 
         // 해당 답변을 작성한 사용자 정보 받아오기
@@ -158,20 +188,46 @@ public class AnswerReadService {
                 .isFollowing(isFollowing);
     }
 
-    private AnswerCommentFindServiceResponseBuilder buildCommentHierarchy(AnswerCommentFindServiceResponseBuilder commentResponseBuilder, AnswerFindServiceRequest request, AnswerComment parent, Map<Long, List<AnswerComment>> childrenMap) {
+    /**
+     * 댓글 계층 정보를 세팅
+     */
+    private AnswerCommentFindServiceResponseBuilder buildCommentHierarchy(
+            AnswerCommentFindServiceResponseBuilder commentResponseBuilder,
+            AnswerFindServiceRequest request,
+            AnswerComment parent,
+            Map<Long, List<AnswerComment>> childrenMap,
+            Set<Long> processedComments) {
 
+        // 현재 댓글 ID를 처리된 Set에 추가
+        processedComments.add(parent.getAnswerCommentId().getValue());
+
+        // 부모 댓글 정보 설정
         buildParentComment(commentResponseBuilder, parent, request);
 
+        // 자식 댓글 가져오기
         List<AnswerComment> children = childrenMap.get(parent.getAnswerCommentId().getValue());
-        if (children != null) {
+
+        if (children != null && !children.isEmpty()) {
+            // 자식 댓글이 있으면 재귀적으로 자식 댓글 처리
             commentResponseBuilder.childCommentCount(children.size());
-            commentResponseBuilder.children(children.stream()
-                    .map(child -> buildCommentHierarchy(commentResponseBuilder, request, child, childrenMap).build())
-                    .toList());
+            commentResponseBuilder.children(
+                    children.stream()
+                            .map(child -> buildCommentHierarchy(
+                                    AnswerCommentFindServiceResponse.builder(),
+                                    request,
+                                    child,
+                                    childrenMap,
+                                    processedComments
+                            ).build())
+                            .toList()
+            );
         } else {
+            // 자식 댓글이 없는 경우
             commentResponseBuilder.childCommentCount(0);
         }
 
         return commentResponseBuilder;
     }
+
+
 }

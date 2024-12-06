@@ -45,9 +45,10 @@ public class AnswerController {
     @Operation(summary = "답변 상세 조회", description = "답변의 상세목록을 조회합니다.")
     @GetMapping("/{answer-id}")
     public ResponseEntity<AnswerGetApiResponse> getAnswers(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
+//            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "답변 상세를 조회할 답변 ID") @PathVariable("answer-id") Long answerId) {
-        String userId = userPrincipal.getId();
+//        String userId = userPrincipal.getId();
+        String userId = "user_id1";
         AnswerFindServiceResponse serviceResponse = answerReadService.findAnswerByAnswerId(new AnswerFindServiceRequest(userId, answerId));
 
         return ResponseEntity.ok(AnswerGetApiResponse.toApiResponse(serviceResponse));
@@ -65,10 +66,10 @@ public class AnswerController {
     })
     public ResponseEntity<AnswerPostApiResponse> postAnswers(
             @Valid @RequestBody AnswerPostApiRequest answerPostApiRequest
-            , @AuthenticationPrincipal UserPrincipal userPrincipal
+//            , @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        String userId = userPrincipal.getId(); // 사용자 아이디를 가져온다.
-//        String authorUserId = "user_id1";
+//        String userId = userPrincipal.getId(); // 사용자 아이디를 가져온다.
+        String userId = "user_id1";
         AnswerCreateServiceResponse serviceResponse = answerService.createAnswer(answerPostApiRequest.toServiceDto(userId)); // 답변 생성
 
         return ResponseEntity.status(201).body(new AnswerPostApiResponse(serviceResponse));
