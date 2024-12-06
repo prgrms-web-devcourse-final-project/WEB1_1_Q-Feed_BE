@@ -63,11 +63,17 @@ public class QuestionAIService {
     public void updateQuestions() {
         // 어제 질문들 비활성화
         questionRepository.findByQuestionStatus(QuestionStatus.ACTIVATED)
-                .forEach(Question::inactivateQuestion);
+                .forEach(q -> {
+                    q.inactivateQuestion();
+                    questionRepository.edit(q);
+                });
 
         // 오늘 질문들 활성화
         questionRepository.findByQuestionStatus(QuestionStatus.CREATED)
-                .forEach(Question::activateQuestion);
+                .forEach(q -> {
+                    q.activateQuestion();
+                    questionRepository.edit(q);
+                });
     }
 
     public List<String> findSimilarText(String question) {
