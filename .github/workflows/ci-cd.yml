@@ -23,8 +23,8 @@ jobs:
       JWT_REFRESH_EXPIRATION: ${{ secrets.JWT_REFRESH_EXPIRATION }}
       MAIL_EMAIL: ${{ secrets.MAIL_EMAIL }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-      KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID}}
-      KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI}}
+      KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+      KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
       FCM_FIREBASE_CONFIG_PATH: ${{ secrets.FCM_FIREBASE_CONFIG_PATH }}
 
 
@@ -107,8 +107,8 @@ jobs:
             echo "JWT_REFRESH_EXPIRATION=${{ secrets.JWT_REFRESH_EXPIRATION }}" >> .env
             echo "MAIL_EMAIL=${{ secrets.MAIL_EMAIL }}" >> .env
             echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
-            echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID}}" >> .env
-            echo "KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI}}" >> .env
+            echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
+            echo "KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI }}" >> .env
             echo "FCM_FIREBASE_CONFIG_PATH=${{ secrets.FCM_FIREBASE_CONFIG_PATH }}" >> .env
             
             
