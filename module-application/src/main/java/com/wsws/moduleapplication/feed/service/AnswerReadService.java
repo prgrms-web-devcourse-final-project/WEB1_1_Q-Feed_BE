@@ -82,7 +82,7 @@ public class AnswerReadService {
         answerResponseBuilder
                 .answerId(answer.getAnswerId().getValue())
                 .authorUserId(answerAuthor.getId().getValue())
-                .authorNickname(String.valueOf(answerAuthor.getNickname()))
+                .authorNickname(answerAuthor.getNickname().getValue())
                 .profileImage(answerAuthor.getProfileImage())
                 .content(answer.getContent())
                 .createdAt(answer.getCreatedAt())
@@ -149,7 +149,7 @@ public class AnswerReadService {
         commentResponseBuilder
                 .commentId(parent.getAnswerCommentId().getValue())
                 .userId(commentAuthor.getId().getValue())
-                .authorNickname(String.valueOf(commentAuthor.getNickname()))
+                .authorNickname(commentAuthor.getNickname().getValue())
                 .profileImage(commentAuthor.getProfileImage())
                 .content(parent.getContent())
                 .likeCount(parent.getLikeCount())
