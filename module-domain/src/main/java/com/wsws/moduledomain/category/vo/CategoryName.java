@@ -8,11 +8,11 @@ import java.util.Arrays;
 @Getter
 public enum CategoryName {
     TRAVEL("travel"),
+    SPORTS("sports"),
+    FASHION("fashion"),
+    CULTURE("culture"),
     DELICIOUS_RESTAURANT("delicious_restaurant"),
-    MOVIE("movie"),
-    MUSIC("music"),
-    READING("reading"),
-    SPORTS("sports");
+    ETC("etc");
 
     private final String name;
 
