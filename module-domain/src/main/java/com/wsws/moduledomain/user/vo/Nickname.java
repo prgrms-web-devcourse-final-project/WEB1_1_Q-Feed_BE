@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 @EqualsAndHashCode
 @Getter
 public class Nickname {
-    public static final String REGEX = "^[ㄱ-ㅎ가-힣a-zA-Z0-9-_]{2,10}$";
+    public static final String REGEX = "^[ㄱ-ㅎ가-힣a-zA-Z0-9-_]{2,20}$";
     public static final String ERR_MSG = "닉네임은 특수문자를 제외한 2~10자리여야 합니다.";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
