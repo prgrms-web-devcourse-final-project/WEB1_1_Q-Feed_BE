@@ -25,6 +25,11 @@ public class AuthController {
         LoginServiceResponse serviceResponse = authService.login(request.toServiceDto());
         return ResponseEntity.ok(new LoginResponse(serviceResponse));
     }
+    @Operation(summary = "kakao 로그인", description = "사용자가 카카오 계정을 이용해 로그인합니다.")
+    @GetMapping("/login/kakao")
+    public LoginServiceResponse kakaoLogin(@RequestParam("code") String authorizationCode) {
+        return authService.socialLogin(authorizationCode);
+    }
 
     @Operation(summary = "로그아웃", description = "사용자가 리프레시 토큰을 이용해 로그아웃합니다.")
     @PostMapping("/logout")
