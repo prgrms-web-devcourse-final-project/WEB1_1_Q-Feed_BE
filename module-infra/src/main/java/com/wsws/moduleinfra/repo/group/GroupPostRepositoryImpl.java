@@ -61,26 +61,11 @@ public class GroupPostRepositoryImpl implements GroupPostRepository {
     @Override
     @Transactional
     public void edit(GroupPost groupPost) {
-        log.info("\nbefore\n");
-        log.info("group Id : {}", groupPost.getGroupId());
-        log.info("groupPostId : {}", groupPost.getGroupPostId());
-        log.info("likeCount : {}", groupPost.getLikeCount());
-        log.info("url : {}", groupPost.getUrl());
-        log.info("userId : {}", groupPost.getUserId());
-        log.info("creatAt : {}", groupPost.getCreatedAt());
 
         // Null 체크
         if (groupPost.getGroupPostId() == null) {
             throw new IllegalArgumentException("GroupPostId가 null입니다.");
         }
-
-        log.info("\nafter\n");
-        log.info("group Id : {}", groupPost.getGroupId());
-        log.info("groupPostId : {}", groupPost.getGroupPostId());
-        log.info("likeCount : {}", groupPost.getLikeCount());
-        log.info("url : {}", groupPost.getUrl());
-        log.info("userId : {}", groupPost.getUserId());
-        log.info("creatAt : {}", groupPost.getCreatedAt());
 
         // 엔티티 조회
         GroupPostEntity groupPostEntity = jpaGroupPostRepository.findById(groupPost.getGroupPostId())
