@@ -28,4 +28,7 @@ public interface JpaAnswerCommentRepository extends JpaRepository<AnswerCommentE
 
     @Query("SELECT ac FROM AnswerCommentEntity ac WHERE ac.parentCommentEntity.id IN :parentIds")
     List<AnswerCommentEntity> findChildCommentsByParentsId(List<Long> parentIds);
+
+    @Query("SELECT COUNT(ac) FROM AnswerCommentEntity ac WHERE ac.parentCommentEntity.id = :answerId")
+    int countParentCommentByAnswerId(Long answerId);
 }

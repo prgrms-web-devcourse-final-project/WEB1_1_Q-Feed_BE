@@ -1,13 +1,8 @@
 package com.wsws.moduleapi.feed.controller;
 
 import com.wsws.moduleapi.feed.dto.MessageResponse;
-import com.wsws.moduleapi.feed.dto.answer.AnswerGetApiResponse;
-import com.wsws.moduleapi.feed.dto.answer.AnswerPatchApiRequest;
-import com.wsws.moduleapi.feed.dto.answer.AnswerPostApiRequest;
-import com.wsws.moduleapi.feed.dto.answer.AnswerPostApiResponse;
-import com.wsws.moduleapplication.feed.dto.answer.AnswerCreateServiceResponse;
-import com.wsws.moduleapplication.feed.dto.answer.AnswerFindServiceRequest;
-import com.wsws.moduleapplication.feed.dto.answer.AnswerFindServiceResponse;
+import com.wsws.moduleapi.feed.dto.answer.*;
+import com.wsws.moduleapplication.feed.dto.answer.*;
 import com.wsws.moduleapplication.feed.service.AnswerReadService;
 import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.feed.service.AnswerService;
@@ -20,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +34,27 @@ public class AnswerController {
     /**
      * 답변 목록 조회
      */
+    @GetMapping
+    @Operation(summary = "답변 목록 조회", description = "답변의 목록을 조회합니다. 댓글의 상세내용은 제공되지 않습니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "답변 목록 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "작성자 정보를 찾을 수 없을 때", content = @Content)
+    })
+    public ResponseEntity<AnswerListGetApiResponse> getAnswerList(
+//            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(description = "커서로 사용할 마지막 글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String answerCursor,
+            @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size
+    ) {
+
+//        String userId = userPrincipal.getId();
+        String userId = "user_id1";
+        LocalDateTime parsedCursor = answerCursor != null ? LocalDateTime.parse(answerCursor) : LocalDateTime.now();
+        AnswerListFindServiceResponse answers = answerReadService.findAnswerListWithCursor(new AnswerFindServiceRequest(userId, null, parsedCursor, size));
+
+
+        return ResponseEntity.ok(AnswerListGetApiResponse.toApiResponse(answers));
+    }
+
 
     /**
      * 답변 상세 조회
@@ -50,18 +67,18 @@ public class AnswerController {
             @ApiResponse(responseCode = "404", description = "작성자 정보를 찾을 수 없을 때", content = @Content)
     })
     public ResponseEntity<AnswerGetApiResponse> getAnswers(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
+//            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "답변 상세를 조회할 답변 ID") @PathVariable("answer-id") Long answerId,
             @Parameter(description = "커서로 사용할 마지막 댓글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String commentCursor,
-            @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size
+            @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "2") int size
     ) {
-        String userId = userPrincipal.getId();
-//        String userId = "user_id1";
+//        String userId = userPrincipal.getId();
+        String userId = "user_id1";
 
         LocalDateTime parsedCursor = commentCursor != null ? LocalDateTime.parse(commentCursor) : LocalDateTime.now();
 
         AnswerFindServiceResponse serviceResponse =
-                answerReadService.findOneAnswerWithCursor(new AnswerFindServiceRequest(userId, answerId), parsedCursor, size);
+                answerReadService.findOneAnswerWithCursor(new AnswerFindServiceRequest(userId, answerId, parsedCursor, size));
 
         return ResponseEntity.ok(AnswerGetApiResponse.toApiResponse(serviceResponse));
     }

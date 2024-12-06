@@ -9,9 +9,12 @@ import com.wsws.moduleinfra.entity.feed.QuestionEntity;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerCommentEntityMapper;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerEntityMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,6 +34,14 @@ public class AnswerRepositoryImpl implements AnswerRepository {
 
         return jpaAnswerRepository.findById(id)
                 .map(AnswerEntityMapper::toDomain);
+    }
+
+    @Override
+    public List<Answer> findAllWithCursor(LocalDateTime answerCursor, int size) {
+        Pageable pageable = PageRequest.of(0, size);
+        return jpaAnswerRepository.findAllWithCursor(answerCursor, pageable).stream()
+                .map(AnswerEntityMapper::toDomain)
+                .toList();
     }
 
 //    @Override

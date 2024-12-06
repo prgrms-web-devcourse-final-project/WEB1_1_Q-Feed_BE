@@ -44,6 +44,11 @@ public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
     }
 
     @Override
+    public int countParentCommentByAnswerId(Long answerId) {
+        return jpaAnswerCommentRepository.countParentCommentByAnswerId(answerId);
+    }
+
+    @Override
     public AnswerComment save(AnswerComment answerComment) {
         AnswerCommentEntity answerCommentEntity = AnswerCommentEntityMapper.toEntity(answerComment);
 

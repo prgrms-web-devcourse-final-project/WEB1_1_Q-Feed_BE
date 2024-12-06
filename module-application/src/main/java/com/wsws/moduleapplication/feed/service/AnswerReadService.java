@@ -20,10 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,7 +38,22 @@ public class AnswerReadService {
      */
     public AnswerListFindServiceResponse findAnswerListWithCursor(AnswerFindServiceRequest request) {
 
-        return null;
+        // 답변 리스트 페이징해서 불러오기
+        List<Answer> answers = answerRepository.findAllWithCursor(request.commentCursor(), request.size());
+
+        List<AnswerFindServiceResponse> responses = new ArrayList<>();
+
+        for (Answer answer : answers) {
+            AnswerFindServiceResponseBuilder responseBuilder = AnswerFindServiceResponse.builder();
+
+            buildAnswer(answer, request.userId(), responseBuilder); // 답변 정보 세팅
+
+            buildCommentCount(answer, responseBuilder); // 해당 답변의 (최상위)부모 댓글 갯수 추가
+
+            responses.add(responseBuilder.build()); // 리스트에 추가
+        }
+
+        return new AnswerListFindServiceResponse(responses);
     }
 
 
@@ -86,7 +98,7 @@ public class AnswerReadService {
     private void buildAnswer(Answer answer, String reqUserId, AnswerFindServiceResponseBuilder answerResponseBuilder) {
 
         // 해당 답변을 작성한 사용자 정보 받아오기
-        User answerAuthor = userRepository.findById(UserId.of(answer.getUserId().getValue()))
+        User answerAuthor = userRepository.findById(UserId.of(answer.getUserId().getValue() + "ㅇ"))
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
         // 해당 사용자가 해당 답변에 좋아요를 눌렀는지
@@ -236,6 +248,14 @@ public class AnswerReadService {
         }
 
         return commentResponseBuilder;
+    }
+
+    /**
+     * 특정 답변의 (최상위)부모 댓글 갯수 정보 세팅
+     */
+    private void buildCommentCount(Answer answer, AnswerFindServiceResponseBuilder responseBuilder) {
+        int commentCount = answerCommentRepository.countParentCommentByAnswerId(answer.getAnswerId().getValue());
+        responseBuilder.commentCount(commentCount);
     }
 
 
