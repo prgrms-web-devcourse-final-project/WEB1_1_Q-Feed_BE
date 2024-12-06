@@ -5,7 +5,6 @@ import com.wsws.moduleapplication.auth.exception.EmailNotFoundException;
 import com.wsws.moduleapplication.auth.exception.InvalidVerificationCodeException;
 import com.wsws.moduleapplication.auth.exception.RefreshTokenExpiredException;
 import com.wsws.moduleapplication.user.dto.AuthServiceResponse;
-import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.auth.repo.EmailService;
 import com.wsws.moduledomain.auth.RefreshToken;
 import com.wsws.moduledomain.auth.repo.TokenProvider;
@@ -14,10 +13,12 @@ import com.wsws.moduledomain.auth.repo.AuthRepository;
 import com.wsws.moduledomain.auth.repo.VerificationCodeStore;
 import com.wsws.moduledomain.user.PasswordEncoder;
 import com.wsws.moduledomain.user.User;
+import com.wsws.moduledomain.user.repo.SocialLoginRepository;
+import com.wsws.moduledomain.user.repo.SocialLoginService;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.Email;
 import com.wsws.moduledomain.user.vo.Nickname;
-import com.wsws.moduledomain.user.vo.UserId;
+import com.wsws.moduledomain.user.vo.SocialLoginInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final VerificationCodeStore codeStore;
     private final EmailService emailService;
+    private final SocialLoginService socialLoginService;
+    private final SocialLoginRepository socialLoginRepository;
 
     //인증 코드 유효 시간
     private static final long CODE_TTL = 300; //5분
@@ -56,6 +59,35 @@ public class AuthService {
         String refreshToken = tokenProvider.createRefreshToken(user.getId().getValue());
 
         // RefreshToken 저장 (7일 유효)
+        authRepository.save(RefreshToken.create(refreshToken, LocalDateTime.now().plusDays(7)));
+
+        return new LoginServiceResponse(accessToken, refreshToken);
+    }
+
+    //외부 로그인
+    public LoginServiceResponse socialLogin(String authorizationCode) {
+        // 1.SocialLoginInfo 가져오기
+        SocialLoginInfo socialLoginInfo = socialLoginService.getSocialLoginInfo(authorizationCode);
+
+        // 2. Provider와 ProviderId로 SocialLogin 조회
+        User user = userRepository.findByEmail(Email.from(socialLoginInfo.getEmail()))
+                .orElseGet(() -> userRepository.save(User.createSocialLoginUser( //save user에
+                        socialLoginInfo.getEmail(),
+                        socialLoginInfo.getNickname(),
+                        socialLoginInfo.getProfileImageUrl()
+                )));
+
+        // 4. SocialLogin 정보 저장 (최초 로그인일 경우에만)
+        if (!socialLoginRepository.existsByProviderAndProviderId(socialLoginInfo.getProvider(), socialLoginInfo.getProviderId())) {
+            socialLoginRepository.save(
+                    socialLoginInfo.getProvider(),
+                    socialLoginInfo.getProviderId(),
+                    user);
+        }
+
+        // 5. JWT 생성 및 반환
+        String accessToken = tokenProvider.createAccessToken(user.getId().getValue());
+        String refreshToken = tokenProvider.createRefreshToken(user.getId().getValue());
         authRepository.save(RefreshToken.create(refreshToken, LocalDateTime.now().plusDays(7)));
 
         return new LoginServiceResponse(accessToken, refreshToken);

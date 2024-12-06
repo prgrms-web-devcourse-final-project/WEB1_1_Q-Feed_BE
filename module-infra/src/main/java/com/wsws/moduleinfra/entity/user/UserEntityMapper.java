@@ -20,7 +20,7 @@ public class UserEntityMapper {
         return new UserEntity(
                 user.getId().getValue(),
                 user.getEmail().getValue(),
-                user.getPassword().getValue(),
+                user.getPassword() != null ? user.getPassword().getValue() : null,
                 user.getNickname().getValue(),
                 user.getProfileImage(),
                 user.getIsUsable(),
