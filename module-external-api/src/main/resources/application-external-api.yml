@@ -22,5 +22,11 @@ spring:
         prefix: qfeedV
         initialize-schema: true
 
+kakao:
+  auth-url: https://kauth.kakao.com
+  api-url: https://kapi.kakao.com
+  client-id: ${KAKAO_CLIENT_ID}
+  redirect-uri: ${KAKAO_REDIRECT_URI}
 fcm:
   firebase_config_path: ${FCM_FIREBASE_CONFIG_PATH}
+

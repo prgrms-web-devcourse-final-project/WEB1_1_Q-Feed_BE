@@ -5,6 +5,7 @@ import com.wsws.modulecommon.exception.BaseErrorCode;
 import com.wsws.modulecommon.exception.ErrorInfo;
 import lombok.RequiredArgsConstructor;
 
+import static com.wsws.modulecommon.constants.ErrorCodeConstants.INTERNAL_SERVER;
 import static com.wsws.modulecommon.constants.ErrorCodeConstants.UNAUTHORIZED;
 
 @RequiredArgsConstructor
@@ -18,8 +19,9 @@ public enum AuthServiceErrorCode implements BaseErrorCode {
     VERIFICATION_CODE_GENERATION_FAILED(400, "AUTH_400_1", "인증 코드 생성에 실패했습니다."),
     INVALID_VERIFICATION_CODE(400, "AUTH_400_2", "인증 코드가 유효하지 않습니다."),
     PASSWORD_RESET_CODE_GENERATION_FAILED(400, "AUTH_400_3", "비밀번호 재설정 코드 생성에 실패했습니다."),
-    INVALID_PASSWORD_RESET_CODE(400, "AUTH_400_4", "비밀번호 재설정 코드가 유효하지 않습니다.");
+    INVALID_PASSWORD_RESET_CODE(400, "AUTH_400_4", "비밀번호 재설정 코드가 유효하지 않습니다."),
 
+    PROVIDER_ID_CONFLICT(INTERNAL_SERVER, "USER_INFRA_500_2", "이미 존재하는 Provider ID입니다.");
     private final Integer status;
     private final String errorCode;
     private final String message;
