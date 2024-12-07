@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,14 +72,18 @@ public class ChatMessageService {
     }
 
     //채팅방의 메세지 조회
-    public List<ChatMessageServiceResponse> getChatMessages(Long chatRoomId, LocalDateTime cursor, int size ) {
+    public List<ChatMessageServiceResponse> getChatMessages(Long chatRoomId,String userId, LocalDateTime cursor, int size ) {
         List<ChatMessageDTO> chatMessages = chatMessageRepository.findMessagesWithUserDetails(chatRoomId, cursor, size);
+
+        // 메시지 소유 여부를 Map으로 반환
+        Map<Long, Boolean> messageOwnershipMap = getMessageOwnershipMap(chatMessages, userId);
 
         // ChatMessageDTO를 ChatMessageServiceResponse로 변환
         return chatMessages.stream()
-                .map(ChatMessageServiceResponse::new)
+                .map(message -> new ChatMessageServiceResponse(message, messageOwnershipMap.get(message.messageId())))
                 .collect(Collectors.toList());
     }
+
 
     // 메세지 읽음 처리
     public void markAllMessagesAsRead(Long chatRoomId) {
@@ -94,6 +99,16 @@ public class ChatMessageService {
         return userRepository.findById(UserId.of(senderId))
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
     }
+
+    // 메시지 소유 여부를 Map으로 반환하는 함수
+    private Map<Long, Boolean> getMessageOwnershipMap(List<ChatMessageDTO> chatMessages, String userId) {
+        return chatMessages.stream()
+                .collect(Collectors.toMap(
+                        ChatMessageDTO::messageId,  // 메시지 ID를 key로 사용
+                        message -> message.userId().equals(userId) // 메시지가 내 것인지 여부
+                ));
+    }
+
 
     //이미지 or 음성 처리
     private String processFile(MultipartFile file, MessageType type) {
