@@ -10,6 +10,5 @@ public record GroupPostDto(
         LocalDateTime createAt,
         String userId,
         Long likeCount
-//        Long commentCount
 ) {
 }
