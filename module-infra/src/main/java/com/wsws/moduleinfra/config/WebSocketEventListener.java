@@ -12,11 +12,12 @@ public class WebSocketEventListener {
     // WebSocket 연결 성공 시 호출되는 메서드
     @EventListener
     public void handleSessionConnected(SessionConnectedEvent event) {
+        System.out.println("STOMP연결 성공!!");
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String chatRoomId  = (String) headerAccessor.getSessionAttributes().get("chatRoomId");
+        String sessionId = headerAccessor.getSessionId();
 
-        // 연결된 사용자 정보 출력
-        System.out.println("STOMP 연결 성공! ChatRoom ID: " + chatRoomId);
+        // 연결된 세션 정보만 출력
+        System.out.println("STOMP 연결 성공! 세션 ID: " + sessionId);
     }
 
     // WebSocket 연결 끊어졌을 때 호출되는 메서드
