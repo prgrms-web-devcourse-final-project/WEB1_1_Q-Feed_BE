@@ -36,4 +36,8 @@ public class GroupCommentRepositoryImpl implements GroupCommentRepository {
         return jpaGroupCommentRepository.findById(groupCommentId)
                 .map(GroupCommentMapper::toDomain); // Entity -> Domain 변환
     }
+
+    @Override
+    public void deleteById(Long groupCommentId) {jpaGroupCommentRepository.deleteById(groupCommentId);
+    }
 }

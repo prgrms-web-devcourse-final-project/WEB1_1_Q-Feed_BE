@@ -38,6 +38,17 @@ public class GroupCommentController {
 //    @PostMapping("/comments/{group-comment-id}/likes")
 
     // 그룹 게시글 댓글 삭제
-//    @DeleteMapping("/comments/{group-comment-id}")
+    @DeleteMapping("/comments/{groupCommentId}")
+    @Operation(summary = "그룹 게시글 댓글 삭제", description = "특정 댓글을 삭제합니다.")
+    public ResponseEntity<String> deleteGroupComment(
+            @PathVariable Long groupCommentId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        String userId = userPrincipal.getId(); // 사용자 ID 가져오기
+        groupcommentService.deleteGroupComment(groupCommentId, userId);
+        return ResponseEntity.ok("그룹 게시글 댓글이 삭제되었습니다.");
+    }
 
-}
+    }
+
+
+

@@ -6,5 +6,6 @@ import java.util.Optional;
 
 public interface GroupCommentRepository {
     void save(GroupComment groupComment);
-    Optional<GroupComment> findById(Long groupPostId);
+    Optional<GroupComment> findById(Long groupCommentId);
+    void deleteById(Long groupCommentId);
 }
