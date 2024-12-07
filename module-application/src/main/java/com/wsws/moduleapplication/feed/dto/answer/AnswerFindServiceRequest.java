@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public record AnswerFindServiceRequest(
         String userId,
         Long answerId,
-        LocalDateTime commentCursor,
+        LocalDateTime cursor,
         int size
 ) {
 }
