@@ -44,7 +44,6 @@ public class ChatMessageService {
     public void sendMessage(Long chatRoomId, String senderId,  ChatMessageRequest request ) {
         ChatRoom chatRoom = getChatRoomById(chatRoomId);
         User user = getUserById(senderId);
-
         UserId userId = user.getId();
 
 //        // 이미지 or 음성 처리
