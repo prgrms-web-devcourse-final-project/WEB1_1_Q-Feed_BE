@@ -14,6 +14,7 @@ import com.wsws.moduledomain.user.vo.UserId;
 import com.wsws.moduleexternalapi.fcm.dto.fcmRequestDto;
 import com.wsws.moduleexternalapi.fcm.service.FcmService;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
+import com.wsws.moduleinfra.cache.CacheManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,49 +27,73 @@ public class FollowService {
     private final FollowRepository followRepository;
     private final NotificationRepository notificationRepository;
     private final FcmService fcmService;
+    private final CacheManager cacheManager;
 
     // 팔로우
     @Transactional
     public void followUser(FollowServiceRequestDto followServiceRequestDto) {
-        if (followRepository.findByFollowerIdAndFolloweeId(followServiceRequestDto.followerId(), followServiceRequestDto.followeeId()).isPresent()) {
+        String followerId = followServiceRequestDto.followerId();
+        String followeeId = followServiceRequestDto.followeeId();
+
+        // 이미 팔로우된 상태인지 확인
+        if (followRepository.findByFollowerIdAndFolloweeId(followerId, followeeId).isPresent()) {
             throw AlreadyFollowedException.EXCEPTION;
         }
-        Follow follow = Follow.create(followServiceRequestDto.followerId(), followServiceRequestDto.followeeId());
 
-        User followerUser = userRepository.findById(UserId.of(followServiceRequestDto.followerId()))
+        // Follow 엔티티 생성 및 저장
+        Follow follow = Follow.create(followerId, followeeId);
+        followRepository.save(follow);
+
+        // 캐시 무효화
+        evictFollowerFollowingCache(followerId, followeeId);
+
+        // 알림 저장 및 FCM 전송
+//        sendFollowNotification(followerId, followeeId);
+    }
+
+    @Transactional
+    public void unfollowUser(FollowServiceRequestDto followServiceRequestDto) {
+        String followerId = followServiceRequestDto.followerId();
+        String followeeId = followServiceRequestDto.followeeId();
+
+        // Follow 관계 확인 및 삭제
+        Follow follow = followRepository.findByFollowerIdAndFolloweeId(followerId, followeeId)
+                .orElseThrow(() -> FollowNotFoundException.EXCEPTION);
+        followRepository.delete(follow);
+
+        // 팔로워/팔로잉 수 감소
+        evictFollowerFollowingCache(followerId, followeeId);
+    }
+
+    public boolean isFollowing(String followerId, String followeeId) {
+        return followRepository.findByFollowerIdAndFolloweeId(followerId, followeeId).isPresent();
+    }
+
+    private void sendFollowNotification(String followerId, String followeeId) {
+        User followerUser = userRepository.findById(UserId.of(followerId))
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
-        User followeeUser = userRepository.findById(UserId.of(followServiceRequestDto.followeeId()))
+        User followeeUser = userRepository.findById(UserId.of(followeeId))
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
         String title = fcmService.makeFcmTitle(FcmType.FOLLOW.getType());
-        String body = fcmService.makeFollowBody(
-                followeeUser.getNickname().getValue(), FcmType.FOLLOW.getType()
-        );
+        String body = fcmService.makeFollowBody(followeeUser.getNickname().getValue(), FcmType.FOLLOW.getType());
         fcmRequestDto fcmDTO = fcmService.makeFcmDTO(title, body);
 
         // 알림 저장
-        Notification notice = Notification.builder()
+        Notification notification = Notification.builder()
                 .type(FcmType.FOLLOW.getType())
                 .sender(followeeUser.getNickname().getValue())
                 .recipient(followerUser.getNickname().getValue())
                 .build();
-        notificationRepository.save(notice);
+        notificationRepository.save(notification);
 
-        //fcm 전송
+        // FCM 전송
         fcmService.fcmSend(followerUser.getNickname().getValue(), fcmDTO);
-
-        followRepository.save(follow);
     }
 
-    // 언팔로우
-    public void unfollowUser(FollowServiceRequestDto followServiceRequestDto) {
-        Follow follow = followRepository.findByFollowerIdAndFolloweeId(followServiceRequestDto.followerId(), followServiceRequestDto.followeeId())
-                .orElseThrow(() -> FollowNotFoundException.EXCEPTION);
-        followRepository.delete(follow);
-    }
-
-    // 팔로우 여부 체크
-    public boolean isFollowing(String followerId, String followeeId) {
-        return followRepository.findByFollowerIdAndFolloweeId(followerId, followeeId).isPresent();
+    //캐시 삭제 -> 업데이트 되면 이전의 캐시는 의미가 없어짐
+    private void evictFollowerFollowingCache(String followerId, String followeeId) {
+        cacheManager.evict("user:" + followerId + ":followingCount");
+        cacheManager.evict("user:" + followeeId + ":followerCount");
     }
 }
