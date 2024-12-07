@@ -6,5 +6,6 @@ import com.wsws.moduledomain.user.vo.UserInterest;
 import java.util.List;
 
 public interface UserRecommendationRepository {
-    List<UserRecommendation> findTopRecommendations(String userId, List<UserInterest> userInterests, int limit);
+    List<UserRecommendation> findTopRecommendations(String userId, List<Long> interestCategoryIds, int limit);
+    List<UserRecommendation> findGeneralRecommendations(String userId, int limit);
 }

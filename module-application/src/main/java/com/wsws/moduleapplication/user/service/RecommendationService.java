@@ -2,6 +2,7 @@ package com.wsws.moduleapplication.user.service;
 
 import com.wsws.moduleapplication.user.dto.UserRecommendationMapper;
 import com.wsws.moduleapplication.user.dto.UserRecommendationResponse;
+import com.wsws.moduledomain.recommendation.UserRecommendation;
 import com.wsws.moduledomain.recommendation.repo.UserRecommendationRepository;
 import com.wsws.moduledomain.user.repo.UserInterestRepository;
 import com.wsws.moduledomain.user.vo.UserId;
@@ -19,8 +20,23 @@ public class RecommendationService {
     private final UserInterestRepository userInterestRepository;
 
     public List<UserRecommendationResponse> getRecommendations(String userId, int limit) {
+        // 사용자 관심사 조회
+        List<Long> interestCategoryIds = userInterestRepository.findByUserId(UserId.of(userId))
+                .stream()
+                .map(interest -> interest.getCategoryId().getValue())
+                .toList();
 
-        List<UserInterest> userInterests = userInterestRepository.findByUserId(UserId.of(userId));
-        return UserRecommendationMapper.toDtoList(userRecommendationRepository.findTopRecommendations(userId, userInterests, limit)) ;
+        // 관심사 기반 추천 조회
+        List<UserRecommendation> commonInterestUsers = userRecommendationRepository.findTopRecommendations(userId, interestCategoryIds, limit);
+
+        // 부족한 수 일반 사용자로 채우기
+        int remaining = limit - commonInterestUsers.size();
+        if (remaining > 0) {
+            List<UserRecommendation> generalUsers = userRecommendationRepository.findGeneralRecommendations(userId, remaining);
+            commonInterestUsers.addAll(generalUsers);
+        }
+
+        // DTO로 변환
+        return UserRecommendationMapper.toDtoList(commonInterestUsers);
     }
 }
