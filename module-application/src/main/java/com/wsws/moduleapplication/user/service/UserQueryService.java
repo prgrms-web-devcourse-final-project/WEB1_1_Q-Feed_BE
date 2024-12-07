@@ -2,8 +2,7 @@ package com.wsws.moduleapplication.user.service;
 
 import com.wsws.moduleapplication.user.dto.FullUserProfileResponse;
 import com.wsws.moduleapplication.user.dto.UserProfileResponse;
-import com.wsws.moduleapplication.user.exception.UserNotFoundException;
-import com.wsws.moduleinfra.cache.CacheManager;
+import com.wsws.moduledomain.cache.CacheManager;
 import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.UserId;

@@ -14,7 +14,7 @@ import com.wsws.moduledomain.user.vo.UserId;
 import com.wsws.moduleexternalapi.fcm.dto.fcmRequestDto;
 import com.wsws.moduleexternalapi.fcm.service.FcmService;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
-import com.wsws.moduleinfra.cache.CacheManager;
+import com.wsws.moduledomain.cache.CacheManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
