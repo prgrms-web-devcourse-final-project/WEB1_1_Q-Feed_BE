@@ -1,6 +1,5 @@
 package com.wsws.moduleinfra.entity.group;
 
-import com.wsws.moduledomain.group.GroupComment;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
