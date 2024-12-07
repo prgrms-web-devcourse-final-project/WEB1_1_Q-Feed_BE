@@ -13,9 +13,10 @@ public record ChatMessageServiceResponse(
         LocalDateTime createdAt,
         String userId,
         String userNickName,
-        String userProfileImage
+        String userProfileImage,
+        Boolean isMine
 ) {
-    public ChatMessageServiceResponse(ChatMessageDTO dto) {
+    public ChatMessageServiceResponse(ChatMessageDTO dto,Boolean isMine) {
         this(
                 dto.messageId(),
                 dto.content(),
@@ -25,7 +26,8 @@ public record ChatMessageServiceResponse(
                 dto.createdAt(),
                 dto.userId(),
                 dto.userNickName(),
-                dto.userProfileImage()
+                dto.userProfileImage(),
+                isMine
         );
     }
 }
