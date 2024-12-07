@@ -1,5 +1,6 @@
 package com.wsws.moduleinfra.repo.feed;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
@@ -8,6 +9,8 @@ import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import com.wsws.moduleinfra.entity.feed.QuestionEntity;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerCommentEntityMapper;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerEntityMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,18 +47,16 @@ public class AnswerRepositoryImpl implements AnswerRepository {
                 .toList();
     }
 
-//    @Override
-//    public Optional<Answer> findByIdWithComments(Long id) {
-//        return jpaAnswerRepository.findByIdWithComments(id)
-//                .map(answerEntity -> {
-//                    List<AnswerComment> answerComments = answerEntity.getAnswerCommentEntities().stream()
-//                            .map(AnswerCommentEntityMapper::toDomain)
-//                            .toList(); // AnswerCommentEntity -> AnswerComment
-//                    Answer answer = AnswerEntityMapper.toDomain(answerEntity);
-//                    answerComments.forEach(answer::addComments);  // 답변 댓글 추가
-//                    return answer;
-//                });
-//    }
+    @Override
+    public List<Answer> findByUserId(String userId) {
+        return List.of();
+    }
+
+    @Override
+    public Long countByUserId(String userId, boolean isMine) {
+        return isMine ? jpaAnswerRepository.countByUserIdAndVisibilityTrue(userId)
+                : jpaAnswerRepository.countByUserIdAndVisibilityFalse(userId);
+    }
 
     /**
      * 답변 저장

@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -47,12 +46,39 @@ public class AnswerController {
     ) {
 
         String userId = userPrincipal.getId();
-//        String userId = "user_id1";
+//        String reqUserId = "user_id1";
         LocalDateTime parsedCursor = answerCursor != null ? LocalDateTime.parse(answerCursor) : LocalDateTime.now();
         AnswerListFindServiceResponse answers = answerReadService.findAnswerListWithCursor(new AnswerFindServiceRequest(userId, null, parsedCursor, size));
 
 
         return ResponseEntity.ok(AnswerListGetApiResponse.toApiResponse(answers));
+    }
+
+    /**
+     * 특정 사용자의 답변 목록 조회
+     */
+    @GetMapping("/{user-id}")
+    public ResponseEntity<?> getAnswersByUser(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("user-id") String userId,
+            @Parameter(description = "커서로 사용할 마지막 글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String answerCursor,
+            @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size) {
+
+        return null;
+    }
+
+    /**
+     * 특정 사용자의 답변 총 갯수
+     */
+    @GetMapping("/{user-id}/count")
+    public ResponseEntity<?> getAnswersByUserCount(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("user-id") String userId) {
+        String reqUserId = userPrincipal.getId();
+//        String reqUserId = "user_id2";
+
+        AnswerCountByUserServiceResponse serviceResponse = answerReadService.countAnswersByUser(new AnswerCountByUserServiceRequest(reqUserId, userId));
+        return ResponseEntity.ok(AnswerCountByUserGetApiResponse.toApiResponse(serviceResponse));
     }
 
 
@@ -73,7 +99,7 @@ public class AnswerController {
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "2") int size
     ) {
         String userId = userPrincipal.getId();
-//        String userId = "user_id1";
+//        String reqUserId = "user_id1";
 
         LocalDateTime parsedCursor = commentCursor != null ? LocalDateTime.parse(commentCursor) : LocalDateTime.now();
 
@@ -98,7 +124,7 @@ public class AnswerController {
             , @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         String userId = userPrincipal.getId(); // 사용자 아이디를 가져온다.
-//        String userId = "user_id1";
+//        String reqUserId = "user_id1";
         AnswerCreateServiceResponse serviceResponse = answerService.createAnswer(answerPostApiRequest.toServiceDto(userId)); // 답변 생성
 
         return ResponseEntity.status(201).body(new AnswerPostApiResponse(serviceResponse));
@@ -169,7 +195,7 @@ public class AnswerController {
             @Parameter(description = "좋아요를 취소할 답변 ID") @PathVariable("answer-id") Long answerId) {
 
         String userId = userPrincipal.getId(); // 좋아요 누른 사용자 아이디 받아오기
-//        String userId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
+//        String reqUserId = "user_id1"; // 좋아요 누른 사용자 아이디 받아오기
 
         LikeServiceRequest request = new LikeServiceRequest(userId, "ANSWER", answerId); // 도메인으로의 의존성을 피하기 위해 문자열로 넘겨줌
 
