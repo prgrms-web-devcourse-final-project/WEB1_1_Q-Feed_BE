@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import org.springframework.data.domain.Pageable;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,9 +22,10 @@ public interface JpaGroupRepository extends JpaRepository<GroupEntity, Long> {
             "FROM GroupEntity g " +
             "LEFT JOIN g.groupMembers gm " +
             "WHERE (:categoryId = 0 OR g.categoryId = :categoryId) " +
+            "AND g.createdAt < :cursorCreatedAt " +
             "GROUP BY g.groupId "+
             "ORDER BY g.createdAt DESC")
-    List<GroupDto> findByCategoryIdWithMemberCount(@Param("categoryId") Long categoryId);
+    List<GroupDto> findByCategoryIdWithMemberCount(@Param("categoryId") Long categoryId, @Param("cursorCreatedAt") LocalDateTime cursor, Pageable pageable);
 
     @Query("SELECT new com.wsws.moduledomain.group.dto.GroupDetailDto(" +
             "g.groupId,c.categoryName,g.url,g.groupName,g.description,g.adminId,g.createdAt) " +

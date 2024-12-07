@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,10 +48,17 @@ public class ChatMessageController {
     @Operation(summary = "메세지 조회", description = "특정 채팅방의 모든 메세지를 조회합니다.")
     public ResponseEntity<List<ChatMessageApiResponse>> getMessages(
             @Parameter(description = "메세지를 조회할 채팅방 ID") @PathVariable Long chatRoomId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        //Pageable pageable = PageRequest.of(page, size);
-        List<ChatMessageServiceResponse> messages = chatMessageService.getChatMessages(chatRoomId, page, size);
+            @Parameter(description = "커서로 사용할 마지막 팔로워의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String cursor,
+            @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size) {
+
+        LocalDateTime parsedCursor;
+        // cursor가 null이거나 잘못된 형식일 경우 기본 값 처리
+        try {
+            parsedCursor = cursor != null ? LocalDateTime.parse(cursor) : LocalDateTime.now();
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid cursor format. Please use the correct ISO format (e.g. 2024-01-01T00:00:00)");
+        }
+        List<ChatMessageServiceResponse> messages = chatMessageService.getChatMessages(chatRoomId, parsedCursor, size);
 
         List<ChatMessageApiResponse> apiResponses = messages.stream()
                 .map(ChatMessageApiResponse::new)  // 생성자에서 변환

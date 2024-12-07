@@ -50,6 +50,15 @@ public class QuestionRepositoryImpl implements QuestionRepository {
                         QuestionEntityMapper.toEntity(question)));
     }
 
+    @Override
+    public void edit(Question question) {
+
+        Optional<QuestionEntity> questionEntity = jpaQuestionRepository.findById(question.getQuestionId().getValue());
+
+        questionEntity
+                .ifPresent(entity -> entity.editQuestionEntity(question.getQuestionStatus()));
+    }
+
     /**
      * 오늘의 질문을 카테고리 기준으로 찾기
      */

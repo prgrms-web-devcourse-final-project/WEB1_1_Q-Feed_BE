@@ -32,12 +32,17 @@ dependencies {
 
 	//mail
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	//s3
+	implementation 'software.amazon.awssdk:s3:2.20.89'
+	implementation 'software.amazon.awssdk:auth:2.20.89'
+	implementation 'software.amazon.awssdk:core:2.20.89'
 }
 
 // QueryDSL 소스 생성 디렉토리
 def querydslSrcDir = "$buildDir/generated/querydsl"
 
-tasks.withType(JavaCompile).configureEach {
+tasks.withType(JavaCompile){
 	// QueryDSL 파일이 생성될 디렉토리 설정
 	options.generatedSourceOutputDirectory = file(querydslSrcDir)
 }

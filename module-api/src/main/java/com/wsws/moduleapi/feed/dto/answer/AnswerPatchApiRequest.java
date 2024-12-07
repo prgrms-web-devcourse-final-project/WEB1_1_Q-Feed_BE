@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 public record AnswerPatchApiRequest(
         String content,
         MultipartFile image,
-        @NotNull
+        @NotNull(message = "visibility는 필수값입니다.")
         Boolean visibility
 ) {
         public AnswerEditServiceRequest toServiceDto(Long answerId) {

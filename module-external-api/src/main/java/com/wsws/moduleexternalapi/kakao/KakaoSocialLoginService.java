@@ -36,7 +36,7 @@ public class KakaoSocialLoginService implements SocialLoginService {
                 "kakao",
                 profile.getId(),
                 profile.getKakao_account().getEmail(),
-                profile.getKakao_account().getProfile().getNickname(),
+                profile.getKakao_account().getProfile().getNickname() + "_kakao",
                 profile.getKakao_account().getProfile().getProfile_image_url()
         );
     }

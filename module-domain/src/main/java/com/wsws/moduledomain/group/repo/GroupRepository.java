@@ -6,6 +6,7 @@ import com.wsws.moduledomain.group.dto.GroupDto;
 import com.wsws.moduledomain.group.dto.GroupMemberDto;
 import com.wsws.moduledomain.group.vo.GroupId;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +21,7 @@ public interface GroupRepository {
 
     Optional<Group> findById(GroupId groupId);
 
-    List<GroupDto> findByCategoryIdWithMemberCount(Long categoryId);
+    List<GroupDto> findByCategoryIdWithMemberCount(Long categoryId, LocalDateTime cursor, int size);
 
     Optional<GroupDetailDto> findGroupWithCategory(Long groupId);
 

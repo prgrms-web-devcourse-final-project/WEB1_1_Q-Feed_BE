@@ -9,7 +9,6 @@ import com.wsws.moduledomain.user.vo.UserInterest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.wsws.moduleinfra.entity.user.QUserEntity.userEntity;
@@ -36,22 +35,15 @@ public class UserRecommendationRepositoryImpl implements UserRecommendationRepos
                         userEntity.id,
                         userEntity.nickname,
                         userEntity.profileImage,
-                        queryFactory
-                                .select(followEntity.id.followerId.count())
-                                .from(followEntity)
-                                .where(followEntity.id.followeeId.eq(userEntity.id))
+                        followEntity.id.followerId.count().as("followerCount")
                 ))
                 .from(userEntity)
                 .leftJoin(userInterestEntity).on(userEntity.id.eq(userInterestEntity.user.id))
+                .leftJoin(followEntity).on(userEntity.id.eq(followEntity.id.followeeId))
                 .where(userEntity.id.ne(userId)
-                        .and(userInterestEntity.category.id.in(interestCategoryIds))) // 관심사 동일한 유저 찾기
-                .orderBy(Expressions.asNumber(
-                                queryFactory
-                                        .select(followEntity.id.followerId.count())
-                                        .from(followEntity)
-                                        .where(followEntity.id.followeeId.eq(userEntity.id)) // 팔로워순으로 정렬
-                        ).desc()
-                )
+                        .and(userInterestEntity.category.id.in(interestCategoryIds)))
+                .groupBy(userEntity.id)
+                .orderBy(followEntity.id.followerId.count().desc())
                 .limit(limit)
                 .fetch();
         if (commonInterestUsers.size() < limit) { // 동일한 사람이 다 안채워지면 유사도 높은 사람

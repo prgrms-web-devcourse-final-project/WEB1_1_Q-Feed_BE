@@ -1,6 +1,7 @@
 package com.wsws.moduleapplication.feed.service.scheduler;
 
 import com.wsws.moduleapplication.feed.service.QuestionAIService;
+import com.wsws.moduledomain.category.vo.CategoryName;
 import com.wsws.moduledomain.feed.question.ai.QuestionGenerateClient;
 import com.wsws.moduledomain.feed.question.ai.VectorClient;
 import lombok.RequiredArgsConstructor;
@@ -80,7 +81,10 @@ public class ScheduledQuestionCreateService {
      * 카테고리 리스트 초기화
      */
     private void initList() {
-        categories = new CopyOnWriteArrayList<>(List.of("TRAVEL", "DELICIOUS_RESTAURANT",  "MOVIE", "MUSIC", "READING", "SPORTS"));
+
+        categories = new CopyOnWriteArrayList<>(Arrays.stream(CategoryName.values())
+                .map(Enum::name)
+                .toList());
         questionBlackListMap = new ConcurrentHashMap<>();
         questionTempStore = new ConcurrentHashMap<>();
     }

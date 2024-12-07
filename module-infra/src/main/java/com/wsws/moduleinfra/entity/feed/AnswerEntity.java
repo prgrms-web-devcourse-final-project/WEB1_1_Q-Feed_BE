@@ -3,6 +3,10 @@ package com.wsws.moduleinfra.entity.feed;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "Answer")
 @Getter
@@ -14,20 +18,26 @@ public class AnswerEntity {
     String content;
     Boolean visibility;
     String url;
-    int reactionCount;
+    int likeCount;
+    LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
     QuestionEntity questionEntity;
 
+    @OneToMany(mappedBy = "answerEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<AnswerCommentEntity> answerCommentEntities = new ArrayList<>();
+
+    @Column(nullable = false)
     String userId;
 
-    public static AnswerEntity create(String content, Boolean visibility, String url, int reactionCount, QuestionEntity questionEntity, String userId) {
+    public static AnswerEntity create(String content, Boolean visibility, String url, int likeCount, LocalDateTime createdAt, QuestionEntity questionEntity, String userId) {
         AnswerEntity answerEntity = new AnswerEntity();
         answerEntity.content = content;
         answerEntity.visibility = visibility;
         answerEntity.url = url;
-        answerEntity.reactionCount = reactionCount;
+        answerEntity.likeCount = likeCount;
+        answerEntity.createdAt = createdAt;
         answerEntity.questionEntity = questionEntity;
         answerEntity.userId = userId;
         return answerEntity;
@@ -43,11 +53,11 @@ public class AnswerEntity {
     /**
      * 수정 로직
      */
-    public void editEntity(String content, Boolean visibility, String url, int reactionCount) {
+    public void editQuestionEntity(String content, Boolean visibility, String url, int likeCount) {
         this.content = content;
         this.visibility = visibility;
         this.url = url;
-        this.reactionCount = reactionCount;
+        this.likeCount = likeCount;
     }
 
 }

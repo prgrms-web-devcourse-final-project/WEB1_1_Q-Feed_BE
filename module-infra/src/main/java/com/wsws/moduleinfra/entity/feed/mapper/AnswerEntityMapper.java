@@ -6,17 +6,18 @@ import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 public class AnswerEntityMapper {
     public static Answer toDomain(AnswerEntity answerEntity) {
 
-        Long questionId = null;
-        if (answerEntity.getQuestionEntity() != null) {
-            questionId = answerEntity.getQuestionEntity().getId();
-        }
+        Long questionId = answerEntity.getQuestionEntity() != null
+                ? answerEntity.getQuestionEntity().getId()
+                : null;
+
 
         return Answer.create(
                 answerEntity.getId(),
                 answerEntity.getContent(),
                 answerEntity.getVisibility(),
                 answerEntity.getUrl(),
-                answerEntity.getReactionCount(),
+                answerEntity.getLikeCount(),
+                answerEntity.getCreatedAt(),
                 questionId,
                 answerEntity.getUserId()
         );
@@ -27,7 +28,8 @@ public class AnswerEntityMapper {
                 answer.getContent(),
                 answer.getVisibility(),
                 answer.getUrl(),
-                answer.getReactionCount(),
+                answer.getLikeCount(),
+                answer.getCreatedAt(),
                 null,
                 answer.getUserId().getValue()
         );

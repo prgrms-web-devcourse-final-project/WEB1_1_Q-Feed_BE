@@ -1,11 +1,8 @@
 package com.wsws.moduleinfra.repo.chat;
 
-import com.wsws.moduledomain.chat.ChatMessage;
-import com.wsws.moduledomain.chat.ChatRoom;
-import com.wsws.moduledomain.chat.repo.ChatMessageRepository;
 import com.wsws.moduledomain.chat.dto.ChatMessageDTO;
 import com.wsws.moduleinfra.entity.chat.ChatMessageEntity;
-import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +22,9 @@ public interface JpaChatMessageRepository extends JpaRepository<ChatMessageEntit
             "FROM ChatMessageEntity m " +
             "JOIN UserEntity u ON m.userId = u.id " +
             "WHERE m.chatRoom.id = :chatRoomId " +
-            "ORDER BY m.createdAt")
-    Page<ChatMessageDTO> findMessagesWithUserDetails(@Param("chatRoomId") Long chatRoomId, Pageable pageable);
+            "AND m.createdAt < :cursorCreatedAt " +
+            "ORDER BY m.createdAt desc ")
+    List<ChatMessageDTO> findMessagesWithUserDetails(@Param("chatRoomId") Long chatRoomId, @Param("cursorCreatedAt") LocalDateTime cursor, Pageable pageable);
 
     @Modifying
     @Transactional
