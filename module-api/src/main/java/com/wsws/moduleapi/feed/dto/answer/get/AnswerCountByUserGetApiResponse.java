@@ -1,4 +1,4 @@
-package com.wsws.moduleapi.feed.dto.answer;
+package com.wsws.moduleapi.feed.dto.answer.get;
 
 import com.wsws.moduleapplication.feed.dto.answer.AnswerCountByUserServiceResponse;
 

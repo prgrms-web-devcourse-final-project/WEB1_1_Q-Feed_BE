@@ -1,4 +1,4 @@
-package com.wsws.moduleapi.feed.dto.answer;
+package com.wsws.moduleapi.feed.dto.answer.put_patch;
 
 import com.wsws.moduleapplication.feed.dto.answer.AnswerEditServiceRequest;
 import jakarta.validation.constraints.NotNull;
