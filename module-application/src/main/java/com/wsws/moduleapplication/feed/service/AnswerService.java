@@ -1,6 +1,8 @@
 package com.wsws.moduleapplication.feed.service;
 
-import com.wsws.moduleapplication.feed.dto.answer.*;
+import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerCreateServiceRequest;
+import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerCreateServiceResponse;
+import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerEditServiceRequest;
 import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.feed.exception.QuestionNotFoundException;
 import com.wsws.moduleapplication.user.dto.LikeServiceRequest;

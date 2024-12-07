@@ -1,6 +1,4 @@
-package com.wsws.moduleapplication.feed.dto.answer;
-
-import java.time.LocalDateTime;
+package com.wsws.moduleapplication.feed.dto.answer.read;
 
 public record AnswerCountByUserServiceRequest(
         String reqUserId,

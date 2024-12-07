@@ -1,6 +1,5 @@
-package com.wsws.moduleapplication.feed.dto.answer;
+package com.wsws.moduleapplication.feed.dto.answer.read;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 

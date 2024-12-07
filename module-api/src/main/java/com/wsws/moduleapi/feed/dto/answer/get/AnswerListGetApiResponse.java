@@ -1,6 +1,6 @@
 package com.wsws.moduleapi.feed.dto.answer.get;
 
-import com.wsws.moduleapplication.feed.dto.answer.AnswerListFindServiceResponse;
+import com.wsws.moduleapplication.feed.dto.answer.read.AnswerListFindServiceResponse;
 
 import java.util.List;
 
