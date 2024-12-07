@@ -41,21 +41,21 @@ public class ChatMessageService {
     private final RedisSubscriber redisSubscriber;
 
     @Transactional
-    public void sendMessage(Long chatRoomId, String senderId, ChatMessageRequest request ) {
+    public void sendMessage(Long chatRoomId, String senderId,  ChatMessageRequest request ) {
         ChatRoom chatRoom = getChatRoomById(chatRoomId);
         User user = getUserById(senderId);
 
         UserId userId = user.getId();
 
-        // 이미지 or 음성 처리
-        String fileProcess = processFile(request.file(),request.type());
+//        // 이미지 or 음성 처리
+//        String fileProcess = processFile(request.file(),request.type());
 
         //메세지 생성
         ChatMessage chatMessage = ChatMessage.create(
                 null,
                 request.content(),
-                request.type(),
-                fileProcess,
+                MessageType.TEXT,
+                null,
                 false,
                 LocalDateTime.now(),
                 senderId,
@@ -118,11 +118,11 @@ public class ChatMessageService {
                 switch (type) {
                     case IMAGE -> {
                         FileValidator.validate(file,"image");
-                        return fileStorageService.saveFile(file, "images");
+                        return fileStorageService.saveFile(file);
                     }
                     case AUDIO -> {
                         FileValidator.validate(file,"audio");
-                        return fileStorageService.saveFile(file, "audios");
+                        return fileStorageService.saveFile(file);
                     }
                 }
             } catch (Exception e) {
