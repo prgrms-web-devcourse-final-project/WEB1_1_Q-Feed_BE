@@ -38,7 +38,7 @@ public class RedisSubscriber implements MessageListener {
     public void onMessage(Message message, byte[] pattern) {
         try {
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
-
+            System.out.println("발행된 메시지: " + publishMessage);  // 메시지 확인
             ChatMessageDomainResponse roomMessage = objectMapper.readValue(publishMessage, ChatMessageDomainResponse.class);
 
            messagingTemplate.convertAndSend("/sub/chat/" + roomMessage.chatRoomId(), roomMessage);
