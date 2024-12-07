@@ -1,6 +1,6 @@
 package com.wsws.moduleapi.feed.dto.answer.get;
 
-import com.wsws.moduleapplication.feed.dto.answer.AnswerCountByUserServiceResponse;
+import com.wsws.moduleapplication.feed.dto.answer.read.AnswerCountByUserServiceResponse;
 
 public record AnswerCountByUserGetApiResponse(
         Long answerCount

@@ -1,8 +1,8 @@
 package com.wsws.moduleapplication.feed.service;
 
-import com.wsws.moduleapplication.feed.dto.answer.*;
-import com.wsws.moduleapplication.feed.dto.answer.AnswerCommentFindServiceResponse.AnswerCommentFindServiceResponseBuilder;
-import com.wsws.moduleapplication.feed.dto.answer.AnswerFindServiceResponse.AnswerFindServiceResponseBuilder;
+import com.wsws.moduleapplication.feed.dto.answer.read.*;
+import com.wsws.moduleapplication.feed.dto.answer.read.AnswerCommentFindServiceResponse.AnswerCommentFindServiceResponseBuilder;
+import com.wsws.moduleapplication.feed.dto.answer.read.AnswerFindServiceResponse.AnswerFindServiceResponseBuilder;
 import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.feed.answer.Answer;
