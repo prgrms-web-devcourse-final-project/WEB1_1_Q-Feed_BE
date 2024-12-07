@@ -98,7 +98,7 @@ public class AnswerReadService {
     private void buildAnswer(Answer answer, String reqUserId, AnswerFindServiceResponseBuilder answerResponseBuilder) {
 
         // 해당 답변을 작성한 사용자 정보 받아오기
-        User answerAuthor = userRepository.findById(UserId.of(answer.getUserId().getValue() + "ㅇ"))
+        User answerAuthor = userRepository.findById(answer.getUserId())
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
         // 해당 사용자가 해당 답변에 좋아요를 눌렀는지
