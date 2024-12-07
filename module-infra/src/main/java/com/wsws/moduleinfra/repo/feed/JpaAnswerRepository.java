@@ -19,4 +19,8 @@ public interface JpaAnswerRepository extends JpaRepository<AnswerEntity, Long> {
 
     @Query("SELECT a FROM AnswerEntity a WHERE a.createdAt < :answerCursor ORDER BY a.createdAt DESC")
     List<AnswerEntity> findAllWithCursor(LocalDateTime answerCursor, Pageable pageable);
+
+
+    Long countByUserIdAndVisibilityTrue(String userId);
+    Long countByUserIdAndVisibilityFalse(String userId);
 }

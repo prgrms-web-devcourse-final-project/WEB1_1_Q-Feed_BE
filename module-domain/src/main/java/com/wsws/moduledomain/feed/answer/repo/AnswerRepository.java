@@ -14,15 +14,20 @@ public interface AnswerRepository {
      */
     Optional<Answer> findById(Long id);
 
-//    /**
-//     * 답변을 Id를 기준으로 댓글과 함께 찾기
-//     */
-//    Optional<Answer> findByIdWithComments(Long id);
-
     /**
      * 답변 리스트를 페이징 해서 찾기
      */
     List<Answer> findAllWithCursor(LocalDateTime commentCursor, int size);
+
+    /**
+     * 답변을 UserId 기준으로 찾기
+     */
+    List<Answer> findByUserId(String userId);
+
+    /**
+     * 특정 사용자의 답변의 갯수
+     */
+    Long countByUserId(String userId, boolean isMine);
 
     /**
      * 답변 저장

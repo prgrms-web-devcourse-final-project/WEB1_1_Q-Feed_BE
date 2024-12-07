@@ -39,7 +39,7 @@ public class AnswerReadService {
     public AnswerListFindServiceResponse findAnswerListWithCursor(AnswerFindServiceRequest request) {
 
         // 답변 리스트 페이징해서 불러오기
-        List<Answer> answers = answerRepository.findAllWithCursor(request.commentCursor(), request.size());
+        List<Answer> answers = answerRepository.findAllWithCursor(request.cursor(), request.size());
 
         List<AnswerFindServiceResponse> responses = new ArrayList<>();
 
@@ -58,20 +58,7 @@ public class AnswerReadService {
 
 
     /**
-     * <h3> 답변 상세 조회 </h3>
-     * -- 필요한 정보 --
-     * <h5> 1. 답변 관련 </h5>
-     * - User(답변 작성자): authorUserId, nickname, profileImage <br>
-     * - Answer: answerId, content, createdAt, likeCount <br>
-     * - Like: 해당 사용자가 해당 답변에 좋아요를 눌렀는지 여부 <br>
-     * - Follow: 요청한 사용자가 답변 작성자를 팔로우 했는지 여부 <br>
-     * <h5> 2. 댓글 관련 </h5> <
-     * - User(댓글 작성자): authorUserId, nickname, profileImage<br>
-     * - AnswerComment: 댓글 총 갯수(부모 댓글)<br>
-     * - AnswerComment: 부모 댓글 리스트(무한스크롤 페이징 적용) - commentId, content, likeCount, childCommentCount, createdAt<br>
-     * - AnswerComment: 대 댓글 리스트 - commentId, content, likeCount, createdAt<br>
-     * - Like: 해당 사용자가 해당 댓글/대댓글에 좋아요를 눌렀는지 여부<br>
-     * - Follow: 요청한 사용자가 댓글/대댓글 작성자를 팔로우 했는지 여부<br>
+     * 답변 상세 조회 (댓글도 함께 받아오며, 댓글은 페이징 처리)
      */
     public AnswerFindServiceResponse findOneAnswerWithCursor(AnswerFindServiceRequest request) {
         AnswerFindServiceResponseBuilder answerResponseBuilder = AnswerFindServiceResponse.builder();
@@ -84,13 +71,31 @@ public class AnswerReadService {
         buildAnswer(answer, request.userId(), answerResponseBuilder);
 
         // Answer에 대한 부모 Answer Comment를 페이징으로 가져오기
-        List<AnswerComment> parentComments = answerCommentRepository.findParentCommentsByAnswerIdWithCursor(request.answerId(), request.commentCursor(), request.size());
+        List<AnswerComment> parentComments = answerCommentRepository.findParentCommentsByAnswerIdWithCursor(request.answerId(), request.cursor(), request.size());
 
         // AnswerComment 정보 세팅
         buildAnswerComment(parentComments, request.userId(), answerResponseBuilder);
 
         return answerResponseBuilder.build();
     }
+
+    /**
+     * 특정 사용자의 답변 갯수
+     */
+    public AnswerCountByUserServiceResponse countAnswersByUser(AnswerCountByUserServiceRequest request) {
+        boolean isMine = request.reqUserId().equals(request.targetUserId());
+
+        Long answerCount = answerRepository.countByUserId(request.targetUserId(), isMine);
+        return new AnswerCountByUserServiceResponse(answerCount);
+    }
+
+
+
+
+
+
+
+    /* Private Method */
 
     /**
      * Answer 정보를 세팅
