@@ -43,7 +43,9 @@ public class AnswerController {
      * 답변 목록 조회
      */
     @GetMapping
-    @Operation(summary = "답변 목록 조회", description = "답변의 목록을 조회합니다. 댓글의 상세내용은 제공되지 않습니다.")
+    @Operation(summary = "답변 목록 조회", description = "답변의 목록을 최신순으로 조회합니다. " +
+            "카테고리 Id를 넣지 않을 시 카테고리 상관없이 전체 글이 최신순으로 조회됩니다. " +
+            "댓글의 상세내용은 제공되지 않습니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "답변 목록 조회 성공"),
             @ApiResponse(responseCode = "404", description = "작성자 정보를 찾을 수 없을 때", content = @Content)
@@ -56,7 +58,7 @@ public class AnswerController {
     ) {
 
         String userId = userPrincipal.getId();
-//        String reqUserId = "user_id1";
+//        String userId = "user_id1";
         LocalDateTime parsedCursor = answerCursor != null ? LocalDateTime.parse(answerCursor) : LocalDateTime.now();
         AnswerListFindServiceResponse answers = answerReadService.findAnswerListWithCursor(new AnswerFindServiceRequest(userId, null, categoryId, parsedCursor, size));
 
@@ -75,13 +77,13 @@ public class AnswerController {
             @ApiResponse(responseCode = "404", description = "대상 사용자를 찾을 수 없는 경우", content = @Content)
     })
     public ResponseEntity<AnswerListByUserGetApiResponse> getAnswersByUser(
-//            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "찾고자하는 대상 사용자") @PathVariable("user-id") String targetId,
             @Parameter(description = "커서로 사용할 마지막 글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String answerCursor,
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size) {
 
-//        String reqUserId = userPrincipal.getId();
-                String reqUserId = "user_id2";
+        String reqUserId = userPrincipal.getId();
+//                String reqUserId = "user_id2";
         LocalDateTime parsedCursor = answerCursor != null ? LocalDateTime.parse(answerCursor) : LocalDateTime.now();
         AnswerFindByUserServiceRequest serviceRequest = new AnswerFindByUserServiceRequest(reqUserId, targetId, parsedCursor, size);
         AnswerListFindByUserServiceResponse serviceResponse = answerReadService.findAnswerListByUserWithCursor(serviceRequest);
@@ -153,7 +155,7 @@ public class AnswerController {
             , @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         String userId = userPrincipal.getId(); // 사용자 아이디를 가져온다.
-//        String reqUserId = "user_id1";
+//        String userId = "user_id1";
         AnswerCreateServiceResponse serviceResponse = answerService.createAnswer(answerPostApiRequest.toServiceDto(userId)); // 답변 생성
 
         return ResponseEntity.status(201).body(new AnswerPostApiResponse(serviceResponse));

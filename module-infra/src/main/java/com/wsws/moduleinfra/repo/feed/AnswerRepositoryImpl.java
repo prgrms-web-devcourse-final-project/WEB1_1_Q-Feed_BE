@@ -41,9 +41,14 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     }
 
     @Override
-    public List<Answer> findAllWithCursor(LocalDateTime answerCursor, int size) {
+    public List<Answer> findAllByCategoryIdWithCursor(LocalDateTime cursor, int size, Long categoryId) {
         Pageable pageable = PageRequest.of(0, size);
-        return jpaAnswerRepository.findAllWithCursor(answerCursor, pageable).stream()
+        return categoryId == null
+                ?
+                jpaAnswerRepository.findAllWithCursor(cursor, pageable).stream()
+                .map(AnswerEntityMapper::toDomain)
+                .toList()
+                :jpaAnswerRepository.findAllByCategoryIdWithCursor(cursor, pageable, categoryId).stream()
                 .map(AnswerEntityMapper::toDomain)
                 .toList();
     }

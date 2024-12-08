@@ -18,7 +18,7 @@ public interface AnswerRepository {
     /**
      * 답변 리스트를 페이징 해서 찾기
      */
-    List<Answer> findAllWithCursor(LocalDateTime cursor, int size);
+    List<Answer> findAllByCategoryIdWithCursor(LocalDateTime cursor, int size, Long categoryId);
 
     /**
      * 답변 리스트를 UserId 기준으로 페이징 해서 찾기

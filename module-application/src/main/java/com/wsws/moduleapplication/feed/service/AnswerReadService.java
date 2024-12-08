@@ -43,7 +43,7 @@ public class AnswerReadService {
     public AnswerListFindServiceResponse findAnswerListWithCursor(AnswerFindServiceRequest request) {
 
         // 답변 리스트 페이징해서 불러오기
-        List<Answer> answers = answerRepository.findAllWithCursor(request.cursor(), request.size());
+        List<Answer> answers = answerRepository.findAllByCategoryIdWithCursor(request.cursor(), request.size(), request.categoryId());
 
         List<AnswerFindServiceResponse> responses = new ArrayList<>();
 
