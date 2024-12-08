@@ -55,16 +55,6 @@ public class GroupCommentService {
         GroupComment groupComment = groupCommentRepository.findById(groupCommentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
 
-//        // 디버깅용 로그 추가
-//        System.out.println("댓글 작성자 ID (groupComment.getUserId()): " + groupComment.getUserId());
-//        System.out.println("로그인된 사용자 ID (UserId.of(userId)): " + UserId.of(userId));
-
-        // 작성자 ID 비교 //수정 필요
-        if (!groupComment.getUserId().equals(UserId.of(userId))) {
-            throw new IllegalStateException("권한이 없습니다. 댓글 작성자만 삭제할 수 있습니다.");
-        }
-
-        // 댓글 삭제
         groupCommentRepository.deleteById(groupCommentId);
     }
 

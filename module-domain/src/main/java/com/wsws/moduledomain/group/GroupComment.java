@@ -3,12 +3,14 @@ package com.wsws.moduledomain.group;
 
 import com.wsws.moduledomain.user.vo.UserId;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Setter
 @Getter
+@NoArgsConstructor
 public class GroupComment {
     private Long groupCommentId;
     private String content;
@@ -17,22 +19,15 @@ public class GroupComment {
     private long likeCount;
     private Long groupPostId;
 
-    private GroupComment(Long groupCommentId, String content, LocalDateTime createdAt, String userId, Long likeCount) {
-        this.groupCommentId = groupCommentId;
-        this.content = content;
-        this.createdAt = createdAt;
-        this.userId = UserId.of(userId);
-        this.likeCount = likeCount;
-    }
 
-
-    //   생성 메서드
     public static GroupComment create(Long id, String content, LocalDateTime createdAt, String userId, Long likeCount) {
-        return new GroupComment(id, content, createdAt, userId, likeCount);
-    }
-
-    public Long getGroupPostId() {
-        return this.groupPostId;
+       GroupComment comment = new GroupComment();
+       comment.groupCommentId = id;
+       comment.content = content;
+       comment.createdAt = createdAt;
+       comment.userId = UserId.of(userId);
+       comment.likeCount = likeCount;
+       return comment;
     }
 
     // 좋아요 증가
