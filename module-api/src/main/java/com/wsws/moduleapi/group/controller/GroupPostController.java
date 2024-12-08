@@ -2,6 +2,7 @@ package com.wsws.moduleapi.group.controller;
 
 import com.wsws.moduleapi.group.dto.GroupPostApiResponse;
 import com.wsws.moduleapplication.group.dto.CreateGroupPostRequest;
+import com.wsws.moduleapplication.group.dto.GroupPostDetailResponse;
 import com.wsws.moduleapplication.group.service.GroupPostService;
 import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
 import com.wsws.modulesecurity.security.UserPrincipal;
@@ -48,9 +49,15 @@ public class GroupPostController {
             @PathVariable Long groupPostId,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         return processAuthenticatedRequest(userPrincipal, userId -> {
-            groupPostService.deleteGroupPost(groupPostId, userId);
+            groupPostService.deleteGroupPost(groupPostId);
             return ResponseEntity.ok("그룹 게시글이 삭제되었습니다.");
         });
+    }
+
+    @GetMapping("/posts/{groupPostId}")
+    @Operation(summary = "게시글 상세 조회", description = "특정 게시글과 그에 대한 댓글을 조회합니다.")
+    public ResponseEntity<GroupPostDetailResponse> getGroupPostDetail(@PathVariable Long groupPostId) {
+        return ResponseEntity.ok(groupPostService.getGroupPostDetail(groupPostId));
     }
 
     @PostMapping("/posts/{groupPostId}/likes")

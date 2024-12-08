@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,6 +17,7 @@ public class GroupPost {
     private String userId;
     private String url;
     private long likeCount = 0;
+    private List<GroupComment> comments;
 
     public static GroupPost create(Long groupPostId, Long groupId, String content, String url, String userId, Long likeCount) {
         GroupPost post = new GroupPost();

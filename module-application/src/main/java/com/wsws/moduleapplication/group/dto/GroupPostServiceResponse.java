@@ -11,9 +11,7 @@ public record GroupPostServiceResponse (
         String content,
         LocalDateTime createAt,
         String userId,
-//        boolean hasReaction,
         Long likeCount
-//        Long commentCount
 ) {
     public GroupPostServiceResponse (GroupPostDto dto) {
      this(
@@ -23,9 +21,7 @@ public record GroupPostServiceResponse (
              dto.content(),
              dto.createAt(),
              dto.userId(),
-//             dto.hasReaction(),
              dto.likeCount()
-//             dto.commentCount()
      );
     }
 }

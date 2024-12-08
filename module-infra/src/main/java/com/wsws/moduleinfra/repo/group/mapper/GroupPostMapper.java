@@ -1,7 +1,12 @@
 package com.wsws.moduleinfra.repo.group.mapper;
 
+import com.wsws.moduleapplication.group.dto.GroupPostDetailResponse;
+import com.wsws.moduledomain.group.GroupComment;
 import com.wsws.moduledomain.group.GroupPost;
 import com.wsws.moduleinfra.entity.group.GroupPostEntity;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class GroupPostMapper {
 
@@ -31,6 +36,21 @@ public class GroupPostMapper {
                 domain.getUserId(),
                 domain.getUrl(),
                 domain.getLikeCount()
+        );
+    }
+
+    public static GroupPostDetailResponse toDetailResponse(GroupPost groupPost, List<GroupComment> comments) {
+        List<GroupPostDetailResponse.CommentResponse> commentResponses = comments.stream()
+                .map(GroupCommentMapper::toCommentResponse)
+                .collect(Collectors.toList());
+
+        return new GroupPostDetailResponse(
+                groupPost.getGroupPostId(),
+                groupPost.getUserId(),
+                groupPost.getContent(),
+                groupPost.getCreatedAt(),
+                groupPost.getLikeCount(),
+                commentResponses
         );
     }
 }

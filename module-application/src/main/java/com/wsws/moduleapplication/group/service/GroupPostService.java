@@ -1,22 +1,23 @@
 package com.wsws.moduleapplication.group.service;
 
 import com.wsws.moduleapplication.group.dto.CreateGroupPostRequest;
+import com.wsws.moduleapplication.group.dto.GroupPostDetailResponse;
 import com.wsws.moduleapplication.group.dto.GroupPostServiceResponse;
 import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.user.exception.NotLikedException;
 import com.wsws.moduleapplication.user.exception.ProfileImageProcessingException;
-import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
+import com.wsws.moduledomain.group.GroupComment;
 import com.wsws.moduledomain.group.GroupPost;
+import com.wsws.moduledomain.group.repo.GroupCommentRepository;
 import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduledomain.user.Like;
-import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.LikeRepository;
-import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.TargetType;
-import com.wsws.moduledomain.user.vo.UserId;
+import com.wsws.moduleinfra.repo.group.mapper.GroupCommentMapper;
+import com.wsws.moduleinfra.repo.group.mapper.GroupPostMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,13 +31,14 @@ public class GroupPostService {
     private final GroupPostRepository groupPostRepository;
     private final FileStorageService fileStorageService;
     private final LikeRepository likeRepository;
+    private final GroupCommentRepository groupCommentRepository;
 
 
     // 게시물 생성
     @Transactional
     public void createGroupPost(CreateGroupPostRequest request, Long groupId, String userId) {
         GroupPost post = GroupPost.create(
-                0L, groupId, request.content(),
+                null, groupId, request.content(),
                 processGroupPostImage(request.url()), userId, 0L
         );
         groupPostRepository.save(post);
@@ -51,24 +53,29 @@ public class GroupPostService {
 
     // 게시물 삭제
     @Transactional
-    public void deleteGroupPost(Long groupPostId, String userId) {
+    public void deleteGroupPost(Long groupPostId) {
         groupPostRepository.findById(groupPostId)
                 .ifPresentOrElse(
-                        groupPost -> groupPostRepository.delete(groupPostId), // 엔티티 삭제
+                        groupPost -> groupPostRepository.deleteById(groupPostId), // 엔티티 삭제
                         () -> {
                             throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
                         }
                 );
     }
 
+    @Transactional
+    public GroupPostDetailResponse getGroupPostDetail(Long groupPostId) {
+        // 게시글 조회
+        GroupPost groupPost = groupPostRepository.findById(groupPostId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
-//    //게시물 상세 조회
-//    @Transactional
-//    public GroupPostDetailResponse getGroupPostDetail(Long groupPostId) {
-//        GroupPostDetailDto groupPostDetailDto = groupPostRepository.findById(groupPostId)
-//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
-//        return new GroupPostDetailResponse(groupPostDetailDto);
-//    }
+        // 댓글 조회
+        List<GroupComment> comments = groupCommentRepository.findAllByGroupPostId(groupPostId);
+
+        // GroupPost를 DTO로 변환 (댓글 포함)
+        return GroupPostMapper.toDetailResponse(groupPost, comments);
+    }
+
 
     @Transactional
     public void addLikeToGroupPost(LikeServiceRequest request) {
