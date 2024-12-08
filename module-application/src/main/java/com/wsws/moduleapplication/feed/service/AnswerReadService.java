@@ -9,6 +9,8 @@ import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.comment.repo.AnswerCommentRepository;
+import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
+import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
 import com.wsws.moduledomain.follow.Follow;
 import com.wsws.moduledomain.follow.repo.FollowRepository;
 import com.wsws.moduledomain.user.Like;
@@ -33,6 +35,8 @@ public class AnswerReadService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final QuestionRepository questionRepository;
+
     /**
      * 답변 목록 조회 (무한 스크롤 페이징 적용)
      */
@@ -79,15 +83,38 @@ public class AnswerReadService {
         return answerResponseBuilder.build();
     }
 
+
+    /**
+     * 특정 사용자의 답변 목록 (페이징 적용)
+     */
+    public AnswerListFindByUserServiceResponse findAnswerListByUserWithCursor(AnswerFindByUserServiceRequest request) {
+        validateTargetUser(request); // 대상 사용자 존재여부 검증
+
+        boolean isMine = isMine(request); // 조회 요청한 사용자와 대상자가 같은지
+
+        List<AnswerQuestionDTO> answers =
+                answerRepository.findAllByUserIdWithCursor(request.targetUserId(), request.cursor(), request.size(), isMine); // 페이징으로 Answer 및 Question 정보 가져오기
+
+        List<AnswerFindByUserServiceResponse> serviceResponses = answers.stream()
+                .map(AnswerFindByUserServiceResponse::toServiceResponse)
+                .toList();
+
+        return new AnswerListFindByUserServiceResponse(serviceResponses);
+    }
+
+
     /**
      * 특정 사용자의 답변 갯수
      */
-    public AnswerCountByUserServiceResponse countAnswersByUser(AnswerCountByUserServiceRequest request) {
-        boolean isMine = request.reqUserId().equals(request.targetUserId());
+    public AnswerCountByUserServiceResponse countAnswersByUser(AnswerFindByUserServiceRequest request) {
+        validateTargetUser(request);
+
+        boolean isMine = isMine(request); // 조회 요청한 사용자와 대상자가 같은지
 
         Long answerCount = answerRepository.countByUserId(request.targetUserId(), isMine);
         return new AnswerCountByUserServiceResponse(answerCount);
     }
+
 
 
 
@@ -263,5 +290,19 @@ public class AnswerReadService {
         responseBuilder.commentCount(commentCount);
     }
 
+    /**
+     * 조회 요청한 사용자와 대상자가 같은지
+     */
+    private boolean isMine(AnswerFindByUserServiceRequest request) {
+        boolean isMine = request.reqUserId().equals(request.targetUserId());
+        return isMine;
+    }
 
+    /**
+     * 대상 사용자가 존재하는지 검증
+     */
+    private void validateTargetUser(AnswerFindByUserServiceRequest request) {
+        userRepository.findById(UserId.of(request.targetUserId()))
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION); // 대상 사용자가 존재하는지 검증
+    }
 }
