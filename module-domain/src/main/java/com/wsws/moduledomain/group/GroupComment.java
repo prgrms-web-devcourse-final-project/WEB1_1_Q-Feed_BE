@@ -34,4 +34,16 @@ public class GroupComment {
     public Long getGroupPostId() {
         return this.groupPostId;
     }
+
+    // 좋아요 증가
+    public void incrementLike() {
+        this.likeCount += 1;
+    }
+
+    // 좋아요 감소
+    public void decrementLike() {
+        if (this.likeCount > 0) {
+            this.likeCount -= 1;
+        }
+    }
 }

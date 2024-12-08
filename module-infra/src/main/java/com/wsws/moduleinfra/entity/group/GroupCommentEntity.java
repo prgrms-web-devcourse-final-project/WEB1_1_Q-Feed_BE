@@ -49,4 +49,8 @@ public class GroupCommentEntity {
         this.groupPost = groupPost;
     }
 
+    public void editEntity(long likeCount) {
+        this.likeCount = likeCount;
+    }
+
 }
