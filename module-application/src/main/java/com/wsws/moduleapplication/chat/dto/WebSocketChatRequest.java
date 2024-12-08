@@ -15,7 +15,7 @@ public record WebSocketChatRequest(
 //        LocalDateTime createdAt
         ) {
     public ChatMessageRequest toChatMessageRequest() {
-        return new ChatMessageRequest(this.message(),MessageType.TEXT,null);
+        return new ChatMessageRequest(this.message());
     }
 
 }

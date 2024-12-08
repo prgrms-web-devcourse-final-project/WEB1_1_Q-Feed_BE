@@ -2,6 +2,8 @@ package com.wsws.moduledomain.chat;
 
 import com.wsws.moduledomain.user.User;
 
+import java.time.LocalDateTime;
+
 public record ChatMessageDomainResponse(
         Long messageId,
         Long chatRoomId,
@@ -10,7 +12,8 @@ public record ChatMessageDomainResponse(
         String senderProfileImage,
         String content,
         String type,
-        String url
+        String url,
+        LocalDateTime createdAt
 
 ) {
     public static ChatMessageDomainResponse createFrom(ChatMessage chatMessage, User sender) {
@@ -22,7 +25,8 @@ public record ChatMessageDomainResponse(
                 sender.getProfileImage(),
                 chatMessage.getContent().getValue(),
                 chatMessage.getType().name(),
-                chatMessage.getUrl()
+                chatMessage.getUrl(),
+                chatMessage.getCreatedAt()
         );
     }
 }

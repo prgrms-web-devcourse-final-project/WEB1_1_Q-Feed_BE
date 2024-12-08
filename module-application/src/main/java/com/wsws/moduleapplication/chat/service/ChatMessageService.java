@@ -41,7 +41,7 @@ public class ChatMessageService {
     private final RedisSubscriber redisSubscriber;
 
     @Transactional
-    public void sendMessage(Long chatRoomId, String senderId,  ChatMessageRequest request ) {
+    public void sendMessage(Long chatRoomId, String senderId, ChatMessageRequest request ) {
         ChatRoom chatRoom = getChatRoomById(chatRoomId);
         User user = getUserById(senderId);
         UserId userId = user.getId();
