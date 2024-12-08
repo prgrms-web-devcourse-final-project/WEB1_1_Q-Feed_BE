@@ -13,7 +13,7 @@
 
     function connect() {
         // Use native WebSocket instead of SockJS
-        const socket = new WebSocket('http://q-feed.n-e.kr/ws');
+        const socket = new WebSocket('https://q-feed.n-e.kr/ws');
 
         stompClient = Stomp.over(socket);
 
