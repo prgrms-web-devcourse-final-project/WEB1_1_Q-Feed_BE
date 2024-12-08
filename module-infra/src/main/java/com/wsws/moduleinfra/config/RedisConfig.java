@@ -47,14 +47,11 @@ public class RedisConfig {
 
     // Redis 메시지 리스너 설정
     @Bean
-    public RedisMessageListenerContainer redisMessageListenerContainer(
-            RedisConnectionFactory redisConnectionFactory,
-            MessageListenerAdapter messageListenerAdapter) {
-        RedisMessageListenerContainer redisMessageListenerContainer = new RedisMessageListenerContainer();
-        redisMessageListenerContainer.setConnectionFactory(redisConnectionFactory);
-        return redisMessageListenerContainer;
+    public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(redisConnectionFactory);
+        return container;
     }
-
     // 메시지를 처리하는 리스너 어댑터 설정
     @Bean
     public MessageListenerAdapter messageListenerAdapter(RedisSubscriber subscriber) {

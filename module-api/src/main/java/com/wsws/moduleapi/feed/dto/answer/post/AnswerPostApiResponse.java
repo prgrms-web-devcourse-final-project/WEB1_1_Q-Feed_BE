@@ -1,7 +1,7 @@
-package com.wsws.moduleapi.feed.dto.answer;
+package com.wsws.moduleapi.feed.dto.answer.post;
 
 
-import com.wsws.moduleapplication.feed.dto.answer.AnswerCreateServiceResponse;
+import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerCreateServiceResponse;
 
 public record AnswerPostApiResponse(
         Long answerId,

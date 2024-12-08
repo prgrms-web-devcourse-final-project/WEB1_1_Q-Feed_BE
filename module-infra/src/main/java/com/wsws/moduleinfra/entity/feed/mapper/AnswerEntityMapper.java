@@ -1,6 +1,7 @@
 package com.wsws.moduleinfra.entity.feed.mapper;
 
 import com.wsws.moduledomain.feed.answer.Answer;
+import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 
 public class AnswerEntityMapper {
@@ -32,6 +33,15 @@ public class AnswerEntityMapper {
                 answer.getCreatedAt(),
                 null,
                 answer.getUserId().getValue()
+        );
+    }
+
+    public static AnswerQuestionDTO toJoinDto(AnswerEntity answerEntity) {
+        return new AnswerQuestionDTO(
+                answerEntity.getId(),
+                answerEntity.getCreatedAt(),
+                answerEntity.getQuestionEntity().getContent(),
+                answerEntity.getVisibility()
         );
     }
 }

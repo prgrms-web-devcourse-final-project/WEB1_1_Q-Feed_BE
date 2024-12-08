@@ -12,6 +12,7 @@ import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,9 @@ public class RedisSubscriber implements MessageListener {
     private final RedisMessageListenerContainer redisMessageListenerContainer;
 
     @Autowired
+    private MessageListenerAdapter messageListenerAdapter;
+
+    @Autowired
     public RedisSubscriber(@Qualifier("customRedisTemplateString") RedisTemplate<String, String> redisTemplate,
                            ObjectMapper objectMapper,
                            SimpMessageSendingOperations messagingTemplate, @Lazy RedisMessageListenerContainer redisMessageListenerContainer) {
@@ -32,17 +36,18 @@ public class RedisSubscriber implements MessageListener {
         this.objectMapper = objectMapper;
         this.messagingTemplate = messagingTemplate;
         this.redisMessageListenerContainer = redisMessageListenerContainer;
+
     }
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
         try {
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
-
+            System.out.println("발행된 메시지: " + publishMessage);  // 메시지 확인
             ChatMessageDomainResponse roomMessage = objectMapper.readValue(publishMessage, ChatMessageDomainResponse.class);
-
+            System.out.println("!@@@@@@!!!!!!!!!!발행된 메시지!!!!!!!: " + roomMessage);
            messagingTemplate.convertAndSend("/sub/chat/" + roomMessage.chatRoomId(), roomMessage);
-
+            System.out.println("@@@@@@@@@@@@REDIS로 보냄!!!!!");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -50,8 +55,10 @@ public class RedisSubscriber implements MessageListener {
 
     // 채팅방을 구독하는 메소드 (동적으로 구독 추가)
     public void subscribeToChatRoom(Long chatRoomId) {
+        System.out.println("@@@@@@@@@@@@채팅방 구독!!!!!");
         String channel = "/sub/chat/" + chatRoomId;
-        redisMessageListenerContainer.addMessageListener(this, new ChannelTopic(channel));
+        redisMessageListenerContainer.addMessageListener(messageListenerAdapter, new ChannelTopic(channel));
+        System.out.println("~~~~~~~~~~~~~~~채널 구독 완료!!");
     }
 
     // 구독을 해제하는 메소드 (선택 사항)

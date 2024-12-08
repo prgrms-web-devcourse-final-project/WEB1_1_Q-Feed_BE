@@ -14,7 +14,8 @@ public record ChatMessageApiResponse(
         LocalDateTime createdAt,
         String userId,
         String userNickName,
-        String userProfileImage
+        String userProfileImage,
+        Boolean isMine
 ) {
     public ChatMessageApiResponse(ChatMessageServiceResponse serviceResponse) {
         this(
@@ -26,7 +27,8 @@ public record ChatMessageApiResponse(
                 serviceResponse.createdAt(),
                 serviceResponse.userId(),
                 serviceResponse.userNickName(),
-                serviceResponse.userProfileImage()
+                serviceResponse.userProfileImage(),
+                serviceResponse.isMine()
         );
     }
 

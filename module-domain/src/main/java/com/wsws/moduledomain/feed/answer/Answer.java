@@ -40,21 +40,27 @@ public class Answer {
     }
 
     /* 비즈니스 로직 */
+
+    // 답변 수정
     public void editAnswer(String content, Boolean visibility, String url) {
         this.content = content;
         this.visibility = visibility;
         this.url = url;
     }
 
+    // 공개 여부 수정
+    public void changeVisibility(boolean visibility) {
+        this.visibility = visibility;
+    }
+
+    // 좋아요 추가
     public void addLikeCount() {
         this.likeCount++;
     }
 
+    // 좋아요 취소
     public void cancelLikeCount() {
         this.likeCount--;
     }
 
-    public void addComments(AnswerComment answerComment) {
-        comments.add(answerComment);
-    }
 }

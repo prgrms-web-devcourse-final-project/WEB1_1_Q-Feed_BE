@@ -1,13 +1,17 @@
 package com.wsws.moduleinfra.repo.feed;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
+import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
 import com.wsws.moduleinfra.entity.feed.AnswerCommentEntity;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import com.wsws.moduleinfra.entity.feed.QuestionEntity;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerCommentEntityMapper;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerEntityMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,18 +48,25 @@ public class AnswerRepositoryImpl implements AnswerRepository {
                 .toList();
     }
 
-//    @Override
-//    public Optional<Answer> findByIdWithComments(Long id) {
-//        return jpaAnswerRepository.findByIdWithComments(id)
-//                .map(answerEntity -> {
-//                    List<AnswerComment> answerComments = answerEntity.getAnswerCommentEntities().stream()
-//                            .map(AnswerCommentEntityMapper::toDomain)
-//                            .toList(); // AnswerCommentEntity -> AnswerComment
-//                    Answer answer = AnswerEntityMapper.toDomain(answerEntity);
-//                    answerComments.forEach(answer::addComments);  // 답변 댓글 추가
-//                    return answer;
-//                });
-//    }
+    @Override
+    public List<AnswerQuestionDTO> findAllByUserIdWithCursor(
+            String userId, LocalDateTime cursor, int size, boolean isMine) {
+        Pageable pageable = PageRequest.of(0, size);
+        List<AnswerEntity> answerEntities = isMine
+                ? jpaAnswerRepository.findAllByUserIdWithCursor(userId, cursor, pageable)
+                : jpaAnswerRepository.findAllByUserIdAndVisibilityTrueWithCursor(userId, cursor, pageable);
+
+        return answerEntities.stream()
+                .map(AnswerEntityMapper::toJoinDto)
+                .toList();
+    }
+
+
+    @Override
+    public Long countByUserId(String userId, boolean isMine) {
+        return isMine ? jpaAnswerRepository.countByUserId(userId) // 요청한 사용자의 질문이면 모든 Answer
+                : jpaAnswerRepository.countByUserIdAndVisibilityTrue(userId); // 요청한 사용자의 질문이 아니면 visibility가 true인 Answer만
+    }
 
     /**
      * 답변 저장

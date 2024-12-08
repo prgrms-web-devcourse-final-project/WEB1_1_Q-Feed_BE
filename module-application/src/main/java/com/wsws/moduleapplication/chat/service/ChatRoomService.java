@@ -78,7 +78,7 @@ public class ChatRoomService {
 
     //채팅방 찾기
     public ChatRoomServiceResponse getChatRoomWithOtherUser(String userId, String nickname) {
-        // nickname으로 userId 찾기
+        // nickname으로 reqUserId 찾기
         User otherUser = getUserByNickname(nickname);
 
         ChatRoom chatRoom = findChatRoomBetweenUsers(userId, otherUser.getId().getValue());
