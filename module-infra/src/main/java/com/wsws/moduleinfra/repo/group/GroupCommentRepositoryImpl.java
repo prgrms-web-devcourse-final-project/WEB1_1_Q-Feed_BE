@@ -3,7 +3,6 @@ package com.wsws.moduleinfra.repo.group;
 import com.wsws.moduledomain.group.GroupComment;
 import com.wsws.moduledomain.group.repo.GroupCommentRepository;
 import com.wsws.moduleinfra.entity.group.GroupCommentEntity;
-import com.wsws.moduleinfra.entity.group.GroupEntity;
 import com.wsws.moduleinfra.entity.group.GroupPostEntity;
 import com.wsws.moduleinfra.repo.group.mapper.GroupCommentMapper;
 import jakarta.transaction.Transactional;
