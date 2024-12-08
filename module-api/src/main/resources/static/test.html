@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>STOMP WebSocket Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
 </head>
 <body>
@@ -12,13 +13,8 @@
     let stompClient;
 
     function connect() {
-        // Use native WebSocket instead of SockJS
-        const socket = new WebSocket('wss://q-feed.n-e.kr/ws');
-
+        const socket = new SockJS('https://q-feed.n-e.kr/ws');
         stompClient = Stomp.over(socket);
-
-        // Optional: Disable debug logs
-        stompClient.debug = null;
 
         stompClient.connect({}, (frame) => {
             console.log('Connected: ' + frame);
@@ -27,19 +23,13 @@
             stompClient.subscribe('/topic/messages', (message) => {
                 console.log('Received: ' + message.body);
             });
-        }, (error) => {
-            console.error('Error during STOMP connection:', error);
         });
     }
 
     function sendMessage() {
-        if (stompClient && stompClient.connected) {
-            // Send a message to the destination endpoint
-            const payload = JSON.stringify({ message: 'Hello, STOMP!' });
-            stompClient.send('/pub/chat/message', {}, payload);
-        } else {
-            console.error('STOMP client is not connected.');
-        }
+        // Send a message to /app/hello
+        const payload = JSON.stringify({ message: 'Hello, STOMP!' });
+        stompClient.send('/pub/chat/message', {}, payload);
     }
 </script>
 </body>
