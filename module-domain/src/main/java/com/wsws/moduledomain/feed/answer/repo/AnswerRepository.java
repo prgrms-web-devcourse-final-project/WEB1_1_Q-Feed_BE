@@ -1,6 +1,7 @@
 package com.wsws.moduledomain.feed.answer.repo;
 
 import com.wsws.moduledomain.feed.answer.Answer;
+import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
 import com.wsws.moduledomain.feed.question.Question;
 
 import java.time.LocalDateTime;
@@ -17,12 +18,12 @@ public interface AnswerRepository {
     /**
      * 답변 리스트를 페이징 해서 찾기
      */
-    List<Answer> findAllWithCursor(LocalDateTime commentCursor, int size);
+    List<Answer> findAllWithCursor(LocalDateTime cursor, int size);
 
     /**
-     * 답변을 UserId 기준으로 찾기
+     * 답변 리스트를 UserId 기준으로 페이징 해서 찾기
      */
-    List<Answer> findByUserId(String userId);
+    List<AnswerQuestionDTO> findAllByUserIdWithCursor(String userId, LocalDateTime cursor, int size, boolean isMine);
 
     /**
      * 특정 사용자의 답변의 갯수

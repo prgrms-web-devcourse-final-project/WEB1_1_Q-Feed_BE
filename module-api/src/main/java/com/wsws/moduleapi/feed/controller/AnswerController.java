@@ -3,6 +3,7 @@ package com.wsws.moduleapi.feed.controller;
 import com.wsws.moduleapi.feed.dto.MessageResponse;
 import com.wsws.moduleapi.feed.dto.answer.get.AnswerCountByUserGetApiResponse;
 import com.wsws.moduleapi.feed.dto.answer.get.AnswerGetApiResponse;
+import com.wsws.moduleapi.feed.dto.answer.get.AnswerListByUserGetApiResponse;
 import com.wsws.moduleapi.feed.dto.answer.get.AnswerListGetApiResponse;
 import com.wsws.moduleapi.feed.dto.answer.post.AnswerPostApiRequest;
 import com.wsws.moduleapi.feed.dto.answer.post.AnswerPostApiResponse;
@@ -64,13 +65,18 @@ public class AnswerController {
      * 특정 사용자의 답변 목록 조회
      */
     @GetMapping("/{user-id}")
-    public ResponseEntity<?> getAnswersByUser(
+    public ResponseEntity<AnswerListByUserGetApiResponse> getAnswersByUser(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("user-id") String userId,
+            @PathVariable("user-id") String targetId,
             @Parameter(description = "커서로 사용할 마지막 글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String answerCursor,
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size) {
+        String reqUserId = userPrincipal.getId();
+        //        String reqUserId = "user_id1";
+        LocalDateTime parsedCursor = answerCursor != null ? LocalDateTime.parse(answerCursor) : LocalDateTime.now();
+        AnswerFindByUserServiceRequest serviceRequest = new AnswerFindByUserServiceRequest(reqUserId, targetId, parsedCursor, size);
+        AnswerListFindByUserServiceResponse serviceResponse = answerReadService.findAnswerListByUserWithCursor(serviceRequest);
 
-        return null;
+        return ResponseEntity.ok(AnswerListByUserGetApiResponse.toApiResponse(serviceResponse));
     }
 
     /**
@@ -79,11 +85,12 @@ public class AnswerController {
     @GetMapping("/{user-id}/count")
     public ResponseEntity<?> getAnswersByUserCount(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("user-id") String userId) {
+            @PathVariable("user-id") String targetId) {
         String reqUserId = userPrincipal.getId();
-//        String reqUserId = "user_id2";
+//        String reqUserId = "user_id1";
 
-        AnswerCountByUserServiceResponse serviceResponse = answerReadService.countAnswersByUser(new AnswerCountByUserServiceRequest(reqUserId, userId));
+        AnswerCountByUserServiceResponse serviceResponse =
+                answerReadService.countAnswersByUser(new AnswerFindByUserServiceRequest(reqUserId, targetId, null, 0));
         return ResponseEntity.ok(AnswerCountByUserGetApiResponse.toApiResponse(serviceResponse));
     }
 
