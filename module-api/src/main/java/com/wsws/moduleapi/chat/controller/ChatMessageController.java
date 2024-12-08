@@ -49,7 +49,7 @@ public class ChatMessageController {
     public ResponseEntity<List<ChatMessageApiResponse>> getMessages(
             @Parameter(description = "메세지를 조회할 채팅방 ID") @PathVariable Long chatRoomId,
             @Parameter(description = "커서로 사용할 마지막 팔로워의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String cursor,
-            @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size,
+            @Parameter(description = "페이지 크기", example = "100") @RequestParam(defaultValue = "10") int size,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
 
         String userId = userPrincipal.getId();

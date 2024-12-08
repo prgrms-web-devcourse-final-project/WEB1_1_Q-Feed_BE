@@ -60,6 +60,7 @@ public class ChatRoomService {
         // 채팅방 목록을 가져옴
         List<ChatRoom> chatRooms = chatRoomRepository.findChatRooms(userId);
 
+
         return chatRooms.stream().map(chatRoom -> {
             // 상대방 사용자 가져오기
             User otherUser = getOtherUser(chatRoom, userId);
