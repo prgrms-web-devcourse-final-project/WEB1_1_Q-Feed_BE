@@ -34,7 +34,7 @@ public class GroupController {
     //그룹 생성
     @PostMapping("/create")
     @Operation(summary = "그룹 생성", description = "원하는 카테고리에 그룹을 생성합니다.")
-    public ResponseEntity<GroupResponse> createGroup(@RequestBody CreateGroupRequest req, @AuthenticationPrincipal UserPrincipal userPrincipal) {
+    public ResponseEntity<GroupResponse> createGroup(@ModelAttribute CreateGroupRequest req, @AuthenticationPrincipal UserPrincipal userPrincipal) {
         String adminId = userPrincipal.getId();
         groupService.createGroup(req, adminId);
         return ResponseEntity.status(201).body(new GroupResponse("그룹 생성이 완료되었습니다."));
@@ -44,7 +44,7 @@ public class GroupController {
     @PatchMapping("/{groupId}")
     @Operation(summary = "그룹 수정", description = "그룹의 정보를 수정합니다.")
     public ResponseEntity<GroupResponse> updateGroup(
-            @Parameter(description = "수정할 그룹 ID") @PathVariable Long groupId,
+            @Parameter(description = "수정할 그룹 ID") @ModelAttribute Long groupId,
             @RequestBody UpdateGroupRequest req,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         String adminId = userPrincipal.getId();
