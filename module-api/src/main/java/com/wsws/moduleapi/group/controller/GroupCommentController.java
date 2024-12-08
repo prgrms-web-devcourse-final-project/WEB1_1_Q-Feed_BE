@@ -24,7 +24,7 @@ public class GroupCommentController {
             @RequestBody CreateGroupCommentRequest request,
             @PathVariable Long groupPostId,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        String userId = userPrincipal.getId();
+        String userId = validateAndGetUserId(userPrincipal);
         groupCommentService.createGroupComment(request, groupPostId, userId);
         return ResponseEntity.status(201).body("그룹 게시글 댓글이 생성되었습니다.");
     }
@@ -35,7 +35,7 @@ public class GroupCommentController {
     public ResponseEntity<String> deleteGroupComment(
             @PathVariable Long groupCommentId,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        String userId = userPrincipal.getId();
+        String userId = validateAndGetUserId(userPrincipal);
         groupCommentService.deleteGroupComment(groupCommentId, userId);
         return ResponseEntity.ok("그룹 게시글 댓글이 삭제되었습니다.");
     }
@@ -67,6 +67,14 @@ public class GroupCommentController {
         groupCommentService.cancelLikeToGroupComment(
                 new LikeServiceRequest(userId, "GROUP_COMMENT", groupCommentId));
         return ResponseEntity.ok("그룹 게시글 댓글에 좋아요가 취소되었습니다.");
+    }
+
+    // 사용자 인증
+    private String validateAndGetUserId(UserPrincipal userPrincipal) {
+        if (userPrincipal == null) {
+            throw new IllegalArgumentException("인증되지 않은 사용자입니다.");
+        }
+        return userPrincipal.getId();
     }
 
     }
