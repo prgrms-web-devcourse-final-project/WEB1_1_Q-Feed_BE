@@ -22,15 +22,15 @@ public class GroupCommentController {
     @Operation(summary = "그룹 게시글 댓글 추가", description = "특정 게시글에 댓글을 추가합니다.")
     public ResponseEntity<String> createGroupComment(
             @RequestBody CreateGroupCommentRequest request,
-            @PathVariable Long groupCommentId,
-            @AuthenticationPrincipal UserPrincipal userPrincipal){
+            @PathVariable Long groupPostId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
         String userId = userPrincipal.getId();
-        groupCommentService.createGroupComment( request, groupCommentId, userId);
+        groupCommentService.createGroupComment(request, groupPostId, userId);
         return ResponseEntity.status(201).body("그룹 게시글 댓글이 생성되었습니다.");
     }
 
     // 그룹 게시글 댓글 삭제
-    @DeleteMapping("/comments/{groupCommentId}/cansel-likes")
+    @DeleteMapping("/comments/{groupCommentId}")
     @Operation(summary = "그룹 게시글 댓글 삭제", description = "특정 댓글을 삭제합니다.")
     public ResponseEntity<String> deleteGroupComment(
             @PathVariable Long groupCommentId,
