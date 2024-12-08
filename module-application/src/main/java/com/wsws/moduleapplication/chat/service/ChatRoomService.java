@@ -118,7 +118,7 @@ public class ChatRoomService {
     // 마지막 메시지 가져오기
     private ChatMessage getLastMessage(Long chatRoomId) {
         return chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoomId)
-                .orElse(new ChatMessage());
+                .orElse(null);
     }
 
     // 채팅방의 소유자가 현재 사용자인지 확인
@@ -144,7 +144,11 @@ public class ChatRoomService {
         return chatRooms.stream()
                 .collect(Collectors.toMap(
                         ChatRoom::getId,
-                        chatRoom -> getLastMessage(chatRoom.getId())
+                        chatRoom -> {
+                            // 마지막 메시지가 null이면 null을 반환
+                            ChatMessage lastMessage = getLastMessage(chatRoom.getId());
+                            return lastMessage != null ? lastMessage : new ChatMessage(); // 기본값 반환 가능
+                        }
                 ));
     }
 

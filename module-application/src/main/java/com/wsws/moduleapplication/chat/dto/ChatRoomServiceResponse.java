@@ -19,7 +19,7 @@ public record ChatRoomServiceResponse(
                 chatRoom.getId(),
                 otherUser.getNickname().getValue(),
                 otherUser.getProfileImage(),
-                lastMessage != null ? lastMessage.getContent().getValue() : null,
+                lastMessage != null && lastMessage.getContent() != null ? lastMessage.getContent().getValue() : "No messages",
                 lastMessage != null ? lastMessage.getCreatedAt() : null,
                 unreadMessageCount
         );
