@@ -2,6 +2,7 @@ package com.wsws.moduleapi.auth.controller;
 
 import com.wsws.moduleapi.auth.dto.*;
 import com.wsws.moduleapplication.auth.dto.LoginServiceResponse;
+import com.wsws.moduleapplication.auth.dto.TokenReissueAppDto;
 import com.wsws.moduleapplication.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -40,9 +41,9 @@ public class AuthController {
 
     @Operation(summary = "토큰 재발행", description = "리프레시 토큰을 이용해 새로운 엑세스 토큰과 리프레시 토큰을 발급받습니다.")
     @PostMapping("/reissue")
-    public ResponseEntity<LoginResponse> reissueTokens(@RequestBody TokenReissueRequest request) {
-        LoginServiceResponse serviceResponse = authService.reissueToken(request.refreshToken());
-        return ResponseEntity.ok(new LoginResponse(serviceResponse));
+    public ResponseEntity<TokenReissueResponse> reissueTokens(@RequestBody TokenReissueRequest request) {
+        TokenReissueAppDto serviceResponse = authService.reissueToken(request.refreshToken());
+        return ResponseEntity.ok(new TokenReissueResponse(serviceResponse));
     }
 
     @Operation(summary = "비밀번호 재설정 요청", description = "사용자가 비밀번호 재설정을 위해 인증 코드를 요청합니다.")
