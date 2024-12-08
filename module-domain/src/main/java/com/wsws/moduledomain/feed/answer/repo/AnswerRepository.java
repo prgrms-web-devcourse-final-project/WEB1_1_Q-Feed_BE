@@ -18,7 +18,7 @@ public interface AnswerRepository {
     /**
      * 답변 리스트를 페이징 해서 찾기
      */
-    List<Answer> findAllWithCursor(LocalDateTime cursor, int size);
+    List<Answer> findAllByCategoryIdWithCursor(LocalDateTime cursor, int size, Long categoryId);
 
     /**
      * 답변 리스트를 UserId 기준으로 페이징 해서 찾기
@@ -31,9 +31,19 @@ public interface AnswerRepository {
     Long countByUserId(String userId, boolean isMine);
 
     /**
+     * 특정 사용자의 특정 질문에 대한 답변
+     */
+    Optional<Answer> findAnswerByUserIdAndQuestionId(String userId, Long questionId);
+
+    /**
      * 답변 저장
      */
     Answer save(Answer answer);
+
+    /**
+     * 특정 사용자가 특정 질문에 대해 작성한 글이 있는지
+     */
+    boolean existsByUserIdAndQuestionId(String userId, Long questionId);
 
     /**
      * 답변 수정

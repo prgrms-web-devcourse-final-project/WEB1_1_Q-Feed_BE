@@ -1,10 +1,7 @@
 package com.wsws.moduleapi.feed.controller;
 
 import com.wsws.moduleapi.feed.dto.MessageResponse;
-import com.wsws.moduleapi.feed.dto.answer.get.AnswerCountByUserGetApiResponse;
-import com.wsws.moduleapi.feed.dto.answer.get.AnswerGetApiResponse;
-import com.wsws.moduleapi.feed.dto.answer.get.AnswerListByUserGetApiResponse;
-import com.wsws.moduleapi.feed.dto.answer.get.AnswerListGetApiResponse;
+import com.wsws.moduleapi.feed.dto.answer.get.*;
 import com.wsws.moduleapi.feed.dto.answer.post.AnswerPostApiRequest;
 import com.wsws.moduleapi.feed.dto.answer.post.AnswerPostApiResponse;
 import com.wsws.moduleapi.feed.dto.answer.put_patch.AnswerPatchApiRequest;
@@ -29,6 +26,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,21 +41,24 @@ public class AnswerController {
      * 답변 목록 조회
      */
     @GetMapping
-    @Operation(summary = "답변 목록 조회", description = "답변의 목록을 조회합니다. 댓글의 상세내용은 제공되지 않습니다.")
+    @Operation(summary = "답변 목록 조회", description = "답변의 목록을 최신순으로 조회합니다. " +
+            "카테고리 Id를 넣지 않을 시 카테고리 상관없이 전체 글이 최신순으로 조회됩니다. " +
+            "댓글의 상세내용은 제공되지 않습니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "답변 목록 조회 성공"),
             @ApiResponse(responseCode = "404", description = "작성자 정보를 찾을 수 없을 때", content = @Content)
     })
     public ResponseEntity<AnswerListGetApiResponse> getAnswerList(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(description = "답변을 조회할 카테고리 ID. 없을 시 전체 카테고리 조회로 처리") @RequestParam(value = "category-id", required = false)Long categoryId,
             @Parameter(description = "커서로 사용할 마지막 글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String answerCursor,
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size
     ) {
 
         String userId = userPrincipal.getId();
-//        String reqUserId = "user_id1";
+//        String userId = "user_id1";
         LocalDateTime parsedCursor = answerCursor != null ? LocalDateTime.parse(answerCursor) : LocalDateTime.now();
-        AnswerListFindServiceResponse answers = answerReadService.findAnswerListWithCursor(new AnswerFindServiceRequest(userId, null, parsedCursor, size));
+        AnswerListFindServiceResponse answers = answerReadService.findAnswerListWithCursor(new AnswerFindServiceRequest(userId, null, categoryId, parsedCursor, size));
 
 
         return ResponseEntity.ok(AnswerListGetApiResponse.toApiResponse(answers));
@@ -66,7 +67,7 @@ public class AnswerController {
     /**
      * 특정 사용자의 답변 목록 조회
      */
-    @GetMapping("/{user-id}")
+    @GetMapping("/users/{user-id}")
     @Operation(summary = "특정 사용자의 답변 목록 조회", description = "특정 사용자 답변 목록을 조회합니다. " +
             "요청한 사람과 대상사용자가 같으면 모든 글, 다르면 visibility가 true인 글만 조회됩니다.")
     @ApiResponses(value = {
@@ -78,8 +79,9 @@ public class AnswerController {
             @Parameter(description = "찾고자하는 대상 사용자") @PathVariable("user-id") String targetId,
             @Parameter(description = "커서로 사용할 마지막 글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String answerCursor,
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size) {
+
         String reqUserId = userPrincipal.getId();
-        //        String reqUserId = "user_id1";
+//                String reqUserId = "user_id2";
         LocalDateTime parsedCursor = answerCursor != null ? LocalDateTime.parse(answerCursor) : LocalDateTime.now();
         AnswerFindByUserServiceRequest serviceRequest = new AnswerFindByUserServiceRequest(reqUserId, targetId, parsedCursor, size);
         AnswerListFindByUserServiceResponse serviceResponse = answerReadService.findAnswerListByUserWithCursor(serviceRequest);
@@ -90,7 +92,7 @@ public class AnswerController {
     /**
      * 특정 사용자의 답변 총 갯수
      */
-    @GetMapping("/{user-id}/count")
+    @GetMapping("/users/{user-id}/count")
     @Operation(summary = "특정 사용자의 답변 갯수 조회", description = "특정 사용자의 답변 갯수를 조회합니다. " +
             "요청한 사람과 대상사용자가 같으면 모든 글, 다르면 visibility가 true인 글만 조회됩니다.")
     @ApiResponses(value = {
@@ -99,13 +101,41 @@ public class AnswerController {
     })
     public ResponseEntity<AnswerCountByUserGetApiResponse> getAnswersByUserCount(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @Parameter(description = "찾고자하는 대상 사용자") @PathVariable("user-id") String targetId) {
+            @Parameter(description = "찾고자하는 대상 사용자의 ID") @PathVariable("user-id") String targetId) {
         String reqUserId = userPrincipal.getId();
 //        String reqUserId = "user_id1";
 
         AnswerCountByUserServiceResponse serviceResponse =
                 answerReadService.countAnswersByUser(new AnswerFindByUserServiceRequest(reqUserId, targetId, null, 0));
         return ResponseEntity.ok(AnswerCountByUserGetApiResponse.toApiResponse(serviceResponse));
+    }
+
+    /**
+     * 인증된 현재 사용자의 질문에 대한 답변 조회
+     */
+    @GetMapping("/users/question/{question-id}")
+    @Operation(summary = "현재 사용자의 특정 질문에 대한 답변 조회", description = "현재 사용자의 특정 질문에 대한 답변을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "현재 사용자가 특정 질문에 대해 답변을 남긴적이 있을 때"),
+            @ApiResponse(responseCode = "204", description = "현재 사용자가 특정 질문에 대해 답변을 남긴적이 없을 때", content = @Content),
+    })
+    public ResponseEntity<AnswerByUserAndDailyQuestionGetApiResponse> getAnswerByDailyQuestionId(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(description = "찾고자하는 질문의 ID") @PathVariable("question-id") Long questionId
+    ) {
+        String reqUserId = userPrincipal.getId();
+//        String reqUserId = "user_id1";
+        AnswerFindByUserAndDailyQuestionServiceRequest serviceRequest =
+                new AnswerFindByUserAndDailyQuestionServiceRequest(reqUserId, questionId);
+        Optional<AnswerFindByUserAndDailyQuestionServiceResponse> serviceResponse =
+                answerReadService.findAnswerByUserAndDailyQuestion(serviceRequest);
+
+        // serviceResponse가 존재하면 200 OK와 함께 반환, 없으면 204 No Content 반환
+        return serviceResponse.map(response ->
+                ResponseEntity.ok(
+                        AnswerByUserAndDailyQuestionGetApiResponse.toApiResponse(response)
+                )
+        ).orElseGet(() -> ResponseEntity.noContent().build());
     }
 
 
@@ -131,7 +161,7 @@ public class AnswerController {
         LocalDateTime parsedCursor = commentCursor != null ? LocalDateTime.parse(commentCursor) : LocalDateTime.now();
 
         AnswerFindServiceResponse serviceResponse =
-                answerReadService.findOneAnswerWithCursor(new AnswerFindServiceRequest(userId, answerId, parsedCursor, size));
+                answerReadService.findOneAnswerWithCursor(new AnswerFindServiceRequest(userId, answerId, null, parsedCursor, size));
 
         return ResponseEntity.ok(AnswerGetApiResponse.toApiResponse(serviceResponse));
     }
@@ -143,15 +173,16 @@ public class AnswerController {
     @Operation(summary = "답변 생성", description = "현재 인증된 사용자로 답변을 생성합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "답변 작성 성공"),
-            @ApiResponse(responseCode = "400", description = "필수입력값 - questionId, visibility가 누락됐을 때 "),
-            @ApiResponse(responseCode = "404", description = "없는 질문일 때", content = @Content)
+            @ApiResponse(responseCode = "400", description = "필수입력값 - questionId, visibility가 누락됐을 때 ", content = @Content),
+            @ApiResponse(responseCode = "404", description = "없는 질문일 때", content = @Content),
+            @ApiResponse(responseCode = "409", description = "이미 답변을 작성한 적이 있는 질문 일 때", content = @Content)
     })
     public ResponseEntity<AnswerPostApiResponse> postAnswers(
             @Valid @RequestBody AnswerPostApiRequest answerPostApiRequest
             , @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         String userId = userPrincipal.getId(); // 사용자 아이디를 가져온다.
-//        String reqUserId = "user_id1";
+//        String userId = "user_id1";
         AnswerCreateServiceResponse serviceResponse = answerService.createAnswer(answerPostApiRequest.toServiceDto(userId)); // 답변 생성
 
         return ResponseEntity.status(201).body(new AnswerPostApiResponse(serviceResponse));

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public record AnswerFindByUserServiceResponse(
         Long answerId,
         LocalDateTime createdAt,
+        String answerContent,
         String questionContent,
         Boolean visibility
 ) {
@@ -14,6 +15,7 @@ public record AnswerFindByUserServiceResponse(
         return new AnswerFindByUserServiceResponse(
                 dto.answerId(),
                 dto.createdAt(),
+                dto.answerContent(),
                 dto.questionContent(),
                 dto.visibility());
     }

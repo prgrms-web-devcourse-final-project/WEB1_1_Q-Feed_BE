@@ -35,7 +35,6 @@ public class AnswerReadService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
-    private final QuestionRepository questionRepository;
 
     /**
      * 답변 목록 조회 (무한 스크롤 페이징 적용)
@@ -43,7 +42,7 @@ public class AnswerReadService {
     public AnswerListFindServiceResponse findAnswerListWithCursor(AnswerFindServiceRequest request) {
 
         // 답변 리스트 페이징해서 불러오기
-        List<Answer> answers = answerRepository.findAllWithCursor(request.cursor(), request.size());
+        List<Answer> answers = answerRepository.findAllByCategoryIdWithCursor(request.cursor(), request.size(), request.categoryId());
 
         List<AnswerFindServiceResponse> responses = new ArrayList<>();
 
@@ -115,6 +114,21 @@ public class AnswerReadService {
         return new AnswerCountByUserServiceResponse(answerCount);
     }
 
+    /**
+     * 현재 사용자의 오늘의 질문에 대한 답변
+     */
+    public Optional<AnswerFindByUserAndDailyQuestionServiceResponse> findAnswerByUserAndDailyQuestion(AnswerFindByUserAndDailyQuestionServiceRequest request) {
+
+        Optional<Answer> answer = answerRepository.findAnswerByUserIdAndQuestionId(request.reqUserId(), request.questionId());
+
+        return answer.map(a ->
+                new AnswerFindByUserAndDailyQuestionServiceResponse(
+                        a.getAnswerId().getValue(),
+                        a.getContent(),
+                        a.getCreatedAt()
+                )
+        );
+    }
 
 
 

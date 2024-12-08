@@ -6,6 +6,7 @@ public record AnswerQuestionDTO (
         Long answerId,
         LocalDateTime createdAt,
         String questionContent,
+        String answerContent,
         Boolean visibility
 ) {
 }

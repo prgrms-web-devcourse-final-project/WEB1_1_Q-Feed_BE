@@ -41,9 +41,14 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     }
 
     @Override
-    public List<Answer> findAllWithCursor(LocalDateTime answerCursor, int size) {
+    public List<Answer> findAllByCategoryIdWithCursor(LocalDateTime cursor, int size, Long categoryId) {
         Pageable pageable = PageRequest.of(0, size);
-        return jpaAnswerRepository.findAllWithCursor(answerCursor, pageable).stream()
+        return categoryId == null
+                ?
+                jpaAnswerRepository.findAllWithCursor(cursor, pageable).stream()
+                .map(AnswerEntityMapper::toDomain)
+                .toList()
+                :jpaAnswerRepository.findAllByCategoryIdWithCursor(cursor, pageable, categoryId).stream()
                 .map(AnswerEntityMapper::toDomain)
                 .toList();
     }
@@ -68,6 +73,12 @@ public class AnswerRepositoryImpl implements AnswerRepository {
                 : jpaAnswerRepository.countByUserIdAndVisibilityTrue(userId); // 요청한 사용자의 질문이 아니면 visibility가 true인 Answer만
     }
 
+    @Override
+    public Optional<Answer> findAnswerByUserIdAndQuestionId(String userId, Long questionId) {
+        return jpaAnswerRepository.findAnswerByUserIdAndQuestionId(userId, questionId)
+                .map(AnswerEntityMapper::toDomain);
+    }
+
     /**
      * 답변 저장
      */
@@ -81,6 +92,11 @@ public class AnswerRepositoryImpl implements AnswerRepository {
 
         AnswerEntity savedEntity = jpaAnswerRepository.save(answerEntity);// Answer를 엔티티로 변환하여 저장
         return AnswerEntityMapper.toDomain(savedEntity);
+    }
+
+    @Override
+    public boolean existsByUserIdAndQuestionId(String userId, Long questionId) {
+        return jpaAnswerRepository.existsByUserIdAndQuestionId(userId, questionId);
     }
 
     /**

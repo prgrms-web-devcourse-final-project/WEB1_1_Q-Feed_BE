@@ -41,6 +41,7 @@ public class AnswerEntityMapper {
                 answerEntity.getId(),
                 answerEntity.getCreatedAt(),
                 answerEntity.getQuestionEntity().getContent(),
+                answerEntity.getContent(),
                 answerEntity.getVisibility()
         );
     }
