@@ -24,7 +24,7 @@
             console.log('Connected: ' + frame);
 
             // Subscribe to a topic
-            stompClient.subscribe('/topic/messages', (message) => {
+            stompClient.subscribe('/sub/chat/13', (message) => {
                 console.log('Received: ' + message.body);
             });
         }, (error) => {
@@ -35,7 +35,11 @@
     function sendMessage() {
         if (stompClient && stompClient.connected) {
             // Send a message to the destination endpoint
-            const payload = JSON.stringify({ message: 'Hello, STOMP!' });
+            const payload = JSON.stringify({
+                roomId: 13,
+                senderId: '29ae601c-9930-4145-8174-18a466aec50a',
+                message: 'Hello, STOMP!'
+            });
             stompClient.send('/pub/chat/message', {}, payload);
         } else {
             console.error('STOMP client is not connected.');
