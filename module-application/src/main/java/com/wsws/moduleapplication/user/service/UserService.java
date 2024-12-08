@@ -76,7 +76,7 @@ public class UserService {
         User user = findUserByIdOrThrow(userId);
 
 
-        if (!dto.nickname().isEmpty() &&!user.getNickname().getValue().equals(dto.nickname())) {
+        if (!(dto.nickname() == null) && !dto.nickname().isEmpty() &&!user.getNickname().getValue().equals(dto.nickname())) {
             validateUniqueNickname(Nickname.from(dto.nickname()));
         }
 
