@@ -1,6 +1,6 @@
-package com.wsws.moduleapi.feed.dto.answer;
+package com.wsws.moduleapi.feed.dto.answer.post;
 
-import com.wsws.moduleapplication.feed.dto.answer.AnswerCreateServiceRequest;
+import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerCreateServiceRequest;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 

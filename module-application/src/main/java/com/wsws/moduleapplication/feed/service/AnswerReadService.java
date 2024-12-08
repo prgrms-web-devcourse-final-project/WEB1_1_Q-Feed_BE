@@ -1,14 +1,16 @@
 package com.wsws.moduleapplication.feed.service;
 
-import com.wsws.moduleapplication.feed.dto.answer.*;
-import com.wsws.moduleapplication.feed.dto.answer.AnswerCommentFindServiceResponse.AnswerCommentFindServiceResponseBuilder;
-import com.wsws.moduleapplication.feed.dto.answer.AnswerFindServiceResponse.AnswerFindServiceResponseBuilder;
+import com.wsws.moduleapplication.feed.dto.answer.read.*;
+import com.wsws.moduleapplication.feed.dto.answer.read.AnswerCommentFindServiceResponse.AnswerCommentFindServiceResponseBuilder;
+import com.wsws.moduleapplication.feed.dto.answer.read.AnswerFindServiceResponse.AnswerFindServiceResponseBuilder;
 import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.comment.repo.AnswerCommentRepository;
+import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
+import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
 import com.wsws.moduledomain.follow.Follow;
 import com.wsws.moduledomain.follow.repo.FollowRepository;
 import com.wsws.moduledomain.user.Like;
@@ -33,13 +35,15 @@ public class AnswerReadService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final QuestionRepository questionRepository;
+
     /**
      * 답변 목록 조회 (무한 스크롤 페이징 적용)
      */
     public AnswerListFindServiceResponse findAnswerListWithCursor(AnswerFindServiceRequest request) {
 
         // 답변 리스트 페이징해서 불러오기
-        List<Answer> answers = answerRepository.findAllWithCursor(request.commentCursor(), request.size());
+        List<Answer> answers = answerRepository.findAllWithCursor(request.cursor(), request.size());
 
         List<AnswerFindServiceResponse> responses = new ArrayList<>();
 
@@ -58,20 +62,7 @@ public class AnswerReadService {
 
 
     /**
-     * <h3> 답변 상세 조회 </h3>
-     * -- 필요한 정보 --
-     * <h5> 1. 답변 관련 </h5>
-     * - User(답변 작성자): authorUserId, nickname, profileImage <br>
-     * - Answer: answerId, content, createdAt, likeCount <br>
-     * - Like: 해당 사용자가 해당 답변에 좋아요를 눌렀는지 여부 <br>
-     * - Follow: 요청한 사용자가 답변 작성자를 팔로우 했는지 여부 <br>
-     * <h5> 2. 댓글 관련 </h5> <
-     * - User(댓글 작성자): authorUserId, nickname, profileImage<br>
-     * - AnswerComment: 댓글 총 갯수(부모 댓글)<br>
-     * - AnswerComment: 부모 댓글 리스트(무한스크롤 페이징 적용) - commentId, content, likeCount, childCommentCount, createdAt<br>
-     * - AnswerComment: 대 댓글 리스트 - commentId, content, likeCount, createdAt<br>
-     * - Like: 해당 사용자가 해당 댓글/대댓글에 좋아요를 눌렀는지 여부<br>
-     * - Follow: 요청한 사용자가 댓글/대댓글 작성자를 팔로우 했는지 여부<br>
+     * 답변 상세 조회 (댓글도 함께 받아오며, 댓글은 페이징 처리)
      */
     public AnswerFindServiceResponse findOneAnswerWithCursor(AnswerFindServiceRequest request) {
         AnswerFindServiceResponseBuilder answerResponseBuilder = AnswerFindServiceResponse.builder();
@@ -84,13 +75,54 @@ public class AnswerReadService {
         buildAnswer(answer, request.userId(), answerResponseBuilder);
 
         // Answer에 대한 부모 Answer Comment를 페이징으로 가져오기
-        List<AnswerComment> parentComments = answerCommentRepository.findParentCommentsByAnswerIdWithCursor(request.answerId(), request.commentCursor(), request.size());
+        List<AnswerComment> parentComments = answerCommentRepository.findParentCommentsByAnswerIdWithCursor(request.answerId(), request.cursor(), request.size());
 
         // AnswerComment 정보 세팅
         buildAnswerComment(parentComments, request.userId(), answerResponseBuilder);
 
         return answerResponseBuilder.build();
     }
+
+
+    /**
+     * 특정 사용자의 답변 목록 (페이징 적용)
+     */
+    public AnswerListFindByUserServiceResponse findAnswerListByUserWithCursor(AnswerFindByUserServiceRequest request) {
+        validateTargetUser(request); // 대상 사용자 존재여부 검증
+
+        boolean isMine = isMine(request); // 조회 요청한 사용자와 대상자가 같은지
+
+        List<AnswerQuestionDTO> answers =
+                answerRepository.findAllByUserIdWithCursor(request.targetUserId(), request.cursor(), request.size(), isMine); // 페이징으로 Answer 및 Question 정보 가져오기
+
+        List<AnswerFindByUserServiceResponse> serviceResponses = answers.stream()
+                .map(AnswerFindByUserServiceResponse::toServiceResponse)
+                .toList();
+
+        return new AnswerListFindByUserServiceResponse(serviceResponses);
+    }
+
+
+    /**
+     * 특정 사용자의 답변 갯수
+     */
+    public AnswerCountByUserServiceResponse countAnswersByUser(AnswerFindByUserServiceRequest request) {
+        validateTargetUser(request);
+
+        boolean isMine = isMine(request); // 조회 요청한 사용자와 대상자가 같은지
+
+        Long answerCount = answerRepository.countByUserId(request.targetUserId(), isMine);
+        return new AnswerCountByUserServiceResponse(answerCount);
+    }
+
+
+
+
+
+
+
+
+    /* Private Method */
 
     /**
      * Answer 정보를 세팅
@@ -258,5 +290,19 @@ public class AnswerReadService {
         responseBuilder.commentCount(commentCount);
     }
 
+    /**
+     * 조회 요청한 사용자와 대상자가 같은지
+     */
+    private boolean isMine(AnswerFindByUserServiceRequest request) {
+        boolean isMine = request.reqUserId().equals(request.targetUserId());
+        return isMine;
+    }
 
+    /**
+     * 대상 사용자가 존재하는지 검증
+     */
+    private void validateTargetUser(AnswerFindByUserServiceRequest request) {
+        userRepository.findById(UserId.of(request.targetUserId()))
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION); // 대상 사용자가 존재하는지 검증
+    }
 }

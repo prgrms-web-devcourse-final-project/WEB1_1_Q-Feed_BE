@@ -1,9 +1,8 @@
-package com.wsws.moduleapi.feed.dto.answer;
+package com.wsws.moduleapi.feed.dto.answer.get;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.wsws.moduleapplication.feed.dto.answer.AnswerCommentFindServiceResponse;
-import com.wsws.moduleapplication.feed.dto.answer.AnswerFindServiceResponse;
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.wsws.moduleapplication.feed.dto.answer.read.AnswerCommentFindServiceResponse;
+import com.wsws.moduleapplication.feed.dto.answer.read.AnswerFindServiceResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
