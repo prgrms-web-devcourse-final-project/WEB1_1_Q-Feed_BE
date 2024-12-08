@@ -3,6 +3,8 @@ package com.wsws.moduleapplication.feed.service;
 import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerCreateServiceRequest;
 import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerCreateServiceResponse;
 import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerEditServiceRequest;
+import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerVisibilityEditServiceRequest;
+import com.wsws.moduleapplication.feed.exception.AnswerEditNotAllowedException;
 import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.feed.exception.QuestionNotFoundException;
 import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
@@ -81,6 +83,20 @@ public class AnswerService {
     }
 
     /**
+     * 답변 공개여부 수정
+     */
+    public void editAnswerVisibility(AnswerVisibilityEditServiceRequest request) {
+        Answer answer = answerRepository.findById(request.answerId())
+                .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
+
+        validateEditAuth(request, answer); // 요청한 사용자가 수정하려는 답변의 작성자와 같은지 검증
+
+        answer.changeVisibility(request.visibility()); // 공개여부 수정
+
+        answerRepository.edit(answer); // 수정 반영
+    }
+
+    /**
      * 답변 삭제
      */
     public void deleteAnswer(Long answerId) {
@@ -127,11 +143,10 @@ public class AnswerService {
 
 
 
+
     /* private 메서드 */
 
-    /**
-     * 이미지 처리
-     */
+   // 이미지 처리
     private String processImage(MultipartFile image) {
         if (image != null && !image.isEmpty()) {
             try {
@@ -144,9 +159,7 @@ public class AnswerService {
         return null; // 이미지가 없는 경우
     }
 
-    /**
-     * Like 저장 생성 및 저장
-     */
+    // Like 저장 생성 및 저장
     private void createLike(LikeServiceRequest request) {
 
         if (isAlreadyLike(request.targetId(), request.userId(), TargetType.valueOf(request.targetType()))) // 좋아요를 누른적이 있다면 예외
@@ -162,9 +175,7 @@ public class AnswerService {
         likeRepository.save(like);
     }
 
-    /**
-     * Like 삭제
-     */
+    // Like 삭제
     private void deleteLike(LikeServiceRequest request) {
         if (!isAlreadyLike(request.targetId(), request.userId(), TargetType.valueOf(request.targetType()))) // 좋아요를 누른적이 없다면 예외
             throw NotLikedException.EXCEPTION;
@@ -173,10 +184,15 @@ public class AnswerService {
     }
 
 
-    /**
-     * 같은 글에 좋아요를 누른적이 있는지 확인
-     */
+    // 같은 글에 좋아요를 누른적이 있는지 확인
     private boolean isAlreadyLike(Long targetId, String userId, TargetType targetType) {
         return likeRepository.existsByTargetIdAndUserIdAndTargetType(targetId, userId, targetType);
+    }
+
+    // 수정 권한이 있는지 확인
+    private void validateEditAuth(AnswerVisibilityEditServiceRequest request, Answer answer) {
+        if(!answer.getUserId().getValue().equals(request.reqUserId())) {
+            throw AnswerEditNotAllowedException.EXCEPTION;
+        }
     }
 }
