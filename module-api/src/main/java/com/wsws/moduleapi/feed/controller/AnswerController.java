@@ -73,7 +73,7 @@ public class AnswerController {
     })
     public ResponseEntity<AnswerListByUserGetApiResponse> getAnswersByUser(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("user-id") String targetId,
+            @Parameter(description = "찾고자하는 대상 사용자") @PathVariable("user-id") String targetId,
             @Parameter(description = "커서로 사용할 마지막 글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String answerCursor,
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size) {
         String reqUserId = userPrincipal.getId();
@@ -97,7 +97,7 @@ public class AnswerController {
     })
     public ResponseEntity<AnswerCountByUserGetApiResponse> getAnswersByUserCount(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("user-id") String targetId) {
+            @Parameter(description = "찾고자하는 대상 사용자") @PathVariable("user-id") String targetId) {
         String reqUserId = userPrincipal.getId();
 //        String reqUserId = "user_id1";
 
@@ -170,6 +170,18 @@ public class AnswerController {
             @Valid @RequestBody AnswerPatchApiRequest answerPatchApiRequest) {
         answerService.editAnswer(answerPatchApiRequest.toServiceDto(answerId));
         return ResponseEntity.ok(new MessageResponse("답변이 수정되었습니다."));
+    }
+
+    /**
+     * 답변 공개여부 수정
+     */
+    @PatchMapping("/{answer-id}/visibility")
+    public ResponseEntity<?> patchAnswerVisibility(
+            @Parameter(description = "수정할 답변 ID") @PathVariable("answer-id") Long answerId
+
+    ) {
+
+        return null;
     }
 
     /**
