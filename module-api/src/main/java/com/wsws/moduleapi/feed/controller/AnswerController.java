@@ -101,7 +101,7 @@ public class AnswerController {
     })
     public ResponseEntity<AnswerCountByUserGetApiResponse> getAnswersByUserCount(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @Parameter(description = "찾고자하는 대상 사용자") @PathVariable("user-id") String targetId) {
+            @Parameter(description = "찾고자하는 대상 사용자의 ID") @PathVariable("user-id") String targetId) {
         String reqUserId = userPrincipal.getId();
 //        String reqUserId = "user_id1";
 
@@ -114,12 +114,17 @@ public class AnswerController {
      * 인증된 현재 사용자의 질문에 대한 답변 조회
      */
     @GetMapping("/users/question/{question-id}")
+    @Operation(summary = "현재 사용자의 특정 질문에 대한 답변 조회", description = "현재 사용자의 특정 질문에 대한 답변을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "현재 사용자가 특정 질문에 대해 답변을 남긴적이 있을 때"),
+            @ApiResponse(responseCode = "204", description = "현재 사용자가 특정 질문에 대해 답변을 남긴적이 없을 때", content = @Content),
+    })
     public ResponseEntity<AnswerByUserAndDailyQuestionGetApiResponse> getAnswerByDailyQuestionId(
-//            @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("question-id") Long questionId
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(description = "찾고자하는 질문의 ID") @PathVariable("question-id") Long questionId
     ) {
-//        String reqUserId = userPrincipal.getId();
-        String reqUserId = "user_id1";
+        String reqUserId = userPrincipal.getId();
+//        String reqUserId = "user_id1";
         AnswerFindByUserAndDailyQuestionServiceRequest serviceRequest =
                 new AnswerFindByUserAndDailyQuestionServiceRequest(reqUserId, questionId);
         Optional<AnswerFindByUserAndDailyQuestionServiceResponse> serviceResponse =
