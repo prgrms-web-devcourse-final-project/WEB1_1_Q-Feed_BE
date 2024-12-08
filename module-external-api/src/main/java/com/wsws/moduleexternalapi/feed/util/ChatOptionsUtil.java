@@ -1,11 +1,9 @@
 package com.wsws.moduleexternalapi.feed.util;
 
-import com.wsws.moduledomain.category.vo.CategoryName;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.ResponseFormat;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,8 +12,8 @@ public class ChatOptionsUtil {
     public static ChatOptions buildChatOptions(List<String> categories) {
         // 동적으로 categories 리스트에서 JSON Schema 생성
         String properties = categories.stream()
-                .map(category -> String.format("    \"%s\": {\n      \"type\": \"string\"\n    }", category))
-                .collect(Collectors.joining(",\n"));
+                .map(category -> String.format("    \"%s\": {%n      \"type\": \"string\"%n    }", category))
+                .collect(Collectors.joining(",%n"));
 
         String required = categories.stream()
                 .map(category -> "\"" + category + "\"")
@@ -35,7 +33,6 @@ public class ChatOptionsUtil {
                 }
                 """, properties, required);
 
-        System.out.println(jsonSchema);
 
         return OpenAiChatOptions.builder()
                 .withResponseFormat(new ResponseFormat(ResponseFormat.Type.JSON_SCHEMA, jsonSchema))
