@@ -12,8 +12,8 @@ public record ChatMessageDomainResponse(
         String senderProfileImage,
         String content,
         String type,
-        String url,
-        LocalDateTime createdAt
+        String url
+        //LocalDateTime createdAt
 
 ) {
     public static ChatMessageDomainResponse createFrom(ChatMessage chatMessage, User sender) {
@@ -25,8 +25,8 @@ public record ChatMessageDomainResponse(
                 sender.getProfileImage(),
                 chatMessage.getContent().getValue(),
                 chatMessage.getType().name(),
-                chatMessage.getUrl(),
-                chatMessage.getCreatedAt()
+                chatMessage.getUrl()
+                //chatMessage.getCreatedAt()
         );
     }
 }
