@@ -122,4 +122,4 @@ jobs:
             
             docker pull ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
             
-            docker run -d --name q-feed-server --env-file ./.env -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
+            docker run -d --name q-feed-server -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul --env-file ./.env -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
