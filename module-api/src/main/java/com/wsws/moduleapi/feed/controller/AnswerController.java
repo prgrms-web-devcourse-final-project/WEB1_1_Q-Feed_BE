@@ -195,13 +195,17 @@ public class AnswerController {
     @Operation(summary = "답변 수정", description = "답변을 수정합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "답변 수정 성공"),
-            @ApiResponse(responseCode = "400", description = "필수 입력값 - visibility가 누락됐을 때"),
+            @ApiResponse(responseCode = "400", description = "필수 입력값 - visibility가 누락됐을 때", content = @Content),
+            @ApiResponse(responseCode = "403", description = "해당 답변을 수정할 권한이 없을 때", content = @Content),
             @ApiResponse(responseCode = "404", description = "없는 답변 일 때", content = @Content)
     })
     public ResponseEntity<MessageResponse> patchAnswer(
             @Parameter(description = "수정할 답변 ID") @PathVariable("answer-id") Long answerId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody AnswerPatchApiRequest answerPatchApiRequest) {
-        answerService.editAnswer(answerPatchApiRequest.toServiceDto(answerId));
+        String userId = userPrincipal.getId();
+//        String userId = "user_id2";
+        answerService.editAnswer(answerPatchApiRequest.toServiceDto(answerId, userId));
         return ResponseEntity.ok(new MessageResponse("답변이 수정되었습니다."));
     }
 
@@ -212,7 +216,7 @@ public class AnswerController {
     @Operation(summary = "답변 공개 여부 수정", description = "답변의 공개여부를 수정합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "답변 공개여부 수정 성공"),
-            @ApiResponse(responseCode = "403", description = "해당 답변을 수정할 수 있는 권한이 없을 때. 요청한 사용자와 질문의 작성자가 다를 때 발생"),
+            @ApiResponse(responseCode = "403", description = "해당 답변을 수정할 수 있는 권한이 없을 때. 요청한 사용자와 질문의 작성자가 다를 때 발생", content = @Content),
             @ApiResponse(responseCode = "404", description = "없는 답변 일 때", content = @Content)
     })
     public ResponseEntity<?> patchAnswerVisibility(
@@ -232,9 +236,17 @@ public class AnswerController {
      */
     @DeleteMapping("/{answer-id}")
     @Operation(summary = "답변 삭제", description = "답변을 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "답변 삭제 성공"),
+            @ApiResponse(responseCode = "403", description = "답변을 삭제할 권한이 없을 때", content = @Content)
+    })
     public ResponseEntity<MessageResponse> deleteAnswer(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "삭제할 답변 ID") @PathVariable("answer-id") Long answerId) {
-        answerService.deleteAnswer(answerId);
+
+        String userId = userPrincipal.getId();
+//        String userId = "user_id1";
+        answerService.deleteAnswer(answerId, userId);
         return ResponseEntity.ok(new MessageResponse("답변이 삭제되었습니다."));
     }
 
