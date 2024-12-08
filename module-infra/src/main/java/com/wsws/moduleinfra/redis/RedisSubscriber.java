@@ -25,8 +25,6 @@ public class RedisSubscriber implements MessageListener {
     private final SimpMessageSendingOperations messagingTemplate;
     private final RedisMessageListenerContainer redisMessageListenerContainer;
 
-    @Autowired
-    private MessageListenerAdapter messageListenerAdapter;
 
     @Autowired
     public RedisSubscriber(@Qualifier("customRedisTemplateString") RedisTemplate<String, String> redisTemplate,
@@ -57,7 +55,7 @@ public class RedisSubscriber implements MessageListener {
     public void subscribeToChatRoom(Long chatRoomId) {
         System.out.println("@@@@@@@@@@@@채팅방 구독!!!!!");
         String channel = "/sub/chat/" + chatRoomId;
-        redisMessageListenerContainer.addMessageListener(messageListenerAdapter, new ChannelTopic(channel));
+        redisMessageListenerContainer.addMessageListener(this, new ChannelTopic(channel));
         System.out.println("~~~~~~~~~~~~~~~채널 구독 완료!!");
     }
 
