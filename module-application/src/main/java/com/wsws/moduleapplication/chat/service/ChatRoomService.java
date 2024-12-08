@@ -20,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.wsws.moduleapplication.chat.exception.ChatServiceErrorCode.CHATROOM_NOT_FOUND;
@@ -60,22 +62,23 @@ public class ChatRoomService {
         // 채팅방 목록을 가져옴
         List<ChatRoom> chatRooms = chatRoomRepository.findChatRooms(userId);
 
+        // 상대방 사용자 정보를 가져오기
+        Map<Long, User> otherUserMap = getOtherUsersMap(chatRooms, userId);
+
+        // 각 채팅방에 대한 마지막 메시지를 미리 가져오는 함수 호출
+        Map<Long, ChatMessage> lastMessageMap = getLastMessagesForChatRooms(chatRooms);
+
+        // 읽지 않은 메시지 개수를 미리 계산하는 함수 호출
+        Map<Long, Long> unreadCountMap = getUnreadCountsForChatRooms(chatRooms, userId);
+
 
         return chatRooms.stream().map(chatRoom -> {
-            // 상대방 사용자 가져오기
-            User otherUser = getOtherUser(chatRoom, userId);
-
-            // 마지막 메시지 가져오기
-            ChatMessage lastMessage = getLastMessage(chatRoom.getId());
-
-            // 읽지 않은 메시지 개수 가져오기
-            long unreadCount = chatMessageRepository.countUnreadMessages(chatRoom.getId(), otherUser.getId().getValue());
-
             return new ChatRoomServiceResponse(
-                    chatRoom, otherUser, lastMessage, unreadCount
+                    chatRoom, otherUserMap.get(chatRoom.getId()), lastMessageMap.get(chatRoom.getId()), unreadCountMap.get(chatRoom.getId())
             );
         }).collect(Collectors.toList());
     }
+
 
     //채팅방 찾기
     public ChatRoomServiceResponse getChatRoomWithOtherUser(String userId, String nickname) {
@@ -136,6 +139,32 @@ public class ChatRoomService {
         }
     }
 
+    // 사용자 정보를 한 번에 가져오는 메서드
+    private Map<Long, User> getOtherUsersMap(List<ChatRoom> chatRooms, String userId) {
+        Map<Long, User> otherUserMap = new HashMap<>();
+        for (ChatRoom chatRoom : chatRooms) {
+            otherUserMap.put(chatRoom.getId(), getOtherUser(chatRoom, userId));
+        }
+        return otherUserMap;
+    }
+
+    // 마지막 메시지를 가져오는 함수
+    private Map<Long, ChatMessage> getLastMessagesForChatRooms(List<ChatRoom> chatRooms) {
+        return chatRooms.stream()
+                .collect(Collectors.toMap(
+                        ChatRoom::getId,
+                        chatRoom -> getLastMessage(chatRoom.getId())
+                ));
+    }
+
+    // 읽지 않은 메시지 개수를 가져오는 함수
+    private Map<Long, Long> getUnreadCountsForChatRooms(List<ChatRoom> chatRooms, String userId) {
+        return chatRooms.stream()
+                .collect(Collectors.toMap(
+                        ChatRoom::getId,
+                        chatRoom -> chatMessageRepository.countUnreadMessages(chatRoom.getId(), userId)
+                ));
+    }
+
 
 }
-
