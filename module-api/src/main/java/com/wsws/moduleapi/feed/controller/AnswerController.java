@@ -65,6 +65,12 @@ public class AnswerController {
      * 특정 사용자의 답변 목록 조회
      */
     @GetMapping("/{user-id}")
+    @Operation(summary = "특정 사용자의 답변 목록 조회", description = "특정 사용자 답변 목록을 조회합니다. " +
+            "요청한 사람과 대상사용자가 같으면 모든 글, 다르면 visibility가 true인 글만 조회됩니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "특정 사용자의 답변 목록 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "대상 사용자를 찾을 수 없는 경우", content = @Content)
+    })
     public ResponseEntity<AnswerListByUserGetApiResponse> getAnswersByUser(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("user-id") String targetId,
@@ -83,7 +89,13 @@ public class AnswerController {
      * 특정 사용자의 답변 총 갯수
      */
     @GetMapping("/{user-id}/count")
-    public ResponseEntity<?> getAnswersByUserCount(
+    @Operation(summary = "특정 사용자의 답변 갯수 조회", description = "특정 사용자의 답변 갯수를 조회합니다. " +
+            "요청한 사람과 대상사용자가 같으면 모든 글, 다르면 visibility가 true인 글만 조회됩니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "특정 사용자의 답변 갯수 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "대상 사용자를 찾을 수 없는 경우", content = @Content)
+    })
+    public ResponseEntity<AnswerCountByUserGetApiResponse> getAnswersByUserCount(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("user-id") String targetId) {
         String reqUserId = userPrincipal.getId();
