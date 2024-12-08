@@ -46,9 +46,9 @@ public class GroupMemberController {
     @Operation(summary = "그룹 내 멤버 조회", description = "해당 그룹의 내의 모든 멤버들을 조회합니다.")
     public ResponseEntity<List<GroupMemberDetailApiResponse>> getGroupMembers(
             @Parameter(description = "모든 멤버들 조회할 그룹 ID") @PathVariable Long groupId) {
-        // 서비스 호출
+
         List<GroupMemberDetailServiceResponse> members = groupMemberService.getGroupMembers(groupId);
-        //변환작업
+
         List<GroupMemberDetailApiResponse> apiResponses = members.stream()
                 .map(GroupMemberDetailApiResponse::new)
                 .toList();

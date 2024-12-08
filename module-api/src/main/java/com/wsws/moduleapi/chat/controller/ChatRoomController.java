@@ -14,10 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,7 +23,6 @@ import java.util.stream.Collectors;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
-    private final JpaChatRoomRepository chatRoomRepository;
 
     //채팅방 생성
     @PostMapping
@@ -51,8 +47,8 @@ public class ChatRoomController {
     @GetMapping
     @Operation(summary = "채팅방 목록 조회", description = "주어진 사용자 ID의 채팅방 목록을 조회합니다.")
     public ResponseEntity<List<ChatRoomApiResponse>> getChatRooms(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-        String userId = userPrincipal.getId();
 
+        String userId = userPrincipal.getId();
         List<ChatRoomServiceResponse> chatRooms = chatRoomService.getChatRooms(userId);
 
         // ChatRoomServiceResponse->ChatRoomApiResponse

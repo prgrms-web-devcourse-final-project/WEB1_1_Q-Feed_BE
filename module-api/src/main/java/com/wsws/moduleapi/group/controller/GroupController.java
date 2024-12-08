@@ -83,7 +83,6 @@ public class GroupController {
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size) {
         LocalDateTime parsedCursor;
 
-        // cursor가 null이거나 잘못된 형식일 경우 기본 값 처리
         try {
             parsedCursor = cursor != null ? LocalDateTime.parse(cursor) : LocalDateTime.now();
         } catch (DateTimeParseException e) {
