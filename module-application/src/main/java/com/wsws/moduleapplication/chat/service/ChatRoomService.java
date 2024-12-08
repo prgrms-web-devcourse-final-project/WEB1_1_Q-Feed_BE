@@ -118,7 +118,7 @@ public class ChatRoomService {
     // 마지막 메시지 가져오기
     private ChatMessage getLastMessage(Long chatRoomId) {
         return chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoomId)
-                .orElse(null);  // 메시지가 없으면 null 반환
+                .orElse(new ChatMessage());
     }
 
     // 채팅방의 소유자가 현재 사용자인지 확인
