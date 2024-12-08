@@ -111,5 +111,19 @@ public class GroupController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @GetMapping("/user/")
+    @Operation(summary = "내가 참여한 그룹 목록 조회", description = "현재 내가 참여하고 있는 그룹 목록을 조회합니다.")
+    public ResponseEntity<List<GroupApiResponse>> getGroupsByCategory(
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        String userId = userPrincipal.getId();
+        List<GroupServiceResponse> groups = groupService.getJoinedGroups(userId);
+        //변환작업
+        List<GroupApiResponse> apiResponses = groups.stream()
+                .map(GroupApiResponse::new)
+                .toList();
+        return ResponseEntity.ok(apiResponses);
+    }
+
 
 }
