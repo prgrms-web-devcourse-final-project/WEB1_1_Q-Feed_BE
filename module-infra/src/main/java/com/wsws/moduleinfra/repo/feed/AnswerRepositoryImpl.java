@@ -94,6 +94,11 @@ public class AnswerRepositoryImpl implements AnswerRepository {
         return AnswerEntityMapper.toDomain(savedEntity);
     }
 
+    @Override
+    public boolean existsByUserIdAndQuestionId(String userId, Long questionId) {
+        return jpaAnswerRepository.existsByUserIdAndQuestionId(userId, questionId);
+    }
+
     /**
      * 답변 수정
      * 수정된 Answer 객체가 넘어온다.

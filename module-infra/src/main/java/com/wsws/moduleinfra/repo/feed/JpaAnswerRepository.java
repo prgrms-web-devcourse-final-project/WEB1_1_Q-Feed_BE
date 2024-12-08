@@ -24,6 +24,7 @@ public interface JpaAnswerRepository extends JpaRepository<AnswerEntity, Long> {
             ORDER BY a.createdAt DESC
             """)
     List<AnswerEntity> findAllWithCursor(LocalDateTime answerCursor, Pageable pageable);
+
     // 특정 categoryId의 답변 찾기
     @Query("""
             SELECT a 
@@ -38,11 +39,17 @@ public interface JpaAnswerRepository extends JpaRepository<AnswerEntity, Long> {
 
     // 특정 userId를 가진 답변의 갯수
     Long countByUserId(String userId);
+
     // 특정 userId를 가지고 visibility가 true인 답변의 갯수
     Long countByUserIdAndVisibilityTrue(String userId);
 
     // 특정 사용자의 특정 질문에 대한 답변
-    @Query("SELECT a FROM AnswerEntity a WHERE a.userId = :userId AND a.questionEntity.id= :questionId")
+    @Query("""
+            SELECT a 
+            FROM AnswerEntity a join a.questionEntity q 
+            WHERE a.userId = :userId 
+            AND q.id= :questionId 
+            """)
     Optional<AnswerEntity> findAnswerByUserIdAndQuestionId(String userId, Long questionId);
 
 
@@ -54,6 +61,7 @@ public interface JpaAnswerRepository extends JpaRepository<AnswerEntity, Long> {
             ORDER BY a.createdAt DESC
             """)
     List<AnswerEntity> findAllByUserIdWithCursor(String userId, LocalDateTime answerCursor, Pageable pageable);
+
     @Query("""
             SELECT a
             FROM AnswerEntity a join fetch a.questionEntity q 
@@ -63,5 +71,8 @@ public interface JpaAnswerRepository extends JpaRepository<AnswerEntity, Long> {
             ORDER BY a.createdAt DESC
             """)
     List<AnswerEntity> findAllByUserIdAndVisibilityTrueWithCursor(String userId, LocalDateTime answerCursor, Pageable pageable);
+
+    @Query("SELECT COUNT(a) > 0 FROM AnswerEntity a WHERE a.userId = :userId AND a.questionEntity.id = :questionId")
+    boolean existsByUserIdAndQuestionId(String userId, Long questionId);
 
 }

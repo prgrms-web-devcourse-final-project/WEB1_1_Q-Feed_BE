@@ -35,7 +35,6 @@ public class AnswerReadService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
-    private final QuestionRepository questionRepository;
 
     /**
      * 답변 목록 조회 (무한 스크롤 페이징 적용)

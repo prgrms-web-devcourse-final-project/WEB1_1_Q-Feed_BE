@@ -41,6 +41,11 @@ public interface AnswerRepository {
     Answer save(Answer answer);
 
     /**
+     * 특정 사용자가 특정 질문에 대해 작성한 글이 있는지
+     */
+    boolean existsByUserIdAndQuestionId(String userId, Long questionId);
+
+    /**
      * 답변 수정
      */
     void edit(Answer answer);

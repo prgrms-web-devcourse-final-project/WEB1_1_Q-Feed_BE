@@ -111,9 +111,9 @@ public class AnswerController {
     }
 
     /**
-     * 인증된 현재 사용자의 오늘의 질문에 대한 답변 조회
+     * 인증된 현재 사용자의 질문에 대한 답변 조회
      */
-    @GetMapping("/users/daily/{question-id}")
+    @GetMapping("/users/question/{question-id}")
     public ResponseEntity<AnswerByUserAndDailyQuestionGetApiResponse> getAnswerByDailyQuestionId(
 //            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("question-id") Long questionId
@@ -168,8 +168,9 @@ public class AnswerController {
     @Operation(summary = "답변 생성", description = "현재 인증된 사용자로 답변을 생성합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "답변 작성 성공"),
-            @ApiResponse(responseCode = "400", description = "필수입력값 - questionId, visibility가 누락됐을 때 "),
-            @ApiResponse(responseCode = "404", description = "없는 질문일 때", content = @Content)
+            @ApiResponse(responseCode = "400", description = "필수입력값 - questionId, visibility가 누락됐을 때 ", content = @Content),
+            @ApiResponse(responseCode = "404", description = "없는 질문일 때", content = @Content),
+            @ApiResponse(responseCode = "409", description = "이미 답변을 작성한 적이 있는 질문 일 때", content = @Content)
     })
     public ResponseEntity<AnswerPostApiResponse> postAnswers(
             @Valid @RequestBody AnswerPostApiRequest answerPostApiRequest
