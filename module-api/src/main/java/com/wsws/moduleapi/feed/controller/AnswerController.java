@@ -8,7 +8,9 @@ import com.wsws.moduleapi.feed.dto.answer.get.AnswerListGetApiResponse;
 import com.wsws.moduleapi.feed.dto.answer.post.AnswerPostApiRequest;
 import com.wsws.moduleapi.feed.dto.answer.post.AnswerPostApiResponse;
 import com.wsws.moduleapi.feed.dto.answer.put_patch.AnswerPatchApiRequest;
+import com.wsws.moduleapi.feed.dto.answer.put_patch.AnswerVisibilityPatchRequest;
 import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerCreateServiceResponse;
+import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerVisibilityEditServiceRequest;
 import com.wsws.moduleapplication.feed.dto.answer.read.*;
 import com.wsws.moduleapplication.feed.service.AnswerReadService;
 import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
@@ -176,12 +178,22 @@ public class AnswerController {
      * 답변 공개여부 수정
      */
     @PatchMapping("/{answer-id}/visibility")
+    @Operation(summary = "답변 공개 여부 수정", description = "답변의 공개여부를 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "답변 공개여부 수정 성공"),
+            @ApiResponse(responseCode = "403", description = "해당 답변을 수정할 수 있는 권한이 없을 때. 요청한 사용자와 질문의 작성자가 다를 때 발생"),
+            @ApiResponse(responseCode = "404", description = "없는 답변 일 때", content = @Content)
+    })
     public ResponseEntity<?> patchAnswerVisibility(
-            @Parameter(description = "수정할 답변 ID") @PathVariable("answer-id") Long answerId
-
+            @Parameter(description = "수정할 답변 ID") @PathVariable("answer-id") Long answerId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(description = "답변 공개여부 정보") @RequestBody AnswerVisibilityPatchRequest visibilityRequest
     ) {
-
-        return null;
+        String reqUserId = userPrincipal.getId();
+//        String reqUserId = "user_id1";
+        AnswerVisibilityEditServiceRequest serviceRequest = new AnswerVisibilityEditServiceRequest(answerId, reqUserId, visibilityRequest.visibility());
+        answerService.editAnswerVisibility(serviceRequest);
+        return ResponseEntity.ok(new MessageResponse("공개여부가 수정되었습니다."));
     }
 
     /**
