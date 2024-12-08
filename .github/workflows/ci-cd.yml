@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - hotfix/QFEED-134-fix-scheduling-error
 jobs:
   deploy:
     runs-on: ubuntu-latest
