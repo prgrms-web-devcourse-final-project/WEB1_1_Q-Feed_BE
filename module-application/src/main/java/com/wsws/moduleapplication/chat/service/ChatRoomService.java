@@ -59,26 +59,22 @@ public class ChatRoomService {
 
     //채팅방 목록 조회
     public List<ChatRoomServiceResponse> getChatRooms(String userId) {
-        // 채팅방 목록을 가져옴
+
         List<ChatRoom> chatRooms = chatRoomRepository.findChatRooms(userId);
 
-        // 상대방 사용자 정보를 가져오기
+        // 상대방 사용자 정보
         Map<Long, User> otherUserMap = getOtherUsersMap(chatRooms, userId);
 
-        // 각 채팅방에 대한 마지막 메시지를 미리 가져오는 함수 호출
+        // 각 채팅방에 대한 마지막 메시지
         Map<Long, ChatMessage> lastMessageMap = getLastMessagesForChatRooms(chatRooms);
 
-        // 읽지 않은 메시지 개수를 미리 계산하는 함수 호출
+        // 읽지 않은 메시지 개수
         Map<Long, Long> unreadCountMap = getUnreadCountsForChatRooms(chatRooms, userId);
 
-
-        return chatRooms.stream().map(chatRoom -> {
-            return new ChatRoomServiceResponse(
-                    chatRoom, otherUserMap.get(chatRoom.getId()), lastMessageMap.get(chatRoom.getId()), unreadCountMap.get(chatRoom.getId())
-            );
-        }).collect(Collectors.toList());
+        return chatRooms.stream().map(chatRoom -> new ChatRoomServiceResponse(
+                chatRoom, otherUserMap.get(chatRoom.getId()), lastMessageMap.get(chatRoom.getId()), unreadCountMap.get(chatRoom.getId())
+        )).collect(Collectors.toList());
     }
-
 
     //채팅방 찾기
     public ChatRoomServiceResponse getChatRoomWithOtherUser(String userId, String nickname) {
@@ -139,7 +135,7 @@ public class ChatRoomService {
         }
     }
 
-    // 사용자 정보를 한 번에 가져오는 메서드
+    // 상대방 정보 가져오기
     private Map<Long, User> getOtherUsersMap(List<ChatRoom> chatRooms, String userId) {
         Map<Long, User> otherUserMap = new HashMap<>();
         for (ChatRoom chatRoom : chatRooms) {
@@ -148,7 +144,7 @@ public class ChatRoomService {
         return otherUserMap;
     }
 
-    // 마지막 메시지를 가져오는 함수
+    // 마지막 메시지 가져오기
     private Map<Long, ChatMessage> getLastMessagesForChatRooms(List<ChatRoom> chatRooms) {
         return chatRooms.stream()
                 .collect(Collectors.toMap(
@@ -157,7 +153,7 @@ public class ChatRoomService {
                 ));
     }
 
-    // 읽지 않은 메시지 개수를 가져오는 함수
+    // 읽지 않은 메시지 개수 가져오기
     private Map<Long, Long> getUnreadCountsForChatRooms(List<ChatRoom> chatRooms, String userId) {
         return chatRooms.stream()
                 .collect(Collectors.toMap(
@@ -165,6 +161,4 @@ public class ChatRoomService {
                         chatRoom -> chatMessageRepository.countUnreadMessages(chatRoom.getId(), userId)
                 ));
     }
-
-
 }
