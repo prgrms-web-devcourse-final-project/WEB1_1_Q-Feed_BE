@@ -8,7 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "Answer")
+@Table(
+        name = "Answer",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"userId", "question_id"})
+)
 @Getter
 public class AnswerEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
