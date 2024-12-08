@@ -18,7 +18,6 @@ public class ScheduledQuestionUpdateService {
      * 오늘 질문들은 isToday: CREATED -> ACTIVATED
      */
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul") // 매일 00시 00분에 실행되도록 설정
-//    @Scheduled(cron = "*/30 * * * * ?", zone = "Asia/Seoul")
     public void updateQuestions() {
         int maxRetries = 3; // 최대 재시도 횟수
         int attempt = 0;    // 현재 시도 횟수
