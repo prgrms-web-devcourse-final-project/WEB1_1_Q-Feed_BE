@@ -7,19 +7,16 @@ public record UserProfileResponse(
         String email,
         String nickname,
         String profileImage,
-        String description,
-        int followerCount,
-        int followingCount
+        String description
+
 ) {
-    public UserProfileResponse(User user, int followerCount, int followingCount) {
+    public UserProfileResponse(User user) {
         this(
                 user.getId().getValue(),
                 user.getEmail().getValue(),
                 user.getNickname().getValue(),
                 user.getProfileImage(),
-                user.getDescription(),
-                followerCount,
-                followingCount
+                user.getDescription()
         );
     }
 }

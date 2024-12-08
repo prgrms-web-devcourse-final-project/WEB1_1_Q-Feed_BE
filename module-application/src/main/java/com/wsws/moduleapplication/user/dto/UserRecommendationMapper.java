@@ -1,7 +1,7 @@
 package com.wsws.moduleapplication.user.dto;
 
 
-import com.wsws.moduledomain.recommendation.UserRecommendation;
+import com.wsws.moduledomain.follow.vo.UserRecommendation;
 
 import java.util.List;
 

@@ -23,6 +23,7 @@ import com.wsws.moduledomain.user.vo.Nickname;
 import com.wsws.moduledomain.user.vo.UserId;
 import com.wsws.moduledomain.user.vo.UserInterest;
 import com.wsws.moduleinfra.FcmRedis;
+import com.wsws.moduledomain.cache.CacheManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,7 @@ public class UserService {
     private final FileStorageService fileStorageService;
     private final UserInterestRepository userInterestRepository;
     private final FcmRedis fcmRedis;
-
+    private final CacheManager cacheManager;
 
 
     // 회원가입
@@ -88,6 +89,8 @@ public class UserService {
         user.updateProfile(dto.nickname(), profileImageUrl, dto.description());
 
         userRepository.save(user);
+
+        evictProfileCache(userId);
     }
 
     // 비밀번호 변경
@@ -102,6 +105,8 @@ public class UserService {
     public void deleteUser(String userId) {
         User user = findUserByIdOrThrow(userId);
         userRepository.delete(user);
+
+        evictProfileCache(userId);
     }
 
     public void createInterests(String userId, List<String> interestCategoryNames) {
@@ -207,6 +212,11 @@ public class UserService {
         String value = request.fcmToken();
         Duration twoMonths = Duration.ofDays(60); // 2달
         fcmRedis.saveFcmToken(String.valueOf(user.getId()), value, twoMonths);
+    }
+
+    private void evictProfileCache(String userId) {
+        String profileCacheKey = "user:" + userId + ":profile";
+        cacheManager.evict(profileCacheKey);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.wsws.moduleinfra.cache;
+package com.wsws.moduledomain.cache;
 
 public interface CacheManager {
 
