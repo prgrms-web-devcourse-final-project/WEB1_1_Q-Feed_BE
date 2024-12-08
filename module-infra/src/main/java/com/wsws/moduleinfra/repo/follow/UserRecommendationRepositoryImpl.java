@@ -1,11 +1,9 @@
 package com.wsws.moduleinfra.repo.follow;
 
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.wsws.moduledomain.recommendation.UserRecommendation;
-import com.wsws.moduledomain.recommendation.repo.UserRecommendationRepository;
-import com.wsws.moduledomain.user.vo.UserInterest;
+import com.wsws.moduledomain.follow.vo.UserRecommendation;
+import com.wsws.moduledomain.follow.UserRecommendationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

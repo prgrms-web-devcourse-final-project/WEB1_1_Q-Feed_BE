@@ -1,7 +1,6 @@
-package com.wsws.moduledomain.recommendation.repo;
+package com.wsws.moduledomain.follow;
 
-import com.wsws.moduledomain.recommendation.UserRecommendation;
-import com.wsws.moduledomain.user.vo.UserInterest;
+import com.wsws.moduledomain.follow.vo.UserRecommendation;
 
 import java.util.List;
 

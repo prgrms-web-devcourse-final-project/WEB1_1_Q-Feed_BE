@@ -2,11 +2,10 @@ package com.wsws.moduleapplication.user.service;
 
 import com.wsws.moduleapplication.user.dto.UserRecommendationMapper;
 import com.wsws.moduleapplication.user.dto.UserRecommendationResponse;
-import com.wsws.moduledomain.recommendation.UserRecommendation;
-import com.wsws.moduledomain.recommendation.repo.UserRecommendationRepository;
+import com.wsws.moduledomain.follow.vo.UserRecommendation;
+import com.wsws.moduledomain.follow.UserRecommendationRepository;
 import com.wsws.moduledomain.user.repo.UserInterestRepository;
 import com.wsws.moduledomain.user.vo.UserId;
-import com.wsws.moduledomain.user.vo.UserInterest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +35,7 @@ public class RecommendationService {
             commonInterestUsers.addAll(generalUsers);
         }
 
-        // DTO로 변환
+
         return UserRecommendationMapper.toDtoList(commonInterestUsers);
     }
 }
