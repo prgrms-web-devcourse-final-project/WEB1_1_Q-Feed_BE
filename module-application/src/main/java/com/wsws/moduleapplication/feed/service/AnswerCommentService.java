@@ -3,6 +3,7 @@ package com.wsws.moduleapplication.feed.service;
 import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateServiceRequest;
 import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateServiceResponse;
 import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentEditServiceRequest;
+import com.wsws.moduleapplication.feed.exception.AnswerCommentChangeNotAllowedException;
 import com.wsws.moduleapplication.feed.exception.AnswerCommentNotFoundException;
 import com.wsws.moduleapplication.feed.exception.ParentAnswerCommentNotFoundException;
 import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
@@ -39,7 +40,7 @@ public class AnswerCommentService {
         int depth = 0;
         Long parentCommentId = request.parentCommentId();
         AnswerComment parentAnswerComment = null;
-        if(parentCommentId != null) {
+        if (parentCommentId != null) {
             parentAnswerComment = answerCommentRepository.findById(parentCommentId)
                     .orElseThrow(() -> ParentAnswerCommentNotFoundException.EXCEPTION); // 부모 댓글 불러오기
             depth = parentAnswerComment.getDepth() + 1;// 부모 댓글의 depth + 1
@@ -63,8 +64,12 @@ public class AnswerCommentService {
      * 답변 댓글 수정
      */
     public void editAnswerComment(AnswerCommentEditServiceRequest request) {
+
         AnswerComment answerComment = answerCommentRepository.findById(request.answerCommentId())
                 .orElseThrow(() -> AnswerCommentNotFoundException.EXCEPTION);
+
+        // 댓글의 작성자와 요청한 사용자와 다를 때
+        validateEditAuth(request.userId(), answerComment);
 
         answerComment.editAnswerComment(request.content());
 
@@ -75,7 +80,12 @@ public class AnswerCommentService {
     /**
      * 답변 댓글 삭제
      */
-    public void deleteAnswerComment(Long answerCommentId) {
+    public void deleteAnswerComment(Long answerCommentId, String userId) {
+        AnswerComment answerComment = answerCommentRepository.findById(answerCommentId)
+                .orElseThrow(() -> AnswerCommentNotFoundException.EXCEPTION);
+
+        validateEditAuth(userId, answerComment); // 삭제 권한 체크
+
         answerCommentRepository.deleteById(answerCommentId);
     }
 
@@ -113,14 +123,6 @@ public class AnswerCommentService {
     }
 
 
-
-    /* private 메서드 */
-
-    private Answer getRelatedAnswer(Long answerId) {
-        return answerRepository.findById(answerId)
-                .orElseThrow(() -> AnswerCommentNotFoundException.EXCEPTION);
-    }
-
     /**
      * Like 저장 생성 및 저장
      */
@@ -155,5 +157,19 @@ public class AnswerCommentService {
      */
     private boolean isAlreadyLike(Long targetId, String userId, TargetType targetType) {
         return likeRepository.existsByTargetIdAndUserIdAndTargetType(targetId, userId, targetType);
+    }
+
+    /* private 메서드 */
+
+    // 수정 권한 체크 메서드
+    private void validateEditAuth(String userId, AnswerComment answerComment) {
+        if (!answerComment.getUserId().getValue().equals(userId)) {
+            throw AnswerCommentChangeNotAllowedException.EXCEPTION;
+        }
+    }
+
+    private Answer getRelatedAnswer(Long answerId) {
+        return answerRepository.findById(answerId)
+                .orElseThrow(() -> AnswerCommentNotFoundException.EXCEPTION);
     }
 }

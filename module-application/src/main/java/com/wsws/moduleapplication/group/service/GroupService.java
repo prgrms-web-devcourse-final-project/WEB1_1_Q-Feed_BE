@@ -1,6 +1,5 @@
 package com.wsws.moduleapplication.group.service;
 
-import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.group.dto.CreateGroupRequest;
 import com.wsws.moduleapplication.group.dto.GroupDetailServiceResponse;
 import com.wsws.moduleapplication.group.dto.GroupServiceResponse;
@@ -116,10 +115,12 @@ public class GroupService {
 
         List<GroupPostDto> posts = groupPostRepository.findByGroupId(groupId);
 
-        //여기서 userid와 goupid의 그룹 멤버가 있는지 boolean으로 가져와서
+        //본인이 해당 그룹에 존재하는지 여부
         boolean isMember = groupMemberRepository.existsByUserIdAndGroupId(userId, groupId);
-        //있으면 이런식으로 그룹 포스트 처리해주기
+
+        //해당 그룹에 존재 할 때만 post 볼 수 있음
         List<GroupPostDto> groupPosts = isMember ? posts : Collections.emptyList();
+
         return new GroupDetailServiceResponse(groupDetailDto, groupMembers, groupPosts);
     }
 

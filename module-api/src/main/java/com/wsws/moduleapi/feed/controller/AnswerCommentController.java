@@ -39,10 +39,10 @@ public class AnswerCommentController {
     })
     @PostMapping
     public ResponseEntity<AnswerCommentPostApiResponse> postAnswerComment(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
+//            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody AnswerCommentPostApiRequest request) {
-        String userId = userPrincipal.getId();
-//        String reqUserId = "user_id1";
+//        String userId = userPrincipal.getId();
+        String userId = "user_id1";
         AnswerCommentCreateServiceResponse answerComment =
                 answerCommentService.createAnswerComment(request.toServiceDto(userId));
         return ResponseEntity.status(201).body(new AnswerCommentPostApiResponse(answerComment.answerCommentId(), "댓글이 추가되었습니다."));
@@ -55,13 +55,17 @@ public class AnswerCommentController {
     @Operation(summary = "답변 댓글 수정", description = "답변에 대한 댓글을 수정합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "답변 댓글 수정 성공"),
+            @ApiResponse(responseCode = "403", description = "해당 답변 댓글을 수정할 권한이 없는 경우", content = @Content),
             @ApiResponse(responseCode = "404", description = "해당 답변 댓글이 없는 경우", content = @Content)
     })
     @PutMapping("/{comment-id}")
     public ResponseEntity<MessageResponse> putAnswerComment(
             @Parameter(description = "수정할 답변 댓글 ID") @PathVariable("comment-id") Long commentId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody AnswerCommentPutApiRequest request) {
-        answerCommentService.editAnswerComment(request.toServiceDto(commentId));
+        String userId = userPrincipal.getId();
+//        String userId = "user_id2";
+        answerCommentService.editAnswerComment(request.toServiceDto(commentId, userId));
         return ResponseEntity.ok(new MessageResponse("댓글이 수정되었습니다."));
     }
 
@@ -70,12 +74,16 @@ public class AnswerCommentController {
      */
     @Operation(summary = "답변 댓글 삭제", description = "답변에 대한 댓글을 삭제합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "답변 댓글 삭제 성공")
+            @ApiResponse(responseCode = "200", description = "답변 댓글 삭제 성공"),
+            @ApiResponse(responseCode = "403", description = "삭제할 권한이 없을 때", content = @Content)
     })
     @DeleteMapping("/{comment-id}")
     public ResponseEntity<MessageResponse> deleteAnswerComment(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "삭제할 답변 댓글 ID") @PathVariable("comment-id") Long commentId) {
-        answerCommentService.deleteAnswerComment(commentId);
+//        String userId = userPrincipal.getId();
+        String userId = "user_id1";
+        answerCommentService.deleteAnswerComment(commentId, userId);
         return ResponseEntity.ok(new MessageResponse("댓글이 삭제되었습니다."));
     }
 

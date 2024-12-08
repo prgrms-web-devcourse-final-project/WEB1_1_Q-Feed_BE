@@ -58,12 +58,6 @@ public class RedisConfig {
         return new MessageListenerAdapter(subscriber, "onMessage");
     }
 
-//    // 구독할 Redis 채널 설정
-//    @Bean
-//    public ChannelTopic channelTopic() {
-//        return new ChannelTopic("/sub/chat/*");
-//    }
-
     // Object 타입 데이터를 처리하는 RedisTemplate 설정
     @Bean(name = "customRedisTemplateObject")
     public RedisTemplate<String, Object> redisTemplateObject(RedisConnectionFactory connectionFactory) {

@@ -37,7 +37,7 @@ public class ChatMessageController {
             @Parameter(description = "메세지를 전송할 채팅방 ID") @PathVariable Long chatRoomId,
             @RequestBody ChatMessageRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        // 메시지 전송 처리
+
         String userId = userPrincipal.getId();
         chatMessageService.sendMessage(chatRoomId,userId,request);
         return ResponseEntity.status(201).body(new ChatResponse("메세지가 전송되었습니다."));
@@ -49,17 +49,18 @@ public class ChatMessageController {
     public ResponseEntity<List<ChatMessageApiResponse>> getMessages(
             @Parameter(description = "메세지를 조회할 채팅방 ID") @PathVariable Long chatRoomId,
             @Parameter(description = "커서로 사용할 마지막 팔로워의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String cursor,
-            @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size,
+            @Parameter(description = "페이지 크기", example = "100") @RequestParam(defaultValue = "300") int size,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
 
         String userId = userPrincipal.getId();
+
         LocalDateTime parsedCursor;
-        // cursor가 null이거나 잘못된 형식일 경우 기본 값 처리
         try {
             parsedCursor = cursor != null ? LocalDateTime.parse(cursor) : LocalDateTime.now();
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid cursor format. Please use the correct ISO format (e.g. 2024-01-01T00:00:00)");
         }
+
         List<ChatMessageServiceResponse> messages = chatMessageService.getChatMessages(chatRoomId,userId,parsedCursor, size);
 
         List<ChatMessageApiResponse> apiResponses = messages.stream()
@@ -68,7 +69,6 @@ public class ChatMessageController {
 
         return ResponseEntity.ok(apiResponses);
     }
-
 
     @PutMapping("/{chatRoomId}/markasread")
     @Operation(summary = "메세지 읽음처리", description = "특정 채팅방의 읽지않은 모들 메세지를 읽음처리합니다.")

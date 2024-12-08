@@ -1,9 +1,10 @@
 package com.wsws.moduledomain.chat;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wsws.moduledomain.user.User;
 
 import java.time.LocalDateTime;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record ChatMessageDomainResponse(
         Long messageId,
         Long chatRoomId,
@@ -12,8 +13,8 @@ public record ChatMessageDomainResponse(
         String senderProfileImage,
         String content,
         String type,
-        String url,
-        LocalDateTime createdAt
+        String url
+        //LocalDateTime createdAt
 
 ) {
     public static ChatMessageDomainResponse createFrom(ChatMessage chatMessage, User sender) {
@@ -25,8 +26,8 @@ public record ChatMessageDomainResponse(
                 sender.getProfileImage(),
                 chatMessage.getContent().getValue(),
                 chatMessage.getType().name(),
-                chatMessage.getUrl(),
-                chatMessage.getCreatedAt()
+                chatMessage.getUrl()
+                //chatMessage.getCreatedAt()
         );
     }
 }

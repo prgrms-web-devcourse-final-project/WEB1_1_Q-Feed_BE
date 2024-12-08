@@ -25,9 +25,8 @@ public class GroupMemberService {
 
     @Transactional
     public void joinGroup(Long groupId, String userId) {
-        Group group = findGroupById(groupId);
+        findGroupById(groupId);
 
-        // 이미 해당 그룹에 멤버가 있는지 확인
         if (groupMemberRepository.existsByUserIdAndGroupId(userId, groupId)) {
             throw new IllegalStateException("이미 그룹에 가입되어 있습니다.");
         }
@@ -37,9 +36,8 @@ public class GroupMemberService {
 
     @Transactional
     public void leaveGroup(Long groupId, String userId) {
-        Group group = findGroupById(groupId);
+        findGroupById(groupId);
 
-        // 그룹에서 해당 멤버 찾기
         GroupMember groupMember = groupMemberRepository.findByUserIdAndGroupId(userId, groupId)
                 .orElseThrow(() -> new IllegalArgumentException("그룹에서 해당 멤버를 찾을 수 없습니다."));
 
@@ -64,8 +62,6 @@ public class GroupMemberService {
         validateAdminPermission(group, adminId);
 
         GroupMember groupMember = findMemberById(memberId);
-//        //그룹 멤버 확인
-//        validateGroupMembers(groupMember, groupId);
 
         groupMemberRepository.deleteById(groupMember.getGroupMemberId());
     }

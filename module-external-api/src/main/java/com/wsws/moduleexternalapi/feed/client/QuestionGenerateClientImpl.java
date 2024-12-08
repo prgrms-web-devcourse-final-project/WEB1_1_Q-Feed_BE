@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wsws.moduledomain.feed.question.ai.QuestionGenerateClient;
+import com.wsws.moduleexternalapi.feed.util.ChatOptionsUtil;
 import com.wsws.moduleexternalapi.feed.util.TokenCalculateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,6 @@ import java.util.*;
 @Slf4j
 public class QuestionGenerateClientImpl implements QuestionGenerateClient {
     private final ChatModel chatModel;
-    private final ChatOptions chatOptions;
 
     // 시스템 프롬프트
     private static final String SYSTEM_PROMPT = """ 
@@ -128,6 +128,6 @@ public class QuestionGenerateClientImpl implements QuestionGenerateClient {
             promptMessageList.add(questionBlackListMessage);
         }
 
-        return new Prompt(promptMessageList, chatOptions);
+        return new Prompt(promptMessageList, ChatOptionsUtil.buildChatOptions(categories));
     }
 }

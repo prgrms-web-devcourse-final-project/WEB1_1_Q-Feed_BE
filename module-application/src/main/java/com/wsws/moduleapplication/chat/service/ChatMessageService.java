@@ -42,14 +42,12 @@ public class ChatMessageService {
 
     @Transactional
     public void sendMessage(Long chatRoomId, String senderId, ChatMessageRequest request ) {
-        ChatRoom chatRoom = getChatRoomById(chatRoomId);
+        getChatRoomById(chatRoomId);
         User user = getUserById(senderId);
-        UserId userId = user.getId();
 
 //        // 이미지 or 음성 처리
 //        String fileProcess = processFile(request.file(),request.type());
 
-        //메세지 생성
         ChatMessage chatMessage = ChatMessage.create(
                 null,
                 request.content(),
@@ -64,15 +62,11 @@ public class ChatMessageService {
 
         // 해당 채팅방을 구독하도록 RedisSubscriber에 요청
         redisSubscriber.subscribeToChatRoom(chatRoomId);
-        System.out.println("@@@@@@@@@@@@subscribeToChatRoom!!!!!");
 
         // Redis 발행
         ChatMessageDomainResponse response = ChatMessageDomainResponse.createFrom(chatMessage, user);
         String channel = "/sub/chat/" + chatRoomId;
-
         redisTemplate.convertAndSend(channel, response);
-        System.out.println("@@@@@@@@@@@@convertAndSend!!!!!");
-
     }
 
     //채팅방의 메세지 조회
@@ -108,7 +102,7 @@ public class ChatMessageService {
     private Map<Long, Boolean> getMessageOwnershipMap(List<ChatMessageDTO> chatMessages, String userId) {
         return chatMessages.stream()
                 .collect(Collectors.toMap(
-                        ChatMessageDTO::messageId,  // 메시지 ID를 key로 사용
+                        ChatMessageDTO::messageId,
                         message -> message.userId().equals(userId) // 메시지가 내 것인지 여부
                 ));
     }

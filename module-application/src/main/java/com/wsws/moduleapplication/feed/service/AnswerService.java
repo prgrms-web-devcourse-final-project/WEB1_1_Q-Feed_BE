@@ -5,9 +5,8 @@ import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerCreateServiceRespon
 import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerEditServiceRequest;
 import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerVisibilityEditServiceRequest;
 import com.wsws.moduleapplication.feed.exception.AlreadyAnswerWrittenException;
-import com.wsws.moduleapplication.feed.exception.AnswerEditNotAllowedException;
+import com.wsws.moduleapplication.feed.exception.AnswerChangeNotAllowedException;
 import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
-import com.wsws.moduleapplication.feed.exception.QuestionNotFoundException;
 import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.user.exception.NotLikedException;
@@ -16,13 +15,10 @@ import com.wsws.moduleapplication.util.FileValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
-import com.wsws.moduledomain.feed.question.Question;
-import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
 import com.wsws.moduledomain.user.Like;
 import com.wsws.moduledomain.user.repo.LikeRepository;
 import com.wsws.moduledomain.user.vo.TargetType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,6 +70,8 @@ public class AnswerService {
         Answer answer = answerRepository.findById(request.answerId())
                 .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
 
+        validateChangeAuth(request.userId(), answer.getUserId().getValue()); // 수정 권한이 있는지 확인
+
         answer.editAnswer(request.content(), request.visibility(), url);
 
         try {
@@ -90,7 +88,7 @@ public class AnswerService {
         Answer answer = answerRepository.findById(request.answerId())
                 .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
 
-        validateEditAuth(request, answer); // 요청한 사용자가 수정하려는 답변의 작성자와 같은지 검증
+        validateChangeAuth(request.reqUserId(), answer.getUserId().getValue()); // 요청한 사용자가 수정하려는 답변의 작성자와 같은지 검증
 
         answer.changeVisibility(request.visibility()); // 공개여부 수정
 
@@ -100,7 +98,12 @@ public class AnswerService {
     /**
      * 답변 삭제
      */
-    public void deleteAnswer(Long answerId) {
+    public void deleteAnswer(Long answerId, String userId) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
+
+        validateChangeAuth(userId, answer.getUserId().getValue()); // 삭제권한이 있는지 확인
+
         answerRepository.deleteById(answerId);
     }
 
@@ -191,9 +194,9 @@ public class AnswerService {
     }
 
     // 수정 권한이 있는지 확인
-    private void validateEditAuth(AnswerVisibilityEditServiceRequest request, Answer answer) {
-        if (!answer.getUserId().getValue().equals(request.reqUserId())) {
-            throw AnswerEditNotAllowedException.EXCEPTION;
+    private void validateChangeAuth(String reqUserId, String authorId) {
+        if (!reqUserId.equals(authorId)) {
+            throw AnswerChangeNotAllowedException.EXCEPTION;
         }
     }
 

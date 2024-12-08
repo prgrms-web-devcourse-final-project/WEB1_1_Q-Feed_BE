@@ -13,17 +13,14 @@ import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.Nickname;
 import com.wsws.moduledomain.user.vo.UserId;
-
-import com.wsws.moduleinfra.repo.chat.ChatRoomRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.wsws.moduleapplication.chat.exception.ChatServiceErrorCode.CHATROOM_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -57,23 +54,21 @@ public class ChatRoomService {
 
     //채팅방 목록 조회
     public List<ChatRoomServiceResponse> getChatRooms(String userId) {
-        // 채팅방 목록을 가져옴
+
         List<ChatRoom> chatRooms = chatRoomRepository.findChatRooms(userId);
 
-        return chatRooms.stream().map(chatRoom -> {
-            // 상대방 사용자 가져오기
-            User otherUser = getOtherUser(chatRoom, userId);
+        // 상대방 사용자 정보
+        Map<Long, User> otherUserMap = getOtherUsersMap(chatRooms, userId);
 
-            // 마지막 메시지 가져오기
-            ChatMessage lastMessage = getLastMessage(chatRoom.getId());
+        // 각 채팅방에 대한 마지막 메시지
+        Map<Long, ChatMessage> lastMessageMap = getLastMessagesForChatRooms(chatRooms);
 
-            // 읽지 않은 메시지 개수 가져오기
-            long unreadCount = chatMessageRepository.countUnreadMessages(chatRoom.getId(), otherUser.getId().getValue());
+        // 읽지 않은 메시지 개수
+        Map<Long, Long> unreadCountMap = getUnreadCountsForChatRooms(chatRooms, userId);
 
-            return new ChatRoomServiceResponse(
-                    chatRoom, otherUser, lastMessage, unreadCount
-            );
-        }).collect(Collectors.toList());
+        return chatRooms.stream().map(chatRoom -> new ChatRoomServiceResponse(
+                chatRoom, otherUserMap.get(chatRoom.getId()), lastMessageMap.get(chatRoom.getId()), unreadCountMap.get(chatRoom.getId())
+        )).collect(Collectors.toList());
     }
 
     //채팅방 찾기
@@ -135,6 +130,30 @@ public class ChatRoomService {
         }
     }
 
+    // 상대방 정보 가져오기
+    private Map<Long, User> getOtherUsersMap(List<ChatRoom> chatRooms, String userId) {
+        Map<Long, User> otherUserMap = new HashMap<>();
+        for (ChatRoom chatRoom : chatRooms) {
+            otherUserMap.put(chatRoom.getId(), getOtherUser(chatRoom, userId));
+        }
+        return otherUserMap;
+    }
 
+    // 마지막 메시지 가져오기
+    private Map<Long, ChatMessage> getLastMessagesForChatRooms(List<ChatRoom> chatRooms) {
+        return chatRooms.stream()
+                .collect(Collectors.toMap(
+                        ChatRoom::getId,
+                        chatRoom -> getLastMessage(chatRoom.getId())
+                ));
+    }
+
+    // 읽지 않은 메시지 개수 가져오기
+    private Map<Long, Long> getUnreadCountsForChatRooms(List<ChatRoom> chatRooms, String userId) {
+        return chatRooms.stream()
+                .collect(Collectors.toMap(
+                        ChatRoom::getId,
+                        chatRoom -> chatMessageRepository.countUnreadMessages(chatRoom.getId(), userId)
+                ));
+    }
 }
-
