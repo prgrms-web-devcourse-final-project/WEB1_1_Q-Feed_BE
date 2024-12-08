@@ -1,4 +1,4 @@
-package com.wsws.moduledomain.recommendation;
+package com.wsws.moduledomain.follow.vo;
 
 import lombok.Value;
 

@@ -12,15 +12,15 @@ public record UserProfileApiResponse(
         int followingCount
 ) {
 
-    public UserProfileApiResponse(UserProfileResponse serviceResponse) {
+    public UserProfileApiResponse(UserProfileResponse serviceResponse, int followerCount, int followingCount) {
         this(
                 serviceResponse.userId(),
                 serviceResponse.email(),
                 serviceResponse.nickname(),
                 serviceResponse.profileImage(),
                 serviceResponse.description(),
-                serviceResponse.followerCount(),
-                serviceResponse.followingCount()
+                followerCount,
+                followingCount
         );
     }
 }
