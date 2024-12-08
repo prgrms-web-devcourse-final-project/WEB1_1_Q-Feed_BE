@@ -61,7 +61,9 @@ public class AuthService {
         // RefreshToken 저장 (7일 유효)
         authRepository.save(RefreshToken.create(refreshToken, LocalDateTime.now().plusDays(7)));
 
-        return new LoginServiceResponse(accessToken, refreshToken);
+
+
+        return new LoginServiceResponse(accessToken, refreshToken, user.getId().getValue());
     }
 
     //외부 로그인
@@ -90,7 +92,8 @@ public class AuthService {
         String refreshToken = tokenProvider.createRefreshToken(user.getId().getValue());
         authRepository.save(RefreshToken.create(refreshToken, LocalDateTime.now().plusDays(7)));
 
-        return new LoginServiceResponse(accessToken, refreshToken);
+
+        return new LoginServiceResponse(accessToken, refreshToken, user.getId().getValue());
     }
 
     // 로그아웃
@@ -100,7 +103,7 @@ public class AuthService {
     }
 
     // 토큰 재발급
-    public LoginServiceResponse reissueToken(String refreshToken) {
+    public TokenReissueAppDto reissueToken(String refreshToken) {
         // RefreshToken 확인
         RefreshToken rToken = authRepository.findByToken(refreshToken)
                 .orElseThrow(() -> InvalidRefreshTokenException.EXCEPTION);
@@ -118,7 +121,7 @@ public class AuthService {
         authRepository.deleteByToken(refreshToken);
         authRepository.save(RefreshToken.create(newRefreshToken, LocalDateTime.now().plusDays(7)));
 
-        return new LoginServiceResponse(newAccessToken, newRefreshToken);
+        return new TokenReissueAppDto(newAccessToken, newRefreshToken);
     }
 
     // 이메일 인증 코드 발송
