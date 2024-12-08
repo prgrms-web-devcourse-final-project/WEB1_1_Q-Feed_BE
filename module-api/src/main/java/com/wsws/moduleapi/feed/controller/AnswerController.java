@@ -178,7 +178,7 @@ public class AnswerController {
             @ApiResponse(responseCode = "409", description = "이미 답변을 작성한 적이 있는 질문 일 때", content = @Content)
     })
     public ResponseEntity<AnswerPostApiResponse> postAnswers(
-            @Valid @RequestBody AnswerPostApiRequest answerPostApiRequest
+            @Valid @ModelAttribute AnswerPostApiRequest answerPostApiRequest
             , @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         String userId = userPrincipal.getId(); // 사용자 아이디를 가져온다.
@@ -202,7 +202,7 @@ public class AnswerController {
     public ResponseEntity<MessageResponse> patchAnswer(
             @Parameter(description = "수정할 답변 ID") @PathVariable("answer-id") Long answerId,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @Valid @RequestBody AnswerPatchApiRequest answerPatchApiRequest) {
+            @Valid @ModelAttribute AnswerPatchApiRequest answerPatchApiRequest) {
         String userId = userPrincipal.getId();
 //        String userId = "user_id2";
         answerService.editAnswer(answerPatchApiRequest.toServiceDto(answerId, userId));
