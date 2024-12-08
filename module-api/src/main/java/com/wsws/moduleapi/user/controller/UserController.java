@@ -1,11 +1,7 @@
 package com.wsws.moduleapi.user.controller;
 
 import com.wsws.moduleapi.auth.dto.AuthResponse;
-import com.wsws.moduleapi.user.dto.UserProfileApiResponse;
-import com.wsws.moduleapplication.user.dto.PasswordChangeServiceDto;
-import com.wsws.moduleapplication.user.dto.RegisterUserRequest;
-import com.wsws.moduleapplication.user.dto.UpdateFcmTokenRequest;
-import com.wsws.moduleapplication.user.dto.UpdateProfileServiceDto;
+import com.wsws.moduleapplication.user.dto.*;
 import com.wsws.moduleapplication.user.service.UserQueryService;
 import com.wsws.moduleapplication.user.service.UserService;
 import com.wsws.modulesecurity.security.UserPrincipal;
@@ -45,9 +41,9 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음", content = @Content)
     })
     @GetMapping("/{userId}")
-    public ResponseEntity<UserProfileApiResponse> getUser(
+    public ResponseEntity<FullUserProfileResponse> getUser(
             @Parameter(description = "검색할 사용자의 ID") @PathVariable String userId) {
-        UserProfileApiResponse response = new UserProfileApiResponse(userQueryService.getUserProfile(userId));
+        FullUserProfileResponse response = userQueryService.getFullUserProfile(userId);
         return ResponseEntity.ok(response);
     }
 

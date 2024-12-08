@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 @EqualsAndHashCode
 @Getter
-
 public class Password {
     public static final String REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,20}";
     private static final Pattern PATTERN = Pattern.compile(REGEX); // 정적 필드로 사용 -> 대량 검증시 성능 저하 덜함

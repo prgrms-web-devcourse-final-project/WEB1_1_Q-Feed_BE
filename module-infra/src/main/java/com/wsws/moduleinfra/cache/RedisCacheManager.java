@@ -1,5 +1,6 @@
 package com.wsws.moduleinfra.cache;
 
+import com.wsws.moduledomain.cache.CacheManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
