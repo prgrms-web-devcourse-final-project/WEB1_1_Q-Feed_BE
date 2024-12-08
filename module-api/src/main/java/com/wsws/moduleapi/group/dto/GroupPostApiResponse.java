@@ -10,10 +10,9 @@ public record GroupPostApiResponse (
         String profile,
         String content,
         LocalDateTime createAt,
-        Long likeCount
-//        boolean hasReaction,
-//        Long reactionCount,
-//        Long commentCount
+        Long likeCount,
+        String userId
+
 ) {
     public GroupPostApiResponse(GroupPostServiceResponse serviceResponse) {
         this(
@@ -22,7 +21,9 @@ public record GroupPostApiResponse (
                 serviceResponse.profile(),
                 serviceResponse.content(),
                 serviceResponse.createAt(),
-                serviceResponse.likeCount());
+                serviceResponse.likeCount(),
+                serviceResponse.userId()
+        );
 
     }
 }

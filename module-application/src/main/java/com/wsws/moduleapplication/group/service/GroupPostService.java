@@ -50,7 +50,7 @@ public class GroupPostService {
     public void deleteGroupPost(Long groupPostId) {
         groupPostRepository.findById(groupPostId)
                 .ifPresentOrElse(
-                        groupPost -> groupPostRepository.delete(groupPostId), // 엔티티 삭제
+                        groupPost -> groupPostRepository.deleteById(groupPostId), // 엔티티 삭제
                         () -> {
                             throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
                         }

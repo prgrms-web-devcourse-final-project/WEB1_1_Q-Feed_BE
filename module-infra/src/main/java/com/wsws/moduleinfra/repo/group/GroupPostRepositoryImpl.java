@@ -43,12 +43,12 @@ public class GroupPostRepositoryImpl implements GroupPostRepository {
        return jpaGroupPostRepository.findByGroupId(groupId);
     }
 
-    @Override
-    public void delete(GroupPost groupPost) {
-        GroupPostEntity groupPostEntity = GroupPostMapper.toEntity(groupPost);
-        jpaGroupPostRepository.delete(groupPostEntity);
-
-    }
+//    @Override
+//    public void delete(GroupPost groupPost) {
+//        GroupPostEntity groupPostEntity = GroupPostMapper.toEntity(groupPost);
+//        jpaGroupPostRepository.delete(groupPostEntity);
+//
+//    }
 
     @Override
     public Optional<GroupPost> findById(Long groupPostId) {
@@ -76,6 +76,11 @@ public class GroupPostRepositoryImpl implements GroupPostRepository {
                 groupPost.getLikeCount() // 좋아요 수 업데이트
         );
 
+    }
+
+    @Override
+    public void deleteById(Long groupPostId) {
+        jpaGroupPostRepository.deleteById(groupPostId);
     }
 
 
