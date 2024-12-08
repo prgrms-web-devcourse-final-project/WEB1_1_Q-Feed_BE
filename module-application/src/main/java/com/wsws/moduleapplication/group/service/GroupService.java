@@ -124,6 +124,17 @@ public class GroupService {
         return new GroupDetailServiceResponse(groupDetailDto, groupMembers, groupPosts);
     }
 
+    //내가 참여중인 그룹 목록 조회
+    public List<GroupServiceResponse> getJoinedGroups(String userId){
+        List<GroupDto> groups = groupRepository.findJoinedGroupsByUserId(userId);
+
+        //domaindto->serviceresponse
+        return groups.stream()
+                .map(GroupServiceResponse::new)
+                .collect(Collectors.toList());
+    }
+
+
     private Group findGroupById(Long groupId) {
         return groupRepository.findById(GroupId.of(groupId))
                 .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));

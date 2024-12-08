@@ -42,4 +42,15 @@ public interface JpaGroupRepository extends JpaRepository<GroupEntity, Long> {
             "JOIN UserEntity u ON u.id = gm.userId " +
             "WHERE gm.group.groupId = :groupId")
     List<GroupMemberDto> findMembersByGroupId(Long groupId);
+
+    // 사용자가 참여한 그룹 목록 조회
+    @Query("SELECT new com.wsws.moduledomain.group.dto.GroupDto(" +
+            "g.groupId, g.url, g.groupName, g.description, g.isOpen, g.createdAt, COUNT(gm)) " +
+            "FROM GroupEntity g " +
+            "JOIN g.groupMembers gm " +
+            "WHERE gm.userId = :userId " +
+            "GROUP BY g.groupId " +
+            "ORDER BY g.createdAt DESC")
+    List<GroupDto> findJoinedGroupsByUserId(@Param("userId") String userId);
+
 }

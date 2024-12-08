@@ -26,4 +26,6 @@ public interface GroupRepository {
     Optional<GroupDetailDto> findGroupWithCategory(Long groupId);
 
     List<GroupMemberDto> findMembersByGroupId(Long groupId);
+
+    List<GroupDto> findJoinedGroupsByUserId(String userId);
 }

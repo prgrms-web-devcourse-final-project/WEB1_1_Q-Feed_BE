@@ -11,7 +11,6 @@ public record GroupApiResponse(
         String groupName,
         String description,
         boolean isOpen,
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         LocalDateTime createdAt,
         Long membersCount
 ) {

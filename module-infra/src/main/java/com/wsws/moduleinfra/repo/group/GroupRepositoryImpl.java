@@ -77,4 +77,9 @@ public class GroupRepositoryImpl implements GroupRepository {
         return jpaGroupRepository.findMembersByGroupId(groupId);
     }
 
+    @Override
+    public List<GroupDto> findJoinedGroupsByUserId(String userId) {
+        return jpaGroupRepository.findJoinedGroupsByUserId(userId);
+    }
+
 }
