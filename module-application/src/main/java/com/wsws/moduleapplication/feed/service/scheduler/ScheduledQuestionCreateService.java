@@ -29,8 +29,7 @@ public class ScheduledQuestionCreateService {
      * 매일 23시 30분에 질문을 생성
      */
 
-//    @Scheduled(cron = "0 30 23 * * ?", zone = "Asia/Seoul")
-    @Scheduled(cron = "*/30 * * * * ?", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 30 23 * * ?", zone = "Asia/Seoul")
     public void createQuestion() {
         int maxRetries = 10; // 최대 재시도 횟수
         int attempt = 0;
