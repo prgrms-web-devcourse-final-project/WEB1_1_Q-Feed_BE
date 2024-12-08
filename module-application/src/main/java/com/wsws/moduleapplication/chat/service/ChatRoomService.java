@@ -13,19 +13,14 @@ import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.Nickname;
 import com.wsws.moduledomain.user.vo.UserId;
-
-import com.wsws.moduleinfra.repo.chat.ChatRoomRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.wsws.moduleapplication.chat.exception.ChatServiceErrorCode.CHATROOM_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
