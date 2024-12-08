@@ -62,15 +62,17 @@ public class ChatMessageService {
         );
         chatMessageRepository.save(chatMessage);
 
+        // 해당 채팅방을 구독하도록 RedisSubscriber에 요청
+        redisSubscriber.subscribeToChatRoom(chatRoomId);
+        System.out.println("@@@@@@@@@@@@subscribeToChatRoom!!!!!");
+
         // Redis 발행
         ChatMessageDomainResponse response = ChatMessageDomainResponse.createFrom(chatMessage, user);
         String channel = "/sub/chat/" + chatRoomId;
 
         redisTemplate.convertAndSend(channel, response);
         System.out.println("@@@@@@@@@@@@convertAndSend!!!!!");
-        // 해당 채팅방을 구독하도록 RedisSubscriber에 요청
-        redisSubscriber.subscribeToChatRoom(chatRoomId);
-        System.out.println("@@@@@@@@@@@@subscribeToChatRoom!!!!!");
+
     }
 
     //채팅방의 메세지 조회
