@@ -12,7 +12,8 @@ public interface GroupPostRepository {
     void delete(Long groupPostId);
 //    Optional<GroupPostDetailDto> findById(Long groupPostId);
     List<GroupPostDto> findByGroupId(Long groupId);
-    void delete(GroupPost groupPost);
+//    void delete(GroupPost groupPost);
     Optional<GroupPost> findById(Long groupPostId);
     void edit(GroupPost groupPost);
+    void deleteById(Long groupPostId);
 }

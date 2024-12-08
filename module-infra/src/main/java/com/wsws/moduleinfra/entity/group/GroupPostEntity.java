@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -36,8 +38,8 @@ public class GroupPostEntity {
     @Column(name = "like_count", nullable = false)
     private long likeCount;
 
-//    @OneToMany(mappedBy = "groupPost", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<GroupComment> comments;
+    @OneToMany(mappedBy = "groupPost", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GroupCommentEntity> comments = new ArrayList<>();
 
 
         public static GroupPostEntity create(String content, Long groupId, String userId, String url, Long likeCount) {
@@ -54,5 +56,6 @@ public class GroupPostEntity {
     public void editEntity(long likeCount) {
             this.likeCount = likeCount;
     }
+
 
 }

@@ -6,17 +6,13 @@ import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.user.exception.NotLikedException;
 import com.wsws.moduleapplication.user.exception.ProfileImageProcessingException;
-import com.wsws.moduleapplication.user.exception.UserNotFoundException;
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.group.GroupPost;
 import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduledomain.user.Like;
-import com.wsws.moduledomain.user.User;
 import com.wsws.moduledomain.user.repo.LikeRepository;
-import com.wsws.moduledomain.user.repo.UserRepository;
 import com.wsws.moduledomain.user.vo.TargetType;
-import com.wsws.moduledomain.user.vo.UserId;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,7 +32,7 @@ public class GroupPostService {
     @Transactional
     public void createGroupPost(CreateGroupPostRequest request, Long groupId, String userId) {
         GroupPost post = GroupPost.create(
-                0L, groupId, request.content(),
+                null, groupId, request.content(),
                 processGroupPostImage(request.url()), userId, 0L
         );
         groupPostRepository.save(post);
@@ -51,10 +47,10 @@ public class GroupPostService {
 
     // 게시물 삭제
     @Transactional
-    public void deleteGroupPost(Long groupPostId, String userId) {
+    public void deleteGroupPost(Long groupPostId) {
         groupPostRepository.findById(groupPostId)
                 .ifPresentOrElse(
-                        groupPost -> groupPostRepository.delete(groupPostId), // 엔티티 삭제
+                        groupPost -> groupPostRepository.deleteById(groupPostId), // 엔티티 삭제
                         () -> {
                             throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
                         }
