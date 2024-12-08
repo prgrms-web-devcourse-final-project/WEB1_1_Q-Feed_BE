@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public record AnswerByUserGetApiResponse(
         Long answerId,
         LocalDateTime createdAt,
+        String answerContent,
         String questionContent,
         boolean visibility
 ) {
@@ -14,6 +15,7 @@ public record AnswerByUserGetApiResponse(
         return new AnswerByUserGetApiResponse(
                 serviceResponse.answerId(),
                 serviceResponse.createdAt(),
+                serviceResponse.answerContent(),
                 serviceResponse.questionContent(),
                 serviceResponse.visibility()
         );

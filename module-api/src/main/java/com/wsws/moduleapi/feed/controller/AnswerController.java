@@ -75,13 +75,13 @@ public class AnswerController {
             @ApiResponse(responseCode = "404", description = "대상 사용자를 찾을 수 없는 경우", content = @Content)
     })
     public ResponseEntity<AnswerListByUserGetApiResponse> getAnswersByUser(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
+//            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "찾고자하는 대상 사용자") @PathVariable("user-id") String targetId,
             @Parameter(description = "커서로 사용할 마지막 글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String answerCursor,
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size) {
 
-        String reqUserId = userPrincipal.getId();
-//                String reqUserId = "user_id1";
+//        String reqUserId = userPrincipal.getId();
+                String reqUserId = "user_id2";
         LocalDateTime parsedCursor = answerCursor != null ? LocalDateTime.parse(answerCursor) : LocalDateTime.now();
         AnswerFindByUserServiceRequest serviceRequest = new AnswerFindByUserServiceRequest(reqUserId, targetId, parsedCursor, size);
         AnswerListFindByUserServiceResponse serviceResponse = answerReadService.findAnswerListByUserWithCursor(serviceRequest);
