@@ -1,9 +1,10 @@
 package com.wsws.moduledomain.chat;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wsws.moduledomain.user.User;
 
 import java.time.LocalDateTime;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record ChatMessageDomainResponse(
         Long messageId,
         Long chatRoomId,
