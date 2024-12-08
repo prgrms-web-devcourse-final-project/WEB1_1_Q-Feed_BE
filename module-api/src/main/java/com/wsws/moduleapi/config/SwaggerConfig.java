@@ -5,8 +5,11 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Arrays;
 
 @Configuration
 public class SwaggerConfig {
@@ -35,6 +38,7 @@ public class SwaggerConfig {
                 .info(info)
                 .addSecurityItem(securityRequirement)
                 .components(new io.swagger.v3.oas.models.Components()
-                        .addSecuritySchemes(securitySchemeName, securityScheme));
+                        .addSecuritySchemes(securitySchemeName, securityScheme))
+                .servers(Arrays.asList(new Server().url("https://q-feed.n-e.kr")));
     }
 }
