@@ -5,7 +5,7 @@ import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentEditServi
 public record AnswerCommentPutApiRequest(
         String content
 ) {
-    public AnswerCommentEditServiceRequest toServiceDto(Long answerCommentId) {
-        return new AnswerCommentEditServiceRequest(answerCommentId, content);
+    public AnswerCommentEditServiceRequest toServiceDto(Long answerCommentId, String userId) {
+        return new AnswerCommentEditServiceRequest(userId, answerCommentId, content);
     }
 }

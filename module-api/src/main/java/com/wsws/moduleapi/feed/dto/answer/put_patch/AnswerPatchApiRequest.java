@@ -10,7 +10,7 @@ public record AnswerPatchApiRequest(
         @NotNull(message = "visibility는 필수값입니다.")
         Boolean visibility
 ) {
-        public AnswerEditServiceRequest toServiceDto(Long answerId) {
-                return new AnswerEditServiceRequest(answerId, content, image, visibility);
+        public AnswerEditServiceRequest toServiceDto(Long answerId, String userId) {
+                return new AnswerEditServiceRequest(answerId, userId, content, image, visibility);
         }
 }
