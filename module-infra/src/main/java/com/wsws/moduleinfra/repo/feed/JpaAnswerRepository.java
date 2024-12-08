@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface JpaAnswerRepository extends JpaRepository<AnswerEntity, Long> {
@@ -39,6 +40,11 @@ public interface JpaAnswerRepository extends JpaRepository<AnswerEntity, Long> {
     Long countByUserId(String userId);
     // 특정 userId를 가지고 visibility가 true인 답변의 갯수
     Long countByUserIdAndVisibilityTrue(String userId);
+
+    // 특정 사용자의 특정 질문에 대한 답변
+    @Query("SELECT a FROM AnswerEntity a WHERE a.userId = :userId AND a.questionEntity.id= :questionId")
+    Optional<AnswerEntity> findAnswerByUserIdAndQuestionId(String userId, Long questionId);
+
 
     @Query("""
             SELECT a 

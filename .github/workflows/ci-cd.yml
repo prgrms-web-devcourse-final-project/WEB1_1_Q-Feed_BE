@@ -5,7 +5,6 @@ on:
     branches:
       - main
       - develop
-      - feature/QFEED-129-additional-answer-api
 jobs:
   deploy:
     runs-on: ubuntu-latest

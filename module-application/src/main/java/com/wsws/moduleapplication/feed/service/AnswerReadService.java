@@ -115,6 +115,21 @@ public class AnswerReadService {
         return new AnswerCountByUserServiceResponse(answerCount);
     }
 
+    /**
+     * 현재 사용자의 오늘의 질문에 대한 답변
+     */
+    public Optional<AnswerFindByUserAndDailyQuestionServiceResponse> findAnswerByUserAndDailyQuestion(AnswerFindByUserAndDailyQuestionServiceRequest request) {
+
+        Optional<Answer> answer = answerRepository.findAnswerByUserIdAndQuestionId(request.reqUserId(), request.questionId());
+
+        return answer.map(a ->
+                new AnswerFindByUserAndDailyQuestionServiceResponse(
+                        a.getAnswerId().getValue(),
+                        a.getContent(),
+                        a.getCreatedAt()
+                )
+        );
+    }
 
 
 

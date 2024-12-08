@@ -1,10 +1,7 @@
 package com.wsws.moduleapi.feed.controller;
 
 import com.wsws.moduleapi.feed.dto.MessageResponse;
-import com.wsws.moduleapi.feed.dto.answer.get.AnswerCountByUserGetApiResponse;
-import com.wsws.moduleapi.feed.dto.answer.get.AnswerGetApiResponse;
-import com.wsws.moduleapi.feed.dto.answer.get.AnswerListByUserGetApiResponse;
-import com.wsws.moduleapi.feed.dto.answer.get.AnswerListGetApiResponse;
+import com.wsws.moduleapi.feed.dto.answer.get.*;
 import com.wsws.moduleapi.feed.dto.answer.post.AnswerPostApiRequest;
 import com.wsws.moduleapi.feed.dto.answer.post.AnswerPostApiResponse;
 import com.wsws.moduleapi.feed.dto.answer.put_patch.AnswerPatchApiRequest;
@@ -29,6 +26,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -110,6 +108,29 @@ public class AnswerController {
         AnswerCountByUserServiceResponse serviceResponse =
                 answerReadService.countAnswersByUser(new AnswerFindByUserServiceRequest(reqUserId, targetId, null, 0));
         return ResponseEntity.ok(AnswerCountByUserGetApiResponse.toApiResponse(serviceResponse));
+    }
+
+    /**
+     * 인증된 현재 사용자의 오늘의 질문에 대한 답변 조회
+     */
+    @GetMapping("/users/daily/{question-id}")
+    public ResponseEntity<AnswerByUserAndDailyQuestionGetApiResponse> getAnswerByDailyQuestionId(
+//            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("question-id") Long questionId
+    ) {
+//        String reqUserId = userPrincipal.getId();
+        String reqUserId = "user_id1";
+        AnswerFindByUserAndDailyQuestionServiceRequest serviceRequest =
+                new AnswerFindByUserAndDailyQuestionServiceRequest(reqUserId, questionId);
+        Optional<AnswerFindByUserAndDailyQuestionServiceResponse> serviceResponse =
+                answerReadService.findAnswerByUserAndDailyQuestion(serviceRequest);
+
+        // serviceResponse가 존재하면 200 OK와 함께 반환, 없으면 204 No Content 반환
+        return serviceResponse.map(response ->
+                ResponseEntity.ok(
+                        AnswerByUserAndDailyQuestionGetApiResponse.toApiResponse(response)
+                )
+        ).orElseGet(() -> ResponseEntity.noContent().build());
     }
 
 

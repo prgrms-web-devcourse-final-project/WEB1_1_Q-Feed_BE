@@ -73,6 +73,12 @@ public class AnswerRepositoryImpl implements AnswerRepository {
                 : jpaAnswerRepository.countByUserIdAndVisibilityTrue(userId); // 요청한 사용자의 질문이 아니면 visibility가 true인 Answer만
     }
 
+    @Override
+    public Optional<Answer> findAnswerByUserIdAndQuestionId(String userId, Long questionId) {
+        return jpaAnswerRepository.findAnswerByUserIdAndQuestionId(userId, questionId)
+                .map(AnswerEntityMapper::toDomain);
+    }
+
     /**
      * 답변 저장
      */

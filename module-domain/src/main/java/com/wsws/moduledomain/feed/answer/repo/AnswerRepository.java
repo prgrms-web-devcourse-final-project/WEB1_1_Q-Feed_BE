@@ -31,6 +31,11 @@ public interface AnswerRepository {
     Long countByUserId(String userId, boolean isMine);
 
     /**
+     * 특정 사용자의 특정 질문에 대한 답변
+     */
+    Optional<Answer> findAnswerByUserIdAndQuestionId(String userId, Long questionId);
+
+    /**
      * 답변 저장
      */
     Answer save(Answer answer);
