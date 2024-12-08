@@ -24,7 +24,6 @@ import java.util.*;
 @Slf4j
 public class QuestionGenerateClientImpl implements QuestionGenerateClient {
     private final ChatModel chatModel;
-    private final ChatOptions chatOptions;
 
     // 시스템 프롬프트
     private static final String SYSTEM_PROMPT = """ 
