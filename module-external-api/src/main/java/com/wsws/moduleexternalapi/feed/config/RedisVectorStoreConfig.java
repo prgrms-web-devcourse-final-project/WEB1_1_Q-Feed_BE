@@ -39,6 +39,6 @@ public class RedisVectorStoreConfig {
                 .withPrefix(redisPredix)
                 .build();
 
-        return new RedisVectorStore(config, embeddingModel, jedisPooled, false);
+        return new RedisVectorStore(config, embeddingModel, jedisPooled, true);
     }
 }
