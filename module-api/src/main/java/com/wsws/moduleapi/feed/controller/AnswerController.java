@@ -50,6 +50,7 @@ public class AnswerController {
     })
     public ResponseEntity<AnswerListGetApiResponse> getAnswerList(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(description = "답변을 조회할 카테고리 ID. 없을 시 전체 카테고리 조회로 처리") @RequestParam(value = "category-id", required = false)Long categoryId,
             @Parameter(description = "커서로 사용할 마지막 글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String answerCursor,
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size
     ) {
@@ -57,7 +58,7 @@ public class AnswerController {
         String userId = userPrincipal.getId();
 //        String reqUserId = "user_id1";
         LocalDateTime parsedCursor = answerCursor != null ? LocalDateTime.parse(answerCursor) : LocalDateTime.now();
-        AnswerListFindServiceResponse answers = answerReadService.findAnswerListWithCursor(new AnswerFindServiceRequest(userId, null, parsedCursor, size));
+        AnswerListFindServiceResponse answers = answerReadService.findAnswerListWithCursor(new AnswerFindServiceRequest(userId, null, categoryId, parsedCursor, size));
 
 
         return ResponseEntity.ok(AnswerListGetApiResponse.toApiResponse(answers));
@@ -66,7 +67,7 @@ public class AnswerController {
     /**
      * 특정 사용자의 답변 목록 조회
      */
-    @GetMapping("/{user-id}")
+    @GetMapping("/users/{user-id}")
     @Operation(summary = "특정 사용자의 답변 목록 조회", description = "특정 사용자 답변 목록을 조회합니다. " +
             "요청한 사람과 대상사용자가 같으면 모든 글, 다르면 visibility가 true인 글만 조회됩니다.")
     @ApiResponses(value = {
@@ -78,8 +79,9 @@ public class AnswerController {
             @Parameter(description = "찾고자하는 대상 사용자") @PathVariable("user-id") String targetId,
             @Parameter(description = "커서로 사용할 마지막 글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String answerCursor,
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size) {
+
         String reqUserId = userPrincipal.getId();
-        //        String reqUserId = "user_id1";
+//                String reqUserId = "user_id1";
         LocalDateTime parsedCursor = answerCursor != null ? LocalDateTime.parse(answerCursor) : LocalDateTime.now();
         AnswerFindByUserServiceRequest serviceRequest = new AnswerFindByUserServiceRequest(reqUserId, targetId, parsedCursor, size);
         AnswerListFindByUserServiceResponse serviceResponse = answerReadService.findAnswerListByUserWithCursor(serviceRequest);
@@ -90,7 +92,7 @@ public class AnswerController {
     /**
      * 특정 사용자의 답변 총 갯수
      */
-    @GetMapping("/{user-id}/count")
+    @GetMapping("/users/{user-id}/count")
     @Operation(summary = "특정 사용자의 답변 갯수 조회", description = "특정 사용자의 답변 갯수를 조회합니다. " +
             "요청한 사람과 대상사용자가 같으면 모든 글, 다르면 visibility가 true인 글만 조회됩니다.")
     @ApiResponses(value = {
@@ -131,7 +133,7 @@ public class AnswerController {
         LocalDateTime parsedCursor = commentCursor != null ? LocalDateTime.parse(commentCursor) : LocalDateTime.now();
 
         AnswerFindServiceResponse serviceResponse =
-                answerReadService.findOneAnswerWithCursor(new AnswerFindServiceRequest(userId, answerId, parsedCursor, size));
+                answerReadService.findOneAnswerWithCursor(new AnswerFindServiceRequest(userId, answerId, null, parsedCursor, size));
 
         return ResponseEntity.ok(AnswerGetApiResponse.toApiResponse(serviceResponse));
     }
