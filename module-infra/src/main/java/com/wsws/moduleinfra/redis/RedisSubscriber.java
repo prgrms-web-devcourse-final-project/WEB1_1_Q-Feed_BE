@@ -12,6 +12,7 @@ import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,9 @@ public class RedisSubscriber implements MessageListener {
     private final RedisMessageListenerContainer redisMessageListenerContainer;
 
     @Autowired
+    private MessageListenerAdapter messageListenerAdapter;
+
+    @Autowired
     public RedisSubscriber(@Qualifier("customRedisTemplateString") RedisTemplate<String, String> redisTemplate,
                            ObjectMapper objectMapper,
                            SimpMessageSendingOperations messagingTemplate, @Lazy RedisMessageListenerContainer redisMessageListenerContainer) {
@@ -32,6 +36,7 @@ public class RedisSubscriber implements MessageListener {
         this.objectMapper = objectMapper;
         this.messagingTemplate = messagingTemplate;
         this.redisMessageListenerContainer = redisMessageListenerContainer;
+
     }
 
     @Override
@@ -52,7 +57,8 @@ public class RedisSubscriber implements MessageListener {
     public void subscribeToChatRoom(Long chatRoomId) {
         System.out.println("@@@@@@@@@@@@채팅방 구독!!!!!");
         String channel = "/sub/chat/" + chatRoomId;
-        redisMessageListenerContainer.addMessageListener(this, new ChannelTopic(channel));
+        redisMessageListenerContainer.addMessageListener(messageListenerAdapter, new ChannelTopic(channel));
+        System.out.println("~~~~~~~~~~~~~~~채널 구독 완료!!");
     }
 
     // 구독을 해제하는 메소드 (선택 사항)
