@@ -14,7 +14,6 @@ public record GroupDetailApiResponse(
         String description,
         String adminId,
         LocalDateTime createdAt,
-        Boolean isOpen,
         List<GroupMemberApiResponse> members,
         List<GroupPostApiResponse> posts
 ) {
@@ -27,7 +26,6 @@ public record GroupDetailApiResponse(
                 serviceResponse.description(),
                 serviceResponse.adminId(),
                 serviceResponse.createdAt(),
-                serviceResponse.isOpen(),
                 serviceResponse.members().stream() // GroupMemberServiceResponse ->GroupMemberApiResponse
                         .map(GroupMemberApiResponse::new)
                         .collect(Collectors.toList()),

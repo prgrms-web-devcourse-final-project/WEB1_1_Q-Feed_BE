@@ -25,16 +25,16 @@ public class ScheduledQuestionUpdateService {
         while (attempt < maxRetries) {
             try {
                 attempt++;
-                log.info("스케줄링 작업 실행, 시도 횟수: {}", attempt);
+                log.info("질문 업데이트 스케줄링 작업 실행, 시도 횟수: {}", attempt);
 
                 // 질문 상태 업데이트 로직
                 questionAIService.updateQuestions();
 
                 // 성공하면 루프 종료
-                log.info("스케줄링 작업 완료, 시도 횟수: {}", attempt);
+                log.info("질문 업데이트 스케줄링 작업 완료, 시도 횟수: {}", attempt);
                 break;
             } catch (Exception e) {
-                log.error("스케줄링 작업 실패, 시도 횟수: {}, 에러: {}", attempt, e.getMessage());
+                log.error("질문 업데이트 스케줄링 작업 실패, 시도 횟수: {}, 에러: {}", attempt, e.getMessage());
 
                 // 마지막 시도에서 실패했을 때 추가 처리
                 if (attempt >= maxRetries) {
