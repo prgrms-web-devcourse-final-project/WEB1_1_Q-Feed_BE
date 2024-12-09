@@ -11,5 +11,6 @@ public record GroupDetailDto(
         String groupName,
         String description,
         String adminId,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        Boolean isOpen
 ) { }
