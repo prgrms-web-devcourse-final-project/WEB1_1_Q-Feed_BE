@@ -22,7 +22,7 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @GetMapping("/daily")
-    @Operation(summary = "질문 조회", description = "해당 카테고리의 오늘 생성된 질문을 조회합니다.")
+    @Operation(summary = "질문 조회", description = "해당 카테고리의 오늘 생성된 질문을 조회합니다")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "질문 조회 성공"),
             @ApiResponse(responseCode = "404", description = "없는 질문일 때", content = @Content)
