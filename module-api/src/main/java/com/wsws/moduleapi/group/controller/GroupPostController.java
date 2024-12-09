@@ -33,7 +33,7 @@ public class GroupPostController {
     @PostMapping("/{groupId}/posts")
     @Operation(summary = "게시글 생성", description = "특정 그룹에 새로운 게시글을 작성합니다.")
     public ResponseEntity<String> createGroupPost(
-            @ModelAttribute CreateGroupPostRequest request,
+            @RequestBody CreateGroupPostRequest request,
             @PathVariable Long groupId,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         return processAuthenticatedRequest(userPrincipal, userId -> {
