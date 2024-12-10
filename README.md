@@ -72,8 +72,8 @@
 
 ## ✅ 시퀀스 다이어그램
 
-### 카테고리별 질문 생성
-<img width="550" alt="image" src="https://github.com/user-attachments/assets/8fe526a8-6178-400e-a781-6c486863fb7b">
+### 생성형 AI 기반 카테고리별 질문 생성
+<img width="700" alt="image" src="https://github.com/user-attachments/assets/8fe526a8-6178-400e-a781-6c486863fb7b">
 
 ### 질문 상태 업데이트 
 <img width="550" alt="image" src="https://github.com/user-attachments/assets/6946ff57-f229-4149-80e5-53bc878ffb57">
