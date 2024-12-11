@@ -27,4 +27,9 @@ public interface LikeRepository {
      */
     List<Like> findByUserId(String userId);
 
+    /**
+     * 데이터베이스 즉시 반영하기
+     */
+    void flush();
+
 }

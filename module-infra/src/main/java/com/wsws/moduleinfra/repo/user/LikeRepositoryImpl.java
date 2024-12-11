@@ -46,4 +46,9 @@ public class LikeRepositoryImpl implements LikeRepository {
                 .map(LikeEntityMapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public void flush() {
+        jpaLikeUserRepository.flush();
+    }
 }
