@@ -30,7 +30,9 @@ public class ScheduledQuestionCreateService {
      */
 
     @Scheduled(cron = "0 30 23 * * ?", zone = "Asia/Seoul")
+//    @Scheduled(cron = "*/30 * * * * ?", zone = "Asia/Seoul")
     public void createQuestion() {
+        log.info("질문 생성 스케줄링 시작");
         int maxRetries = 10; // 최대 재시도 횟수
         int attempt = 0;
 
@@ -59,9 +61,10 @@ public class ScheduledQuestionCreateService {
                 }
                 log.info("모든 질문 생성완료.");
                 questionAIService.saveQuestions(questionTempStore);
+                log.info("질문 생성 스케줄링 성공");
                 break; // 성공 시 루프 종료
             } catch (Exception e) {
-                log.error("createQuestion 실패. 시도 횟수: {}", attempt, e);
+                log.error("질문 생성 스케줄링 실패. 시도 횟수: {}", attempt, e);
                 if (attempt >= maxRetries) {
                     log.error("모든 재시도가 실패했습니다.");
                     // TODO: 이메일로 알림

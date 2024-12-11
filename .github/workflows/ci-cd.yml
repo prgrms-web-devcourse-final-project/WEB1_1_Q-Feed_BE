@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - feature/QFEED-138-resolve-like-concurrency-issue
 jobs:
   deploy:
     runs-on: ubuntu-latest

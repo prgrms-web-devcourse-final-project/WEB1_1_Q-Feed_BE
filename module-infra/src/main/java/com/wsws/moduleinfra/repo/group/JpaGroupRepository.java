@@ -28,7 +28,7 @@ public interface JpaGroupRepository extends JpaRepository<GroupEntity, Long> {
     List<GroupDto> findByCategoryIdWithMemberCount(@Param("categoryId") Long categoryId, @Param("cursorCreatedAt") LocalDateTime cursor, Pageable pageable);
 
     @Query("SELECT new com.wsws.moduledomain.group.dto.GroupDetailDto(" +
-            "g.groupId,c.categoryName,g.url,g.groupName,g.description,g.adminId,g.createdAt,g.isOpen) " +
+            "g.groupId,c.categoryName,g.url,g.groupName,g.description,g.adminId,g.createdAt) " +
             "FROM GroupEntity g " +
             "JOIN CategoryEntity c ON c.id = g.categoryId " +
             "WHERE g.groupId = :groupId")

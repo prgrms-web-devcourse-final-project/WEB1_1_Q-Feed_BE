@@ -17,7 +17,6 @@ public record GroupDetailServiceResponse(
         String description,
         String adminId,
         LocalDateTime createdAt,
-        Boolean isOpen,
         List<GroupMemberServiceResponse> members,
         List<GroupPostServiceResponse> posts
 ) {
@@ -30,7 +29,6 @@ public record GroupDetailServiceResponse(
                 group.description(),
                 group.adminId(),
                 group.createdAt(),
-                group.isOpen(),
                 members.stream() // GroupMemberDto-> GroupMemberServiceResponse
                         .map(GroupMemberServiceResponse::new)
                         .collect(Collectors.toList()),
