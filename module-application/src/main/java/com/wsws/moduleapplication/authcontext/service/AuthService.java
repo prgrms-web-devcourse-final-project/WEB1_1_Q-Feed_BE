@@ -1,24 +1,24 @@
-package com.wsws.moduleapplication.auth.service;
+package com.wsws.moduleapplication.authcontext.service;
 
-import com.wsws.moduleapplication.auth.dto.*;
-import com.wsws.moduleapplication.auth.exception.EmailNotFoundException;
-import com.wsws.moduleapplication.auth.exception.InvalidVerificationCodeException;
-import com.wsws.moduleapplication.auth.exception.RefreshTokenExpiredException;
-import com.wsws.moduleapplication.user.dto.AuthServiceResponse;
-import com.wsws.moduledomain.auth.repo.EmailService;
-import com.wsws.moduledomain.auth.RefreshToken;
-import com.wsws.moduledomain.auth.repo.TokenProvider;
-import com.wsws.moduledomain.auth.exception.InvalidRefreshTokenException;
-import com.wsws.moduledomain.auth.repo.AuthRepository;
-import com.wsws.moduledomain.auth.repo.VerificationCodeStore;
-import com.wsws.moduledomain.user.PasswordEncoder;
-import com.wsws.moduledomain.user.User;
-import com.wsws.moduledomain.user.repo.SocialLoginRepository;
-import com.wsws.moduledomain.user.repo.SocialLoginService;
-import com.wsws.moduledomain.user.repo.UserRepository;
-import com.wsws.moduledomain.user.vo.Email;
-import com.wsws.moduledomain.user.vo.Nickname;
-import com.wsws.moduledomain.user.vo.SocialLoginInfo;
+import com.wsws.moduleapplication.authcontext.dto.*;
+import com.wsws.moduleapplication.authcontext.exception.EmailNotFoundException;
+import com.wsws.moduleapplication.authcontext.exception.InvalidVerificationCodeException;
+import com.wsws.moduleapplication.authcontext.exception.RefreshTokenExpiredException;
+import com.wsws.moduleapplication.authcontext.dto.AuthServiceResponse;
+import com.wsws.moduledomain.authcontext.auth.repo.EmailService;
+import com.wsws.moduledomain.authcontext.auth.RefreshToken;
+import com.wsws.moduledomain.authcontext.auth.repo.TokenProvider;
+import com.wsws.moduledomain.authcontext.exception.InvalidRefreshTokenException;
+import com.wsws.moduledomain.authcontext.auth.repo.AuthRepository;
+import com.wsws.moduledomain.authcontext.auth.repo.VerificationCodeStore;
+import com.wsws.moduledomain.usercontext.user.encoder.PasswordEncoder;
+import com.wsws.moduledomain.usercontext.user.aggregate.User;
+import com.wsws.moduledomain.authcontext.social.SocialLoginRepository;
+import com.wsws.moduledomain.authcontext.social.SocialLoginService;
+import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
+import com.wsws.moduledomain.usercontext.user.vo.Email;
+import com.wsws.moduledomain.usercontext.user.vo.Nickname;
+import com.wsws.moduledomain.authcontext.social.aggregate.SocialLogin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,22 +69,22 @@ public class AuthService {
     //외부 로그인
     public LoginServiceResponse socialLogin(String authorizationCode) {
         // 1.SocialLoginInfo 가져오기
-        SocialLoginInfo socialLoginInfo = socialLoginService.getSocialLoginInfo(authorizationCode);
+        SocialLogin socialLogin = socialLoginService.getSocialLoginInfo(authorizationCode);
 
         // 2. Provider와 ProviderId로 SocialLogin 조회
-        User user = userRepository.findByEmail(Email.from(socialLoginInfo.getEmail()))
+        User user = userRepository.findByEmail(Email.from(socialLogin.getEmail()))
                 .orElseGet(() -> userRepository.save(User.createSocialLoginUser( //save user에
-                        socialLoginInfo.getEmail(),
-                        socialLoginInfo.getNickname(),
-                        socialLoginInfo.getProfileImageUrl()
+                        socialLogin.getEmail(),
+                        socialLogin.getNickname(),
+                        socialLogin.getProfileImageUrl()
                 )));
 
         // 4. SocialLogin 정보 저장 (최초 로그인일 경우에만)
-        if (!socialLoginRepository.existsByProviderAndProviderId(socialLoginInfo.getProvider(), socialLoginInfo.getProviderId())) {
+        if (!socialLoginRepository.existsByProviderAndProviderId(socialLogin.getProvider(), socialLogin.getProviderId())) {
             socialLoginRepository.save(
-                    socialLoginInfo.getProvider(),
-                    socialLoginInfo.getProviderId(),
-                    user);
+                    socialLogin.getProvider(),
+                    socialLogin.getProviderId(),
+                    user.getId().getValue());
         }
 
         // 5. JWT 생성 및 반환
@@ -159,9 +159,13 @@ public class AuthService {
         sendEmailWithCode(dto.email(), subject, bodyTemplate, resetCode);
     }
 
+    //비밀번호 재설정 인증 코드 확인
+     public void checkVerficationPasswordResetCode(PasswordResetCheckDto dto){
+         verifyCodeAndDelete(PASSWORD_RESET_CODE_PREFIX, dto.email(), dto.code());
+     }
+
     // 비밀번호 재설정
     public void resetPassword(PasswordResetConfirmServiceDto dto) {
-        verifyCodeAndDelete(PASSWORD_RESET_CODE_PREFIX, dto.email(), dto.code());
 
         User user = findUserByEmail(dto.email());
 
