@@ -1,6 +1,6 @@
 package com.wsws.moduleapi.auth.dto;
 
-import com.wsws.moduleapplication.auth.dto.EmailVerificationCheckServiceDto;
+import com.wsws.moduleapplication.authcontext.dto.EmailVerificationCheckServiceDto;
 
 public record EmailVerificationCheckRequest(String email, String code) {
     public EmailVerificationCheckServiceDto toServiceDto() {

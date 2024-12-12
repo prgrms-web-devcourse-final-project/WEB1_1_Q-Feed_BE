@@ -1,6 +1,6 @@
 package com.wsws.modulesecurity.security;
 
-import com.wsws.moduledomain.user.User;
+import com.wsws.moduledomain.usercontext.user.aggregate.User;
 
 public class UserPrincipalMapper {
 

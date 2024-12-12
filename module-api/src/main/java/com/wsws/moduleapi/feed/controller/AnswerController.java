@@ -10,7 +10,7 @@ import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerCreateServiceRespon
 import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerVisibilityEditServiceRequest;
 import com.wsws.moduleapplication.feed.dto.answer.read.*;
 import com.wsws.moduleapplication.feed.service.AnswerReadService;
-import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
+import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.feed.service.AnswerService;
 import com.wsws.modulesecurity.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;

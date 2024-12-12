@@ -3,7 +3,7 @@ package com.wsws.moduledomain.feed.answer;
 import com.wsws.moduledomain.feed.answer.vo.AnswerId;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.question.vo.QuestionId;
-import com.wsws.moduledomain.user.vo.UserId;
+import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -49,9 +49,7 @@ tasks.withType(JavaCompile){
 
 sourceSets {
 	main {
-		java {
-			srcDirs += [querydslSrcDir] // Q 클래스를 소스셋에 추가
-		}
+		java.srcDirs += [querydslSrcDir]
 	}
 }
 

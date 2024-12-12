@@ -2,12 +2,11 @@ package com.wsws.moduledomain.group;
 
 import com.wsws.moduledomain.category.vo.CategoryId;
 import com.wsws.moduledomain.group.vo.GroupId;
-import com.wsws.moduledomain.user.vo.UserId;
+import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor

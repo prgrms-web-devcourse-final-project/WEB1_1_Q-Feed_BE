@@ -1,7 +1,7 @@
 package com.wsws.modulesecurity.crypto;
 
 
-import com.wsws.moduledomain.user.PasswordEncoder;
+import com.wsws.moduledomain.usercontext.user.encoder.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;

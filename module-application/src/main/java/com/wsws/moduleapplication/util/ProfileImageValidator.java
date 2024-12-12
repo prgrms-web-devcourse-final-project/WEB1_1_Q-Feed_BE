@@ -1,8 +1,8 @@
 package com.wsws.moduleapplication.util;
 
-import com.wsws.moduleapplication.user.exception.ProfileImageRequiredException;
-import com.wsws.moduleapplication.user.exception.ProfileImageTooLargeException;
-import com.wsws.moduleapplication.user.exception.UnsupportedImageFormatException;
+import com.wsws.moduleapplication.usercontext.user.exception.ProfileImageRequiredException;
+import com.wsws.moduleapplication.usercontext.user.exception.ProfileImageTooLargeException;
+import com.wsws.moduleapplication.usercontext.user.exception.UnsupportedImageFormatException;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ProfileImageValidator {
