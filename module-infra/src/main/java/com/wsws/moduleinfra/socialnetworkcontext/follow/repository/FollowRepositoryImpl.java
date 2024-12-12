@@ -1,7 +1,7 @@
 package com.wsws.moduleinfra.socialnetworkcontext.follow.repository;
 
 
-import com.wsws.moduledomain.follow.Follow;
+import com.wsws.moduledomain.follow.aggregate.Follow;
 import com.wsws.moduledomain.follow.repo.FollowRepository;
 import com.wsws.moduleinfra.socialnetworkcontext.follow.entity.FollowEntity;
 import com.wsws.moduleinfra.socialnetworkcontext.follow.entity.FollowEntityMapper;

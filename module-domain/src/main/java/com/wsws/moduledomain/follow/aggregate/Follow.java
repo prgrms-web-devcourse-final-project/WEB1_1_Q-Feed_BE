@@ -1,4 +1,4 @@
-package com.wsws.moduledomain.follow;
+package com.wsws.moduledomain.follow.aggregate;
 
 
 import com.wsws.moduledomain.follow.vo.FollowId;

@@ -1,6 +1,6 @@
 package com.wsws.moduledomain.follow.repo;
 
-import com.wsws.moduledomain.follow.Follow;
+import com.wsws.moduledomain.follow.aggregate.Follow;
 
 import java.util.List;
 import java.util.Optional;

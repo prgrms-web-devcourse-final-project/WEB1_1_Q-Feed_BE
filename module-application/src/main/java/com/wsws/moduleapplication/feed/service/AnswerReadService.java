@@ -10,7 +10,7 @@ import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.comment.repo.AnswerCommentRepository;
 import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
-import com.wsws.moduledomain.follow.Follow;
+import com.wsws.moduledomain.follow.aggregate.Follow;
 import com.wsws.moduledomain.follow.repo.FollowRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.usercontext.user.aggregate.User;
