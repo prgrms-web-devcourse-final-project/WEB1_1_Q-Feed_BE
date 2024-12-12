@@ -1,6 +1,6 @@
-package com.wsws.moduledomain.follow;
+package com.wsws.moduledomain.socialnetwork.follow;
 
-import com.wsws.moduledomain.follow.vo.UserRecommendation;
+import com.wsws.moduledomain.socialnetwork.follow.vo.UserRecommendation;
 
 import java.util.List;
 

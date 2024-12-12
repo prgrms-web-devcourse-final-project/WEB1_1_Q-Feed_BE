@@ -1,6 +1,6 @@
-package com.wsws.moduleinfra.usercontext.user;
+package com.wsws.moduleinfra.usercontext.user.repo;
 
-import com.wsws.moduleinfra.usercontext.entity.UserEntity;
+import com.wsws.moduleinfra.usercontext.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

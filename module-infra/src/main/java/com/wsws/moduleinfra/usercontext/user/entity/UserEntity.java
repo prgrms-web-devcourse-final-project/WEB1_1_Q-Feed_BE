@@ -1,4 +1,4 @@
-package com.wsws.moduleinfra.usercontext.entity;
+package com.wsws.moduleinfra.usercontext.user.entity;
 
 
 import com.wsws.moduledomain.usercontext.user.vo.UserRole;

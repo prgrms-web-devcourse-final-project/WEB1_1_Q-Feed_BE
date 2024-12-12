@@ -1,6 +1,6 @@
 package com.wsws.moduleinfra.socialnetworkcontext.follow.entity;
 
-import com.wsws.moduledomain.follow.vo.FollowId;
+import com.wsws.moduledomain.socialnetwork.follow.vo.FollowId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.EqualsAndHashCode;

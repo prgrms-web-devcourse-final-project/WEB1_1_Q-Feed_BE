@@ -3,7 +3,7 @@ package com.wsws.moduleinfra.socialnetworkcontext.interest.entity;
 import com.wsws.moduledomain.category.vo.CategoryId;
 import com.wsws.moduledomain.socialnetwork.interest.UserInterest;
 import com.wsws.moduleinfra.entity.CategoryEntity;
-import com.wsws.moduleinfra.usercontext.entity.UserEntity;
+import com.wsws.moduleinfra.usercontext.user.entity.UserEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

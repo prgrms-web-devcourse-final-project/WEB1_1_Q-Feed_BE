@@ -1,6 +1,6 @@
-package com.wsws.moduledomain.follow.repo;
+package com.wsws.moduledomain.socialnetwork.follow.repo;
 
-import com.wsws.moduledomain.follow.vo.FollowQueryResult;
+import com.wsws.moduledomain.socialnetwork.follow.vo.FollowQueryResult;
 
 
 import java.time.LocalDateTime;

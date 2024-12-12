@@ -1,7 +1,7 @@
-package com.wsws.moduledomain.follow.aggregate;
+package com.wsws.moduledomain.socialnetwork.follow.aggregate;
 
 
-import com.wsws.moduledomain.follow.vo.FollowId;
+import com.wsws.moduledomain.socialnetwork.follow.vo.FollowId;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

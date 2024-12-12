@@ -1,7 +1,7 @@
 package com.wsws.moduleinfra.entity.feed;
 
 import com.wsws.moduledomain.feed.like.TargetType;
-import com.wsws.moduleinfra.usercontext.entity.UserEntity;
+import com.wsws.moduleinfra.usercontext.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 

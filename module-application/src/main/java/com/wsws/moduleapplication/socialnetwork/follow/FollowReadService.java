@@ -1,7 +1,7 @@
 package com.wsws.moduleapplication.socialnetwork.follow;
 
 import com.wsws.moduleapplication.socialnetwork.follow.dto.FollowServiceResponseDto;
-import com.wsws.moduledomain.follow.repo.FollowReadRepository;
+import com.wsws.moduledomain.socialnetwork.follow.repo.FollowReadRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

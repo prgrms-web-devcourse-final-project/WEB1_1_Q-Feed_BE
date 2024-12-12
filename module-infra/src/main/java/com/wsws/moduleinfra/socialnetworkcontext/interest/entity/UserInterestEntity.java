@@ -2,7 +2,7 @@ package com.wsws.moduleinfra.socialnetworkcontext.interest.entity;
 
 
 import com.wsws.moduleinfra.entity.CategoryEntity;
-import com.wsws.moduleinfra.usercontext.entity.UserEntity;
+import com.wsws.moduleinfra.usercontext.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

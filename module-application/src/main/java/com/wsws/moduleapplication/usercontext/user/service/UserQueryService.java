@@ -6,7 +6,7 @@ import com.wsws.moduledomain.cache.CacheManager;
 import com.wsws.moduledomain.usercontext.user.aggregate.User;
 import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
 import com.wsws.moduledomain.usercontext.user.vo.UserId;
-import com.wsws.moduledomain.follow.repo.FollowReadRepository;
+import com.wsws.moduledomain.socialnetwork.follow.repo.FollowReadRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

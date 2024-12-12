@@ -4,8 +4,8 @@ package com.wsws.moduleinfra.socialnetworkcontext.follow.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import com.wsws.moduledomain.follow.repo.FollowReadRepository;
-import com.wsws.moduledomain.follow.vo.FollowQueryResult;
+import com.wsws.moduledomain.socialnetwork.follow.repo.FollowReadRepository;
+import com.wsws.moduledomain.socialnetwork.follow.vo.FollowQueryResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.wsws.moduleinfra.socialnetworkcontext.follow.entity.QFollowEntity.followEntity;
-import static com.wsws.moduleinfra.usercontext.entity.QUserEntity.userEntity;
+import static com.wsws.moduleinfra.usercontext.user.entity.QUserEntity.userEntity;
 
 
 @Repository

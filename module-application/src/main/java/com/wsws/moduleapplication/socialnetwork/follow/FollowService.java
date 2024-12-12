@@ -4,8 +4,8 @@ import com.wsws.moduleapplication.socialnetwork.follow.dto.FollowServiceRequestD
 import com.wsws.moduleapplication.socialnetwork.exception.AlreadyFollowedException;
 import com.wsws.moduleapplication.socialnetwork.exception.FollowNotFoundException;
 import com.wsws.moduleapplication.usercontext.user.exception.UserNotFoundException;
-import com.wsws.moduledomain.follow.aggregate.Follow;
-import com.wsws.moduledomain.follow.repo.FollowRepository;
+import com.wsws.moduledomain.socialnetwork.follow.aggregate.Follow;
+import com.wsws.moduledomain.socialnetwork.follow.repo.FollowRepository;
 import com.wsws.moduledomain.notification.Notification;
 import com.wsws.moduledomain.notification.repo.NotificationRepository;
 import com.wsws.moduledomain.usercontext.user.aggregate.User;

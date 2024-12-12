@@ -1,12 +1,12 @@
-package com.wsws.moduleinfra.usercontext.user;
+package com.wsws.moduleinfra.usercontext.user.repo;
 
 import com.wsws.moduledomain.usercontext.user.aggregate.User;
 import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
 import com.wsws.moduledomain.usercontext.user.vo.Email;
 import com.wsws.moduledomain.usercontext.user.vo.Nickname;
 import com.wsws.moduledomain.usercontext.user.vo.UserId;
-import com.wsws.moduleinfra.usercontext.entity.UserEntity;
-import com.wsws.moduleinfra.usercontext.entity.UserEntityMapper;
+import com.wsws.moduleinfra.usercontext.user.entity.UserEntity;
+import com.wsws.moduleinfra.usercontext.user.entity.UserEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

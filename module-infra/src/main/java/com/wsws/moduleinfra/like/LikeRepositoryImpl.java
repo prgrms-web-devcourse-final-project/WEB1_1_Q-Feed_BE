@@ -5,8 +5,8 @@ import com.wsws.moduledomain.feed.like.LikeRepository;
 import com.wsws.moduledomain.feed.like.TargetType;
 import com.wsws.moduleinfra.entity.feed.LikeEntity;
 import com.wsws.moduleinfra.entity.feed.LikeEntityMapper;
-import com.wsws.moduleinfra.usercontext.entity.UserEntity;
-import com.wsws.moduleinfra.usercontext.user.JpaUserRepository;
+import com.wsws.moduleinfra.usercontext.user.entity.UserEntity;
+import com.wsws.moduleinfra.usercontext.user.repo.JpaUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package com.wsws.moduledomain.follow.vo;
+package com.wsws.moduledomain.socialnetwork.follow.vo;
 
 import lombok.Value;
 

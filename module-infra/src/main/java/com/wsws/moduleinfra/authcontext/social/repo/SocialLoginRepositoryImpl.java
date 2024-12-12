@@ -3,8 +3,8 @@ package com.wsws.moduleinfra.authcontext.social.repo;
 import com.wsws.moduledomain.authcontext.social.SocialLoginRepository;
 import com.wsws.moduledomain.authcontext.social.aggregate.SocialLogin;
 import com.wsws.moduleinfra.authcontext.social.entity.SocialLoginEntity;
-import com.wsws.moduleinfra.usercontext.entity.UserEntity;
-import com.wsws.moduleinfra.usercontext.user.JpaUserRepository;
+import com.wsws.moduleinfra.usercontext.user.entity.UserEntity;
+import com.wsws.moduleinfra.usercontext.user.repo.JpaUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
