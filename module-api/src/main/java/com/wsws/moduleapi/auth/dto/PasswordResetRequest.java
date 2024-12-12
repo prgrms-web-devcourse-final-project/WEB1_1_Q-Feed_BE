@@ -1,9 +1,12 @@
 package com.wsws.moduleapi.auth.dto;
 
-import com.wsws.moduleapplication.auth.dto.PasswordResetRequestServiceDto;
+import com.wsws.moduleapplication.authcontext.dto.PasswordResetConfirmServiceDto;
 
-public record PasswordResetRequest(String email) {
-    public PasswordResetRequestServiceDto toServiceDto() {
-        return new PasswordResetRequestServiceDto(email);
+public record PasswordResetRequest(String email, String password) {
+
+    public PasswordResetConfirmServiceDto toServiceDto() {
+        return new PasswordResetConfirmServiceDto(email, password);
+
     }
+
 }
