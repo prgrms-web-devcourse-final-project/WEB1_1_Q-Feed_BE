@@ -2,8 +2,8 @@ package com.wsws.moduleinfra.socialnetworkcontext.recommendation;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.wsws.moduledomain.socialnetwork.follow.vo.UserRecommendation;
-import com.wsws.moduledomain.socialnetwork.follow.UserRecommendationRepository;
+import com.wsws.moduledomain.socialnetwork.recommendation.UserRecommendation;
+import com.wsws.moduledomain.socialnetwork.recommendation.UserRecommendationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

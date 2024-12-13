@@ -2,8 +2,8 @@ package com.wsws.moduleapplication.socialnetwork.recommendation;
 
 import com.wsws.moduleapplication.socialnetwork.recommendation.mapper.UserRecommendationMapper;
 import com.wsws.moduleapplication.socialnetwork.recommendation.dto.UserRecommendationResponse;
-import com.wsws.moduledomain.socialnetwork.follow.vo.UserRecommendation;
-import com.wsws.moduledomain.socialnetwork.follow.UserRecommendationRepository;
+import com.wsws.moduledomain.socialnetwork.recommendation.UserRecommendation;
+import com.wsws.moduledomain.socialnetwork.recommendation.UserRecommendationRepository;
 import com.wsws.moduledomain.socialnetwork.interest.UserInterestRepository;
 import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import lombok.RequiredArgsConstructor;

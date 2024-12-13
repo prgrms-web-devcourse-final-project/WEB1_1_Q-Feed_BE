@@ -4,7 +4,7 @@ package com.wsws.moduleinfra.socialnetworkcontext.follow.repository;
 import com.wsws.moduledomain.socialnetwork.follow.aggregate.Follow;
 import com.wsws.moduledomain.socialnetwork.follow.repo.FollowRepository;
 import com.wsws.moduleinfra.socialnetworkcontext.follow.entity.FollowEntity;
-import com.wsws.moduleinfra.socialnetworkcontext.follow.entity.FollowEntityMapper;
+import com.wsws.moduleinfra.socialnetworkcontext.follow.entity.mapper.FollowEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

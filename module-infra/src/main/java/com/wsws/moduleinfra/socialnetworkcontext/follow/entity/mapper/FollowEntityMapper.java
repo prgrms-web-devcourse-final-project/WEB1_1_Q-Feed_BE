@@ -1,7 +1,9 @@
-package com.wsws.moduleinfra.socialnetworkcontext.follow.entity;
+package com.wsws.moduleinfra.socialnetworkcontext.follow.entity.mapper;
 
 
 import com.wsws.moduledomain.socialnetwork.follow.aggregate.Follow;
+import com.wsws.moduleinfra.socialnetworkcontext.follow.entity.FollowEntity;
+import com.wsws.moduleinfra.socialnetworkcontext.follow.entity.FollowIdEmbeddable;
 
 public class FollowEntityMapper {
 

@@ -2,7 +2,7 @@ package com.wsws.moduleapplication.socialnetwork.recommendation.mapper;
 
 
 import com.wsws.moduleapplication.socialnetwork.recommendation.dto.UserRecommendationResponse;
-import com.wsws.moduledomain.socialnetwork.follow.vo.UserRecommendation;
+import com.wsws.moduledomain.socialnetwork.recommendation.UserRecommendation;
 
 import java.util.List;
 
