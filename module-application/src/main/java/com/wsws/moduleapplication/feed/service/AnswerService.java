@@ -115,7 +115,7 @@ public class AnswerService {
 
         createLike(request); // Like 객체 생성
 
-        Answer answer = answerRepository.findById(request.targetId())
+        Answer answer = answerRepository.findByIdWithLock(request.targetId())
                 .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
 
         answer.addLikeCount();// Answer의 likeCount 1증가
