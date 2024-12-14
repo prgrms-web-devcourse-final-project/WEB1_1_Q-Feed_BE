@@ -38,6 +38,7 @@ dependencies {
 	implementation 'software.amazon.awssdk:auth:2.20.89'
 	implementation 'software.amazon.awssdk:core:2.20.89'
 
+	// Redisson
 	implementation 'org.redisson:redisson-spring-boot-starter:3.39.0'
 
 }

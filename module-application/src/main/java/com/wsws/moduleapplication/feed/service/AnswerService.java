@@ -18,6 +18,7 @@ import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.user.Like;
 import com.wsws.moduledomain.user.repo.LikeRepository;
 import com.wsws.moduledomain.user.vo.TargetType;
+import com.wsws.moduleinfra.aop.DistributedLock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,6 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class AnswerService {
     private final AnswerRepository answerRepository;
     private final LikeRepository likeRepository;
@@ -38,6 +38,7 @@ public class AnswerService {
     /**
      * 답변 생성
      */
+    @Transactional
     public AnswerCreateServiceResponse createAnswer(AnswerCreateServiceRequest request) {
 
         validateAlreadyAnswerWritten(request.userId(), request.questionId()); // 이미 답변을 작성한 적이 있는 질문인지 검증
@@ -65,6 +66,7 @@ public class AnswerService {
     /**
      * 답변 수정
      */
+    @Transactional
     public void editAnswer(AnswerEditServiceRequest request) {
         String url = processImage(request.image()); // 이미지 처리
 
@@ -85,6 +87,7 @@ public class AnswerService {
     /**
      * 답변 공개여부 수정
      */
+    @Transactional
     public void editAnswerVisibility(AnswerVisibilityEditServiceRequest request) {
         Answer answer = answerRepository.findById(request.answerId())
                 .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
@@ -99,6 +102,7 @@ public class AnswerService {
     /**
      * 답변 삭제
      */
+    @Transactional
     public void deleteAnswer(Long answerId, String userId) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
@@ -111,12 +115,14 @@ public class AnswerService {
     /**
      * 좋아요 추가
      */
+    @DistributedLock(key = "'like-' + #request.targetType + '_' + #request.targetId")
     public void addLikeToAnswer(LikeServiceRequest request) {
 
         createLike(request); // Like 객체 생성
 
-        Answer answer = answerRepository.findByIdWithLock(request.targetId())
+        Answer answer = answerRepository.findById(request.targetId())
                 .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
+
 
         answer.addLikeCount();// Answer의 likeCount 1증가
 
@@ -128,6 +134,7 @@ public class AnswerService {
     /**
      * 좋아요 취소
      */
+    @Transactional
     public void cancelLikeToAnswer(LikeServiceRequest request) {
 
         Answer answer = answerRepository.findById(request.targetId())
