@@ -1,7 +1,9 @@
 package com.wsws.moduleinfra.usercontext.user.entity;
 
 import com.wsws.moduledomain.usercontext.user.aggregate.User;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserEntityMapper {
 
     public static User toDomain(UserEntity entity) {

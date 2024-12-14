@@ -5,6 +5,7 @@ import com.wsws.moduledomain.usercontext.user.vo.Email;
 import com.wsws.moduledomain.usercontext.user.vo.Nickname;
 import com.wsws.moduledomain.usercontext.user.vo.UserId;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository {
@@ -15,4 +16,7 @@ public interface UserRepository {
     void delete(User user);
     Boolean existsByEmail(Email email);
     Boolean existsByNickname(Nickname nickname);
+
+    List<User> findUsersByIds(List<String> userIds);
+
 }

@@ -63,4 +63,14 @@ public class UserInterestRepositoryImpl implements UserInterestRepository {
                 .where(userInterestEntity.user.id.eq(userId.getValue()))
                 .execute();
     }
+
+    @Override
+    public List<String> findUserIdsByInterestCategories(List<Long> categoryIds) {
+        return queryFactory
+                .select(userInterestEntity.user.id)
+                .from(userInterestEntity)
+                .where(userInterestEntity.category.id.in(categoryIds))
+                .distinct()
+                .fetch();
+    }
 }

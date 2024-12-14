@@ -1,5 +1,6 @@
 package com.wsws.moduleinfra.usercontext.user.repo;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wsws.moduledomain.usercontext.user.aggregate.User;
 import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
 import com.wsws.moduledomain.usercontext.user.vo.Email;
@@ -10,13 +11,18 @@ import com.wsws.moduleinfra.usercontext.user.entity.UserEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
+
+import static com.wsws.moduleinfra.usercontext.user.entity.QUserEntity.userEntity;
 
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
 
+    private final JPAQueryFactory queryFactory;
     private final JpaUserRepository jpaUserRepository;
+    private final UserEntityMapper userEntityMapper;
 
     @Override
     public Optional<User> findByEmail(Email email) {
@@ -56,5 +62,19 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Boolean existsByNickname(Nickname nickname) {
         return jpaUserRepository.existsByNickname(nickname.getValue());
+    }
+
+    @Override
+    public List<User> findUsersByIds(List<String> userIds) {
+        // UserEntity 조회
+        List<UserEntity> userEntities = queryFactory
+                .selectFrom(userEntity)
+                .where(userEntity.id.in(userIds))
+                .fetch();
+
+        // UserEntity를 도메인 객체로 변환
+        return userEntities.stream()
+                .map(UserEntityMapper::toDomain)
+                .toList();
     }
 }

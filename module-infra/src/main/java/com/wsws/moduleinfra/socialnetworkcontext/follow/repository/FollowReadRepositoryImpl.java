@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.wsws.moduleinfra.socialnetworkcontext.follow.entity.QFollowEntity.followEntity;
 import static com.wsws.moduleinfra.usercontext.user.entity.QUserEntity.userEntity;
@@ -74,5 +76,20 @@ public class FollowReadRepositoryImpl implements FollowReadRepository {
         return (int) queryFactory.selectFrom(followEntity)
                 .where(followEntity.id.followerId.eq(userId))
                 .fetchCount();
+    }
+
+    @Override
+    public Map<String, Long> getFollowerCounts(List<String> userIds) {
+        return queryFactory
+                .select(followEntity.id.followeeId, followEntity.id.followerId.count())
+                .from(followEntity)
+                .where(followEntity.id.followeeId.in(userIds))
+                .groupBy(followEntity.id.followeeId)
+                .fetch()
+                .stream()
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(0, String.class), // followeeId
+                        tuple -> tuple.get(1, Long.class)  // followerCount
+                ));
     }
 }
