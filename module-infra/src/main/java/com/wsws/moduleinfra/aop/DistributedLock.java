@@ -18,15 +18,15 @@ public @interface DistributedLock {
     /**
      * 락 시간 단위
      */
-    TimeUnit timeUnit() default TimeUnit.SECONDS;
+    TimeUnit timeUnit() default TimeUnit.MILLISECONDS;
 
     /**
      * 락을 기다리는 시간
      */
-    long waitTime() default 5L;
+    long waitTime() default 500L;
 
     /**
      * 락 임대 시간
      */
-    long leaseTime() default 3L;
+    long leaseTime() default 300L;
 }
