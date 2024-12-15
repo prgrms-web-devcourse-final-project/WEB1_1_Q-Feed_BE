@@ -6,7 +6,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 @Entity
-@Table(name = "Likes")
+@Table(
+        name = "Likes",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"targetId", "user_id"})
+        }
+)
 @Getter
 public class LikeEntity {
     @Id @GeneratedValue

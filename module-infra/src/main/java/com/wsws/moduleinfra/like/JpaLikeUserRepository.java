@@ -27,4 +27,7 @@ public interface JpaLikeUserRepository extends JpaRepository<LikeEntity, Long> {
      */
     @Query("SELECT l FROM LikeEntity l WHERE l.userEntity.id = :userId")
     List<LikeEntity> findByUserId(String userId);
+
+    @Override
+    void flush();
 }
