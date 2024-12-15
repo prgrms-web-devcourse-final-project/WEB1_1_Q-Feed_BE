@@ -1,6 +1,6 @@
 package com.wsws.moduledomain.feed.comment.vo;
 
-import com.wsws.moduledomain.user.vo.LikeTargetId;
+import com.wsws.moduledomain.feed.like.LikeTargetId;
 import lombok.Getter;
 
 @Getter

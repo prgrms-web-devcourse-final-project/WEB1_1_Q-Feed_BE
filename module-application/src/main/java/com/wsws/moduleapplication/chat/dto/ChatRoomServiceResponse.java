@@ -2,7 +2,7 @@ package com.wsws.moduleapplication.chat.dto;
 
 import com.wsws.moduledomain.chat.ChatMessage;
 import com.wsws.moduledomain.chat.ChatRoom;
-import com.wsws.moduledomain.user.User;
+import com.wsws.moduledomain.usercontext.user.aggregate.User;
 
 import java.time.LocalDateTime;
 

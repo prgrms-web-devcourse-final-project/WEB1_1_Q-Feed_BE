@@ -1,7 +1,7 @@
 package com.wsws.moduleexternalapi.kakao;
 
-import com.wsws.moduledomain.user.repo.SocialLoginService;
-import com.wsws.moduledomain.user.vo.SocialLoginInfo;
+import com.wsws.moduledomain.authcontext.social.SocialLoginService;
+import com.wsws.moduledomain.authcontext.social.aggregate.SocialLogin;
 import com.wsws.moduleexternalapi.kakao.dto.KakaoProfileResponse;
 import com.wsws.moduleexternalapi.kakao.dto.KakaoTokenResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class KakaoSocialLoginService implements SocialLoginService {
     private String kakaoClientId;
 
     @Override
-    public SocialLoginInfo getSocialLoginInfo(String authorizationCode) {
+    public SocialLogin getSocialLoginInfo(String authorizationCode) {
         KakaoTokenResponse tokenResponse = kakaoAuthClient.getToken(
                 kakaoClientId,
                 kakaoRedirectUri,
@@ -32,7 +32,7 @@ public class KakaoSocialLoginService implements SocialLoginService {
 
         KakaoProfileResponse profile = kakaoProfileClient.getUserInfo("Bearer " + tokenResponse.getAccess_token());
 
-        return new SocialLoginInfo(
+        return  SocialLogin.create(
                 "kakao",
                 profile.getId(),
                 profile.getKakao_account().getEmail(),

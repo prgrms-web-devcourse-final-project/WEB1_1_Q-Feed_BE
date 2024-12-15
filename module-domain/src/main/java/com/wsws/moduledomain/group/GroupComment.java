@@ -1,7 +1,7 @@
 package com.wsws.moduledomain.group;
 
 
-import com.wsws.moduledomain.user.vo.UserId;
+import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

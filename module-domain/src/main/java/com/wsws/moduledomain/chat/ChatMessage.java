@@ -1,10 +1,7 @@
 package com.wsws.moduledomain.chat;
 
-import com.wsws.moduledomain.chat.exception.SelfSelectionNotAllowedException;
-import com.wsws.moduledomain.chat.exception.UrlRequiredException;
 import com.wsws.moduledomain.chat.vo.Content;
-import com.wsws.moduledomain.user.vo.UserId;
-import lombok.AccessLevel;
+import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

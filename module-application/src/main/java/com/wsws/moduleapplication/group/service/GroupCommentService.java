@@ -2,16 +2,16 @@ package com.wsws.moduleapplication.group.service;
 
 
 import com.wsws.moduleapplication.group.dto.CreateGroupCommentRequest;
-import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
-import com.wsws.moduleapplication.user.exception.AlreadyLikedException;
-import com.wsws.moduleapplication.user.exception.NotLikedException;
+import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
+import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
+import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
 import com.wsws.moduledomain.group.GroupComment;
 import com.wsws.moduledomain.group.GroupPost;
 import com.wsws.moduledomain.group.repo.GroupCommentRepository;
 import com.wsws.moduledomain.group.repo.GroupPostRepository;
-import com.wsws.moduledomain.user.Like;
-import com.wsws.moduledomain.user.repo.LikeRepository;
-import com.wsws.moduledomain.user.vo.TargetType;
+import com.wsws.moduledomain.feed.like.Like;
+import com.wsws.moduledomain.feed.like.LikeRepository;
+import com.wsws.moduledomain.feed.like.TargetType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

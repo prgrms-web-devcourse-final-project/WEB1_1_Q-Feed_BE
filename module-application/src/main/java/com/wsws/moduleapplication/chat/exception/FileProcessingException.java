@@ -1,7 +1,6 @@
 package com.wsws.moduleapplication.chat.exception;
 
 
-import com.wsws.moduleapplication.user.exception.UserServiceErrorCode;
 import com.wsws.modulecommon.exception.ApplicationException;
 
 public class FileProcessingException extends ApplicationException {

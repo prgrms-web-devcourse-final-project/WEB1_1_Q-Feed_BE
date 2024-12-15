@@ -1,6 +1,6 @@
 package com.wsws.modulesecurity.security;
 
-import com.wsws.moduledomain.auth.repo.TokenProvider;
+import com.wsws.moduledomain.authcontext.auth.repo.TokenProvider;
 import com.wsws.modulesecurity.exception.InvalidTokenException;
 import com.wsws.modulesecurity.exception.TokenExpiredException;
 import io.jsonwebtoken.Claims;

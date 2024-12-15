@@ -6,7 +6,7 @@ import com.wsws.moduleapi.feed.dto.answer_comment.AnswerCommentPostApiResponse;
 import com.wsws.moduleapi.feed.dto.answer_comment.AnswerCommentPutApiRequest;
 import com.wsws.moduleapplication.feed.dto.answer_comment.AnswerCommentCreateServiceResponse;
 import com.wsws.moduleapplication.feed.service.AnswerCommentService;
-import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
+import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
 import com.wsws.modulesecurity.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

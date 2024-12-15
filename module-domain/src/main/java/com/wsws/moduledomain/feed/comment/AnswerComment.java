@@ -2,14 +2,10 @@ package com.wsws.moduledomain.feed.comment;
 
 import com.wsws.moduledomain.feed.answer.vo.AnswerId;
 import com.wsws.moduledomain.feed.comment.vo.AnswerCommentId;
-import com.wsws.moduledomain.user.Like;
-import com.wsws.moduledomain.user.vo.UserId;
+import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import lombok.Getter;
-import org.checkerframework.checker.units.qual.A;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 public class AnswerComment {

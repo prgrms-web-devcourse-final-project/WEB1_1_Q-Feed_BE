@@ -1,14 +1,11 @@
 package com.wsws.moduleapi.auth.controller;
 
 import com.wsws.moduleapi.auth.dto.*;
-import com.wsws.moduleapplication.auth.dto.LoginServiceResponse;
-import com.wsws.moduleapplication.auth.dto.TokenReissueAppDto;
-import com.wsws.moduleapplication.auth.service.AuthService;
+import com.wsws.moduleapplication.authcontext.dto.LoginServiceResponse;
+import com.wsws.moduleapplication.authcontext.dto.PasswordResetCheckDto;
+import com.wsws.moduleapplication.authcontext.dto.TokenReissueAppDto;
+import com.wsws.moduleapplication.authcontext.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,14 +45,23 @@ public class AuthController {
 
     @Operation(summary = "비밀번호 재설정 요청", description = "사용자가 비밀번호 재설정을 위해 인증 코드를 요청합니다.")
     @PostMapping("/reset-password/request")
-    public ResponseEntity<AuthResponse> requestPasswordReset(@RequestBody PasswordResetRequest request) {
+    public ResponseEntity<AuthResponse> requestPasswordReset(@RequestBody PasswordResetEmailRequest request) {
         authService.sendPasswordResetCode(request.toServiceDto());
         return ResponseEntity.ok(new AuthResponse("비밀번호 재설정 인증번호가 발송되었습니다"));
     }
 
-    @Operation(summary = "비밀번호 재설정 확인", description = "사용자가 비밀번호 재설정을 완료합니다.")
+    //비밀번호 재설정 코드 확인
+    @Operation(summary = "비밀번호 재설정 코드 확인", description = "사용자가 입력한 비밀번호 재설정 코드를 확인합니다.")
     @PostMapping("/reset-password/confirm")
-    public ResponseEntity<AuthResponse> confirmPasswordReset(@RequestBody PasswordResetConfirmRequest request) {
+    public ResponseEntity<AuthResponse> confirmPasswordReset(@RequestBody PasswordResetCheckDto request) {
+        authService.checkVerficationPasswordResetCode(request);
+        return ResponseEntity.ok(new AuthResponse("인증번호가 확인되었습니다"));
+    }
+
+    //비밀번호 재설정
+    @Operation(summary = "비밀번호 재설정", description = "새 비밀번호를 입력하여 비밀번호를 초기화 합니다. ")
+    @PostMapping("/reset-password")
+    public ResponseEntity<AuthResponse> resetPassword(@RequestBody PasswordResetRequest request) {
         authService.resetPassword(request.toServiceDto());
         return ResponseEntity.ok(new AuthResponse("비밀번호가 성공적으로 재설정되었습니다"));
     }

@@ -1,9 +1,9 @@
 package com.wsws.moduleapi.user.controller;
 
 import com.wsws.moduleapi.auth.dto.AuthResponse;
-import com.wsws.moduleapplication.user.dto.*;
-import com.wsws.moduleapplication.user.service.UserQueryService;
-import com.wsws.moduleapplication.user.service.UserService;
+import com.wsws.moduleapplication.usercontext.user.dto.*;
+import com.wsws.moduleapplication.usercontext.user.service.UserQueryService;
+import com.wsws.moduleapplication.usercontext.user.service.UserService;
 import com.wsws.modulesecurity.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

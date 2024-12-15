@@ -1,11 +1,6 @@
 package com.wsws.moduleinfra.entity.chat;
 
-import com.wsws.moduledomain.chat.ChatMessage;
-import com.wsws.moduledomain.chat.ChatRoom;
 import com.wsws.moduledomain.chat.MessageType;
-import com.wsws.moduledomain.chat.exception.UrlRequiredException;
-import com.wsws.moduledomain.user.vo.UserId;
-import com.wsws.moduledomain.chat.vo.Content;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

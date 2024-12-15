@@ -3,7 +3,7 @@ package com.wsws.moduleapi.group.controller;
 import com.wsws.moduleapi.group.dto.GroupPostApiResponse;
 import com.wsws.moduleapplication.group.dto.CreateGroupPostRequest;
 import com.wsws.moduleapplication.group.service.GroupPostService;
-import com.wsws.moduleapplication.user.dto.LikeServiceRequest;
+import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
 import com.wsws.modulesecurity.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
