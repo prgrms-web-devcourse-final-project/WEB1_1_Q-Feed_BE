@@ -41,6 +41,12 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     }
 
     @Override
+    public Optional<Answer> findByIdWithLock(Long id) {
+        return jpaAnswerRepository.findByIdWithLock(id)
+                .map(AnswerEntityMapper::toDomain);
+    }
+
+    @Override
     public List<Answer> findAllByCategoryIdWithCursor(LocalDateTime cursor, int size, Long categoryId) {
         Pageable pageable = PageRequest.of(0, size);
         return categoryId == null

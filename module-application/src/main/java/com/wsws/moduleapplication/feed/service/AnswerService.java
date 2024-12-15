@@ -18,7 +18,9 @@ import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.user.Like;
 import com.wsws.moduledomain.user.repo.LikeRepository;
 import com.wsws.moduledomain.user.vo.TargetType;
+import com.wsws.moduleinfra.aop.DistributedLock;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +29,6 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class AnswerService {
     private final AnswerRepository answerRepository;
     private final LikeRepository likeRepository;
@@ -37,6 +38,7 @@ public class AnswerService {
     /**
      * 답변 생성
      */
+    @Transactional
     public AnswerCreateServiceResponse createAnswer(AnswerCreateServiceRequest request) {
 
         validateAlreadyAnswerWritten(request.userId(), request.questionId()); // 이미 답변을 작성한 적이 있는 질문인지 검증
@@ -64,6 +66,7 @@ public class AnswerService {
     /**
      * 답변 수정
      */
+    @Transactional
     public void editAnswer(AnswerEditServiceRequest request) {
         String url = processImage(request.image()); // 이미지 처리
 
@@ -84,6 +87,7 @@ public class AnswerService {
     /**
      * 답변 공개여부 수정
      */
+    @Transactional
     public void editAnswerVisibility(AnswerVisibilityEditServiceRequest request) {
         Answer answer = answerRepository.findById(request.answerId())
                 .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
@@ -98,6 +102,7 @@ public class AnswerService {
     /**
      * 답변 삭제
      */
+    @Transactional
     public void deleteAnswer(Long answerId, String userId) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
@@ -110,6 +115,7 @@ public class AnswerService {
     /**
      * 좋아요 추가
      */
+    @DistributedLock(key = "'like-' + #request.targetType + '_' + #request.targetId")
     public void addLikeToAnswer(LikeServiceRequest request) {
 
         createLike(request); // Like 객체 생성
@@ -117,20 +123,18 @@ public class AnswerService {
         Answer answer = answerRepository.findById(request.targetId())
                 .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
 
+
         answer.addLikeCount();// Answer의 likeCount 1증가
 
         // 수정 반영
-        try {
-            answerRepository.edit(answer);
-        } catch (RuntimeException e) {
-            throw AnswerNotFoundException.EXCEPTION;
-        }
+        answerRepository.edit(answer);
 
     }
 
     /**
      * 좋아요 취소
      */
+    @Transactional
     public void cancelLikeToAnswer(LikeServiceRequest request) {
 
         Answer answer = answerRepository.findById(request.targetId())
@@ -162,8 +166,8 @@ public class AnswerService {
         }
         return null; // 이미지가 없는 경우
     }
-    // Like 저장 생성 및 저장
 
+    // Like 저장 생성 및 저장
     private void createLike(LikeServiceRequest request) {
 
         if (isAlreadyLike(request.targetId(), request.userId(), TargetType.valueOf(request.targetType()))) // 좋아요를 누른적이 있다면 예외
@@ -176,10 +180,16 @@ public class AnswerService {
                 request.targetId(),
                 request.userId()
         );
-        likeRepository.save(like);
-    }
-    // Like 삭제
 
+        try {
+            likeRepository.save(like);
+            likeRepository.flush(); // 예외처리를 위한 flush
+        } catch (DataIntegrityViolationException e) { // 유니크 제약조건 처리
+            throw AlreadyLikedException.EXCEPTION;
+        }
+    }
+
+    // Like 삭제
     private void deleteLike(LikeServiceRequest request) {
         if (!isAlreadyLike(request.targetId(), request.userId(), TargetType.valueOf(request.targetType()))) // 좋아요를 누른적이 없다면 예외
             throw NotLikedException.EXCEPTION;
@@ -188,7 +198,6 @@ public class AnswerService {
     }
 
     // 같은 글에 좋아요를 누른적이 있는지 확인
-
     private boolean isAlreadyLike(Long targetId, String userId, TargetType targetType) {
         return likeRepository.existsByTargetIdAndUserIdAndTargetType(targetId, userId, targetType);
     }
@@ -202,7 +211,7 @@ public class AnswerService {
 
     // 이미 답변을 작성한 적이 있는 질문인지 확인
     private void validateAlreadyAnswerWritten(String userId, Long questionId) {
-        if(answerRepository.existsByUserIdAndQuestionId(userId, questionId)) {
+        if (answerRepository.existsByUserIdAndQuestionId(userId, questionId)) {
             throw AlreadyAnswerWrittenException.EXCEPTION;
         }
     }

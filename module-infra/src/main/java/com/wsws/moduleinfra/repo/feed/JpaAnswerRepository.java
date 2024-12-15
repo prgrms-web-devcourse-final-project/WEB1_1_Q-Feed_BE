@@ -3,8 +3,10 @@ package com.wsws.moduleinfra.repo.feed;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +16,11 @@ import java.util.Optional;
 
 @Repository
 public interface JpaAnswerRepository extends JpaRepository<AnswerEntity, Long> {
+
+    // 락을 걸고 해당 Answer 가져오기
+    @Lock(value = LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT a FROM AnswerEntity a WHERE a.id = :id")
+    Optional<AnswerEntity> findByIdWithLock(Long id);
 
     // 카테고리 상관없이 답변 찾기
     @Query("""

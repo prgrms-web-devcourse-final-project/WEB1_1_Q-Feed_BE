@@ -37,6 +37,10 @@ dependencies {
 	implementation 'software.amazon.awssdk:s3:2.20.89'
 	implementation 'software.amazon.awssdk:auth:2.20.89'
 	implementation 'software.amazon.awssdk:core:2.20.89'
+
+	// Redisson
+	implementation 'org.redisson:redisson-spring-boot-starter:3.39.0'
+
 }
 
 // QueryDSL 소스 생성 디렉토리

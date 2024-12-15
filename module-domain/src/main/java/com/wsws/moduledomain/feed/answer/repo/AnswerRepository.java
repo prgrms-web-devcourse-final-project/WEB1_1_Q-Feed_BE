@@ -16,6 +16,11 @@ public interface AnswerRepository {
     Optional<Answer> findById(Long id);
 
     /**
+     * 답변을 Id를 기준으로 찾고 해당 답변 락 걸기
+     */
+    Optional<Answer> findByIdWithLock(Long id);
+
+    /**
      * 답변 리스트를 페이징 해서 찾기
      */
     List<Answer> findAllByCategoryIdWithCursor(LocalDateTime cursor, int size, Long categoryId);
