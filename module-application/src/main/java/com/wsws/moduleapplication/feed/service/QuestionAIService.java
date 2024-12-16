@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class QuestionAIService {
                             null,
                             questionTempStore.get(categoryName),
                             QuestionStatus.CREATED,
-                            LocalDateTime.now(),
+                            LocalDate.now().plusDays(1),
                             category.getId().getValue()
                     )
             );
@@ -61,6 +62,18 @@ public class QuestionAIService {
 
     @Transactional
     public void updateQuestions() {
+        List<Question> dailyQuestions = questionRepository.findByQuestionStatus(QuestionStatus.CREATED);
+
+        // CREATED 상태 질문이 없다는 것은 질문 생성이 실패했다는 뜻이므로 갱신 작업을 진행하면 안됨.
+        if(dailyQuestions.isEmpty()) return;
+
+        // 오늘 질문들 활성화
+        dailyQuestions
+                .forEach(question -> {
+                    question.activateQuestion();
+                    questionRepository.edit(question);
+                });
+
         // 어제 질문들 비활성화
         questionRepository.findByQuestionStatus(QuestionStatus.ACTIVATED)
                 .forEach(question -> {
@@ -68,12 +81,6 @@ public class QuestionAIService {
                     questionRepository.edit(question);
                 });
 
-        // 오늘 질문들 활성화
-        questionRepository.findByQuestionStatus(QuestionStatus.CREATED)
-                .forEach(question -> {
-                    question.activateQuestion();
-                    questionRepository.edit(question);
-                });
     }
 
     public List<String> findSimilarText(String question) {

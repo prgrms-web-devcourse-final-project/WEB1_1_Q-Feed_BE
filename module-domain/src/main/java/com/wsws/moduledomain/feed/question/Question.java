@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,16 +15,16 @@ public class Question {
     private QuestionId questionId;
     private String content;
     private QuestionStatus questionStatus;
-    private LocalDateTime createdAt;
+    private LocalDate questionDate;
     private Long categoryId;
 
 
-    public static Question create(Long questionId, String content, QuestionStatus questionStatus, LocalDateTime createdAt, Long categoryId) {
+    public static Question create(Long questionId, String content, QuestionStatus questionStatus, LocalDate createdAt, Long categoryId) {
         Question question = new Question();
         question.questionId = QuestionId.of(questionId);
         question.content = content;
         question.questionStatus = questionStatus;
-        question.createdAt = createdAt;
+        question.questionDate = createdAt;
         question.categoryId = categoryId;
         return question;
     }
