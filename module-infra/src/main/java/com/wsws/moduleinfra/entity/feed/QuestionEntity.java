@@ -4,7 +4,7 @@ import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -17,17 +17,17 @@ public class QuestionEntity {
     private String content;
     @Enumerated(EnumType.STRING)
     private QuestionStatus questionStatus;
-    private LocalDateTime createdAt;
+    private LocalDate questionDate;
 
     @Column(nullable = false)
     private Long categoryId;
 
 
-    public static QuestionEntity create(String content, QuestionStatus questionStatus, LocalDateTime createdAt, Long categoryId) {
+    public static QuestionEntity create(String content, QuestionStatus questionStatus, LocalDate questionDate, Long categoryId) {
         QuestionEntity questionEntity = new QuestionEntity();
         questionEntity.content = content;
         questionEntity.questionStatus = questionStatus;
-        questionEntity.createdAt = createdAt;
+        questionEntity.questionDate = questionDate;
         questionEntity.categoryId = categoryId;
         return questionEntity;
     }

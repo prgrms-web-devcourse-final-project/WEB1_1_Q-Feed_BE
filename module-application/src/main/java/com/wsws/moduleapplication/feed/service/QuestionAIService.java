@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class QuestionAIService {
                             null,
                             questionTempStore.get(categoryName),
                             QuestionStatus.CREATED,
-                            LocalDateTime.now(),
+                            LocalDate.now().plusDays(1),
                             category.getId().getValue()
                     )
             );

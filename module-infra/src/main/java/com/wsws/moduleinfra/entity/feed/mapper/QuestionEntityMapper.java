@@ -10,7 +10,7 @@ public class QuestionEntityMapper {
                 questionEntity.getId(),
                 questionEntity.getContent(),
                 questionEntity.getQuestionStatus(),
-                questionEntity.getCreatedAt(),
+                questionEntity.getQuestionDate(),
                 questionEntity.getCategoryId()
         );
     }
@@ -19,7 +19,7 @@ public class QuestionEntityMapper {
         return QuestionEntity.create(
                 question.getContent(),
                 question.getQuestionStatus(),
-                question.getCreatedAt(),
+                question.getQuestionDate(),
                 question.getCategoryId()
         );
     }

@@ -1,20 +1,19 @@
 package com.wsws.moduleapplication.feed.dto.question;
 
 import com.wsws.moduledomain.feed.question.Question;
-
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record QuestionFindServiceResponse(
         Long questionId,
         String content,
-        LocalDateTime createdAt
+        LocalDate questionDate
 ) {
 
     public QuestionFindServiceResponse(Question question) {
         this(
                 question.getQuestionId().getValue(),
                 question.getContent(),
-                question.getCreatedAt()
+                question.getQuestionDate()
         );
     }
 }
