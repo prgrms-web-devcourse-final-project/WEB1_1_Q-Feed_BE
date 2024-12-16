@@ -24,9 +24,10 @@ public class QuestionService {
      */
     public QuestionFindServiceResponse findQuestionByCategoryId(Long categoryId) {
 
-        // 캐시에서 데이터 조회
+        // 캐시 키 생성
         String questionCacheKey = "QUESTION:" + LocalDate.now() + ":CATEGORY:" + categoryId; // 예: QUESTION:2024-12-16:CATEGORY:1
 
+        // 캐시에서 데이터 조회
         QuestionFindServiceResponse cachedQuestion = cacheManager.get(questionCacheKey, QuestionFindServiceResponse.class);
 
         // 캐시에 데이터가 있다면 해당 데이터 반환
