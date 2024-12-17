@@ -4,8 +4,6 @@ package com.wsws.moduleapplication.group.service;
 import com.wsws.moduleapplication.group.dto.CreateGroupCommentRequest;
 import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.group.dto.GroupCommentServiceResponse;
-import com.wsws.moduleapplication.group.dto.GroupPostServiceResponse;
-import com.wsws.moduleapplication.group.dto.GroupServiceResponse;
 import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
 import com.wsws.moduledomain.group.GroupComment;
