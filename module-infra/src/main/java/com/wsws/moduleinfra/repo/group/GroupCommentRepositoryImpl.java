@@ -1,6 +1,7 @@
 package com.wsws.moduleinfra.repo.group;
 
 import com.wsws.moduledomain.group.GroupComment;
+import com.wsws.moduledomain.group.dto.GroupCommentDto;
 import com.wsws.moduledomain.group.repo.GroupCommentRepository;
 import com.wsws.moduleinfra.entity.group.GroupCommentEntity;
 import com.wsws.moduleinfra.entity.group.GroupPostEntity;
@@ -9,6 +10,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -60,5 +62,10 @@ public class GroupCommentRepositoryImpl implements GroupCommentRepository {
                 groupComment.getLikeCount() // 좋아요 수 업데이트
         );
 
+    }
+
+    @Override
+    public List<GroupCommentDto> findByGroupPostId(Long groupPostId) {
+        return jpaGroupCommentRepository.findByGroupPostId(groupPostId);
     }
 }

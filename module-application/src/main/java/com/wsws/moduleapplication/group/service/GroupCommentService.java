@@ -3,10 +3,14 @@ package com.wsws.moduleapplication.group.service;
 
 import com.wsws.moduleapplication.group.dto.CreateGroupCommentRequest;
 import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
+import com.wsws.moduleapplication.group.dto.GroupCommentServiceResponse;
+import com.wsws.moduleapplication.group.dto.GroupPostServiceResponse;
+import com.wsws.moduleapplication.group.dto.GroupServiceResponse;
 import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
 import com.wsws.moduledomain.group.GroupComment;
 import com.wsws.moduledomain.group.GroupPost;
+import com.wsws.moduledomain.group.dto.GroupCommentDto;
 import com.wsws.moduledomain.group.repo.GroupCommentRepository;
 import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduledomain.feed.like.Like;
@@ -17,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +50,18 @@ public class GroupCommentService {
 
         groupCommentRepository.save(groupComment);
     }
+
+    // 게시글 댓글 목록 조회
+    public List<GroupCommentServiceResponse> getGroupCommentList(Long groupPostId) {
+        List<GroupCommentDto> comments = groupCommentRepository.findByGroupPostId(groupPostId);
+        System.out.println("조회된 댓글 DTO: " + comments);
+        return groupCommentRepository.findByGroupPostId(groupPostId).stream()
+                .map(GroupCommentServiceResponse::new)
+//                .toList();
+                .collect(Collectors.toList());
+
+    }
+
 
     // 그룹 게시글 댓글 삭제
     @Transactional

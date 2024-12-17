@@ -1,5 +1,7 @@
 package com.wsws.moduleinfra.entity.group;
 
+
+import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +41,8 @@ public class GroupCommentEntity {
         GroupCommentEntity entity = new GroupCommentEntity();
         entity.content = content;
         entity.createdAt = createdAt;
-        entity.userId = userId;
+//        entity.userId = userId;
+        entity.userId = userId.toString();
         entity.likeCount = likeCount;
         return entity;
     }

@@ -1,7 +1,6 @@
 package com.wsws.moduledomain.group;
 
 
-import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +14,7 @@ public class GroupComment {
     private Long groupCommentId;
     private String content;
     private LocalDateTime createdAt;
-    private UserId userId;
+    private String userId;
     private long likeCount;
     private Long groupPostId;
 
@@ -25,7 +24,7 @@ public class GroupComment {
        comment.groupCommentId = id;
        comment.content = content;
        comment.createdAt = createdAt;
-       comment.userId = UserId.of(userId);
+       comment.userId = userId;
        comment.likeCount = likeCount;
        return comment;
     }
