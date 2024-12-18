@@ -13,7 +13,7 @@ public record GroupCommentApiResponse(
         long likeCount,
         Long groupPostId
 ) {
-    // GroupCommentDto를 인자로 받는 생성자
+
     public GroupCommentApiResponse(GroupCommentServiceResponse dto) {
         this(
                 dto.groupCommentId(),

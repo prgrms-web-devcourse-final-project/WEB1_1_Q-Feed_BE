@@ -11,6 +11,5 @@ public interface GroupCommentRepository {
     Optional<GroupComment> findById(Long groupCommentId);
     void deleteById(Long groupCommentId);
     void edit(GroupComment groupComment);
-
     List<GroupCommentDto> findByGroupPostId(Long groupPostId);
 }

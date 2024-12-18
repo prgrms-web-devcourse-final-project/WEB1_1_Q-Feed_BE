@@ -11,15 +11,12 @@ import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.group.GroupPost;
 import com.wsws.moduledomain.group.dto.GroupCommentDto;
-import com.wsws.moduledomain.group.dto.GroupDetailDto;
 import com.wsws.moduledomain.group.dto.GroupPostDetailDto;
-import com.wsws.moduledomain.group.dto.GroupPostDto;
 import com.wsws.moduledomain.group.repo.GroupCommentRepository;
 import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.feed.like.LikeRepository;
 import com.wsws.moduledomain.feed.like.TargetType;
-import com.wsws.moduleinfra.repo.group.JpaGroupCommentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -52,6 +49,20 @@ public class GroupPostService {
                 .toList();
     }
 
+    // 그룹 게시물 상세조회
+    @Transactional
+    public GroupPostDetailServiceResponse getGroupPostDetail(Long groupPostId, String userId) {
+
+        GroupPostDetailDto groupPostDetailDto = groupPostRepository.findByGroupPostId(groupPostId)
+                .orElseThrow(() -> new IllegalArgumentException("그룹 게시물을 찾을 수 없습니다."));
+
+
+        List<GroupCommentDto> comments = groupCommentRepository.findByGroupPostId(groupPostId);
+
+        return new GroupPostDetailServiceResponse(groupPostDetailDto, comments);
+
+    }
+
     // 게시물 삭제
     @Transactional
     public void deleteGroupPost(Long groupPostId) {
@@ -63,15 +74,6 @@ public class GroupPostService {
                         }
                 );
     }
-
-
-//    //게시물 상세 조회
-//    @Transactional
-//    public GroupPostDetailResponse getGroupPostDetail(Long groupPostId) {
-//        GroupPostDetailDto groupPostDetailDto = groupPostRepository.findById(groupPostId)
-//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
-//        return new GroupPostDetailResponse(groupPostDetailDto);
-//    }
 
     @Transactional
     public void addLikeToGroupPost(LikeServiceRequest request) {
@@ -143,17 +145,4 @@ public class GroupPostService {
         return null;
     }
 
-    // 그룹 게시물 상세조회
-    @Transactional
-    public GroupPostDetailServiceResponse getGroupPostDetail(Long groupPostId, String userId) {
-
-        GroupPostDetailDto groupPostDetailDto = groupPostRepository.findByGroupPostId(groupPostId)
-                .orElseThrow(() -> new IllegalArgumentException("그룹 게시물을 찾을 수 없습니다."));
-
-
-        List<GroupCommentDto> comments = groupCommentRepository.findByGroupPostId(groupPostId);
-
-        return new GroupPostDetailServiceResponse(groupPostDetailDto, comments);
-
-    }
 }

@@ -5,7 +5,7 @@ import com.wsws.moduleinfra.entity.group.GroupPostEntity;
 
 public class GroupPostMapper {
 
-    // Entity -> Domain 변환
+    // 엔티티 -> 도메인
     public static GroupPost toDomain(GroupPostEntity entity) {
         if (entity == null) {
             return null;
@@ -20,7 +20,7 @@ public class GroupPostMapper {
         );
     }
 
-    // Domain -> Entity 변환
+    // 도메인 -> 엔티티
     public static GroupPostEntity toEntity(GroupPost domain) {
         if (domain == null) {
             return null;

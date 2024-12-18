@@ -8,7 +8,6 @@ import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedExcepti
 import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
 import com.wsws.moduledomain.group.GroupComment;
 import com.wsws.moduledomain.group.GroupPost;
-import com.wsws.moduledomain.group.dto.GroupCommentDto;
 import com.wsws.moduledomain.group.repo.GroupCommentRepository;
 import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduledomain.feed.like.Like;
@@ -32,7 +31,6 @@ public class GroupCommentService {
 
 
     // 그룹 게시글 댓글 생성
-
     @Transactional
     public void createGroupComment(CreateGroupCommentRequest request, Long groupPostId, String userId) {
         GroupPost groupPost = getGroupPost(groupPostId);
@@ -52,13 +50,9 @@ public class GroupCommentService {
 
     // 게시글 댓글 목록 조회
     public List<GroupCommentServiceResponse> getGroupCommentList(Long groupPostId) {
-        List<GroupCommentDto> comments = groupCommentRepository.findByGroupPostId(groupPostId);
-        System.out.println("조회된 댓글 DTO: " + comments);
         return groupCommentRepository.findByGroupPostId(groupPostId).stream()
                 .map(GroupCommentServiceResponse::new)
-//                .toList();
                 .collect(Collectors.toList());
-
     }
 
 

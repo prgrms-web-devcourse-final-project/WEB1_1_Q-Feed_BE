@@ -59,7 +59,7 @@ public class GroupCommentRepositoryImpl implements GroupCommentRepository {
 
         // 좋아요 수정
         groupCommentEntity.editEntity(
-                groupComment.getLikeCount() // 좋아요 수 업데이트
+                groupComment.getLikeCount()
         );
 
     }

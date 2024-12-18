@@ -37,8 +37,6 @@ public class GroupCommentController {
     @GetMapping("/{groupPostId}/comments")
     @Operation(summary = "게시글 댓글 목록 조회", description = "특정 그룹의 게시글 댓글의 목록을 조회합니다.")
     public ResponseEntity<List<GroupCommentApiResponse>> getComments(@PathVariable Long groupPostId){
-        List<GroupCommentServiceResponse> comments = groupCommentService.getGroupCommentList(groupPostId);
-        System.out.println("컨트롤러에서 받은 데이터: " + comments); // 로그 출력
         return ResponseEntity.ok(
                 groupCommentService.getGroupCommentList(groupPostId).stream()
                         .map(GroupCommentApiResponse::new)
