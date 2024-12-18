@@ -2,7 +2,6 @@ package com.wsws.moduleapi.group.controller;
 
 import com.wsws.moduleapi.group.dto.GroupCommentApiResponse;
 import com.wsws.moduleapplication.group.dto.CreateGroupCommentRequest;
-import com.wsws.moduleapplication.group.dto.GroupCommentServiceResponse;
 import com.wsws.moduleapplication.group.service.GroupCommentService;
 import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
 import com.wsws.modulesecurity.security.UserPrincipal;
