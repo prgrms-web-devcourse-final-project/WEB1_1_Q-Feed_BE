@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 public record GroupDetailApiResponse(
         Long groupId,
+        Long categoryId,
         String categoryName,
         String url,
         String groupName,
@@ -20,6 +21,7 @@ public record GroupDetailApiResponse(
     public GroupDetailApiResponse(GroupDetailServiceResponse serviceResponse) {
         this(
                 serviceResponse.groupId(),
+                serviceResponse.categoryId(),
                 serviceResponse.categoryName(),
                 serviceResponse.url(),
                 serviceResponse.groupName(),

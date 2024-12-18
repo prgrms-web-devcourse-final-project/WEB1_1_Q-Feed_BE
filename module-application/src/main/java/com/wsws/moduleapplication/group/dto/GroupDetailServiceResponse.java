@@ -11,6 +11,7 @@ import com.wsws.moduledomain.group.dto.GroupPostDto;
 
 public record GroupDetailServiceResponse(
         Long groupId,
+        Long categoryId,
         String categoryName,
         String url,
         String groupName,
@@ -23,6 +24,7 @@ public record GroupDetailServiceResponse(
     public GroupDetailServiceResponse(GroupDetailDto group, List<GroupMemberDto> members, List<GroupPostDto> posts) {
         this(
                 group.groupId(),
+                group.categoryId(),
                 group.categoryName().name(), // CategoryName 가져오기
                 group.url(),
                 group.groupName(),
