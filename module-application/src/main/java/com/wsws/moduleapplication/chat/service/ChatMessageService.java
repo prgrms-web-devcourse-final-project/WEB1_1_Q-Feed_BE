@@ -42,8 +42,8 @@ public class ChatMessageService {
 
     @Transactional
     public void sendMessage(Long chatRoomId, String senderId, ChatMessageRequest request ) {
-        getChatRoomById(chatRoomId);
-        User user = getUserById(senderId);
+        validateChatRoom(chatRoomId);
+        User user = validateUser(senderId);
 
 //        // 이미지 or 음성 처리
 //        String fileProcess = processFile(request.file(),request.type());
@@ -88,12 +88,12 @@ public class ChatMessageService {
         chatMessageRepository.markAllMessagesAsRead(chatRoomId);
     }
 
-    private ChatRoom getChatRoomById(Long chatRoomId) {
+    private ChatRoom validateChatRoom(Long chatRoomId) {
         return chatRoomRepository.findChatRoomById(chatRoomId)
                 .orElseThrow(() -> ChatRoomNotFoundException.EXCEPTION);
     }
 
-    private User getUserById(String senderId) {
+    private User validateUser(String senderId) {
         return userRepository.findById(UserId.of(senderId))
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
     }
