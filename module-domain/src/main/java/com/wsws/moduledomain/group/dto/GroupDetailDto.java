@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 public record GroupDetailDto(
         Long groupId,
+        Long categoryId,
         CategoryName categoryName,
         String url,
         String groupName,
