@@ -1,6 +1,7 @@
 package com.wsws.moduleinfra.repo.group;
 
 import com.wsws.moduledomain.group.GroupPost;
+import com.wsws.moduledomain.group.dto.GroupPostDetailDto;
 import com.wsws.moduledomain.group.dto.GroupPostDto;
 import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduleinfra.entity.group.GroupPostEntity;
@@ -29,6 +30,11 @@ public class GroupPostRepositoryImpl implements GroupPostRepository {
     @Override
     public void delete(Long groupPostId) {
         jpaGroupPostRepository.deleteById(groupPostId);
+    }
+
+    @Override
+    public Optional<GroupPostDetailDto> findByGroupPostId(Long groupPostId) {
+        return jpaGroupPostRepository.findByGroupPostId(groupPostId);
     }
 
     //상세조회 댓글 생성후 구현예정

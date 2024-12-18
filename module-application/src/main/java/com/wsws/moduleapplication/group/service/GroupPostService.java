@@ -1,6 +1,7 @@
 package com.wsws.moduleapplication.group.service;
 
 import com.wsws.moduleapplication.group.dto.CreateGroupPostRequest;
+import com.wsws.moduleapplication.group.dto.GroupPostDetailServiceResponse;
 import com.wsws.moduleapplication.group.dto.GroupPostServiceResponse;
 import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
@@ -9,10 +10,16 @@ import com.wsws.moduleapplication.usercontext.user.exception.ProfileImageProcess
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.group.GroupPost;
+import com.wsws.moduledomain.group.dto.GroupCommentDto;
+import com.wsws.moduledomain.group.dto.GroupDetailDto;
+import com.wsws.moduledomain.group.dto.GroupPostDetailDto;
+import com.wsws.moduledomain.group.dto.GroupPostDto;
+import com.wsws.moduledomain.group.repo.GroupCommentRepository;
 import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.feed.like.LikeRepository;
 import com.wsws.moduledomain.feed.like.TargetType;
+import com.wsws.moduleinfra.repo.group.JpaGroupCommentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +33,7 @@ public class GroupPostService {
     private final GroupPostRepository groupPostRepository;
     private final FileStorageService fileStorageService;
     private final LikeRepository likeRepository;
-
+    private final GroupCommentRepository groupCommentRepository;
 
     // 게시물 생성
     @Transactional
@@ -134,5 +141,19 @@ public class GroupPostService {
             }
         }
         return null;
+    }
+
+    // 그룹 게시물 상세조회
+    @Transactional
+    public GroupPostDetailServiceResponse getGroupPostDetail(Long groupPostId, String userId) {
+
+        GroupPostDetailDto groupPostDetailDto = groupPostRepository.findByGroupPostId(groupPostId)
+                .orElseThrow(() -> new IllegalArgumentException("그룹 게시물을 찾을 수 없습니다."));
+
+
+        List<GroupCommentDto> comments = groupCommentRepository.findByGroupPostId(groupPostId);
+
+        return new GroupPostDetailServiceResponse(groupPostDetailDto, comments);
+
     }
 }
