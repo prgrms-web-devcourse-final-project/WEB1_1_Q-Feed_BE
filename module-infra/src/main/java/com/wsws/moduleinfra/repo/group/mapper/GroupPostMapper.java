@@ -27,8 +27,8 @@ public class GroupPostMapper {
         }
         return GroupPostEntity.create(
                 domain.getContent(),
-                domain.getGroupId(),
-                domain.getUserId(),
+                domain.getGroupId().getValue(),
+                domain.getUserId().getValue(),
                 domain.getUrl(),
                 domain.getLikeCount()
         );

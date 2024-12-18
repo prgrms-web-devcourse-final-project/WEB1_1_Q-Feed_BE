@@ -1,6 +1,7 @@
 package com.wsws.moduledomain.group;
 
 
+import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,19 +15,20 @@ public class GroupComment {
     private Long groupCommentId;
     private String content;
     private LocalDateTime createdAt;
-    private String userId;
+    private UserId userId;
     private long likeCount;
     private Long groupPostId;
 
 
-    public static GroupComment create(Long id, String content, LocalDateTime createdAt, String userId, Long likeCount) {
+    public static GroupComment create(Long groupCommentId, String content, LocalDateTime createdAt, String userId, Long likeCount, long groupPostId) {
        GroupComment comment = new GroupComment();
-       comment.groupCommentId = id;
+       comment.groupCommentId = groupCommentId;
        comment.content = content;
        comment.createdAt = createdAt;
-       comment.userId = userId;
+       comment.userId = UserId.of(userId);
        comment.likeCount = likeCount;
-       return comment;
+       comment.groupPostId = groupPostId;
+        return comment;
     }
 
     // 좋아요 증가

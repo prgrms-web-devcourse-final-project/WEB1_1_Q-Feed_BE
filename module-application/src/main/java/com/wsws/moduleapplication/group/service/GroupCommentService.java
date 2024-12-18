@@ -42,7 +42,8 @@ public class GroupCommentService {
                 request.content(),
                 LocalDateTime.now(),
                 userId,
-                0L
+                0L,
+                groupPostId
         );
         groupComment.setGroupPostId(groupPostId); // GroupPost와 연관 설정
 

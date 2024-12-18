@@ -36,12 +36,13 @@ public class GroupCommentEntity {
 
 
     // 생성 메서드
-    public static GroupCommentEntity create(String content, LocalDateTime createdAt, String userId, Long likeCount, Long groupPost) {
+    public static GroupCommentEntity create(String content, LocalDateTime createdAt,String userId, Long likeCount, GroupPostEntity groupPost) {
         GroupCommentEntity entity = new GroupCommentEntity();
         entity.content = content;
         entity.createdAt = createdAt;
         entity.userId = userId;
         entity.likeCount = likeCount;
+        entity.groupPost = groupPost;
         return entity;
     }
 
