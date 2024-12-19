@@ -20,14 +20,15 @@ public class GroupComment {
     private Long groupPostId;
 
 
-    public static GroupComment create(Long id, String content, LocalDateTime createdAt, String userId, Long likeCount) {
+    public static GroupComment create(Long groupCommentId, String content, LocalDateTime createdAt, String userId, Long likeCount, long groupPostId) {
        GroupComment comment = new GroupComment();
-       comment.groupCommentId = id;
+       comment.groupCommentId = groupCommentId;
        comment.content = content;
        comment.createdAt = createdAt;
        comment.userId = UserId.of(userId);
        comment.likeCount = likeCount;
-       return comment;
+       comment.groupPostId = groupPostId;
+        return comment;
     }
 
     // 좋아요 증가

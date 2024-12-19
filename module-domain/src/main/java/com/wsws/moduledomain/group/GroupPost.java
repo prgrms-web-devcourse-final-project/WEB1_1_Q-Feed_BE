@@ -1,5 +1,7 @@
 package com.wsws.moduledomain.group;
 
+import com.wsws.moduledomain.group.vo.GroupId;
+import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,18 +14,18 @@ public class GroupPost {
     private Long groupPostId;
     private String content;
     private LocalDateTime createdAt;
-    private Long groupId;
-    private String userId;
+    private GroupId groupId;
+    private UserId userId;
     private String url;
     private long likeCount = 0;
 
     public static GroupPost create(Long groupPostId, Long groupId, String content, String url, String userId, Long likeCount) {
         GroupPost post = new GroupPost();
         post.groupPostId = groupPostId;
-        post.groupId = groupId;
+        post.groupId = GroupId.of(groupId);
         post.content = content;
         post.url = url;
-        post.userId = userId;
+        post.userId = UserId.of(userId);
         post.createdAt = LocalDateTime.now();
         post.likeCount = likeCount;
         return post;

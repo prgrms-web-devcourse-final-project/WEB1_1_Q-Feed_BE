@@ -1,7 +1,9 @@
 package com.wsws.moduleapi.group.controller;
 
 import com.wsws.moduleapi.group.dto.GroupPostApiResponse;
+import com.wsws.moduleapi.group.dto.GroupPostDetailApiResponse;
 import com.wsws.moduleapplication.group.dto.CreateGroupPostRequest;
+import com.wsws.moduleapplication.group.dto.GroupPostDetailServiceResponse;
 import com.wsws.moduleapplication.group.service.GroupPostService;
 import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
 import com.wsws.modulesecurity.security.UserPrincipal;
@@ -20,16 +22,6 @@ public class GroupPostController {
 
     private final GroupPostService groupPostService;
 
-    @GetMapping("/{groupId}/posts")
-    @Operation(summary = "게시글 목록 조회", description = "특정 그룹의 게시글 목록을 조회합니다.")
-    public ResponseEntity<List<GroupPostApiResponse>> getPosts(@PathVariable Long groupId) {
-        return ResponseEntity.ok(
-                groupPostService.getGroupPostsList(groupId).stream()
-                        .map(GroupPostApiResponse::new)
-                        .toList()
-        );
-    }
-
     @PostMapping("/{groupId}/posts")
     @Operation(summary = "게시글 생성", description = "특정 그룹에 새로운 게시글을 작성합니다.")
     public ResponseEntity<String> createGroupPost(
@@ -42,13 +34,34 @@ public class GroupPostController {
         });
     }
 
+    @GetMapping("/{groupId}/posts")
+    @Operation(summary = "게시글 목록 조회", description = "특정 그룹의 게시글 목록을 조회합니다.")
+    public ResponseEntity<List<GroupPostApiResponse>> getPosts(@PathVariable Long groupId) {
+        return ResponseEntity.ok(
+                groupPostService.getGroupPostsList(groupId).stream()
+                        .map(GroupPostApiResponse::new)
+                        .toList()
+        );
+    }
+
+    @GetMapping("/posts/{groupPostId}")
+    @Operation(summary = "그룹 게시물 상세 조회", description = "해당 그룹 게시물을 상세 조회합니다.")
+    public ResponseEntity<GroupPostDetailApiResponse> getPostDetail(
+            @PathVariable Long groupPostId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        String userId = userPrincipal.getId();
+        GroupPostDetailServiceResponse response = groupPostService.getGroupPostDetail(groupPostId,userId);
+        GroupPostDetailApiResponse apiResponse = new GroupPostDetailApiResponse(response);
+        return ResponseEntity.ok(apiResponse);
+    }
+
     @DeleteMapping("/posts/{groupPostId}")
     @Operation(summary = "게시글 삭제", description = "특정 게시글을 삭제합니다.")
     public ResponseEntity<String> deleteGroupPost(
             @PathVariable Long groupPostId,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         return processAuthenticatedRequest(userPrincipal, userId -> {
-            groupPostService.deleteGroupPost(groupPostId);
+            groupPostService.deleteGroupPost(groupPostId, userId);
             return ResponseEntity.ok("그룹 게시글이 삭제되었습니다.");
         });
     }

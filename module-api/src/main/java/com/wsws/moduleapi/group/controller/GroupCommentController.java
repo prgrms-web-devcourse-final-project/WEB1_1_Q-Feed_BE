@@ -1,5 +1,6 @@
 package com.wsws.moduleapi.group.controller;
 
+import com.wsws.moduleapi.group.dto.GroupCommentApiResponse;
 import com.wsws.moduleapplication.group.dto.CreateGroupCommentRequest;
 import com.wsws.moduleapplication.group.service.GroupCommentService;
 import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +30,17 @@ public class GroupCommentController {
         String userId = validateAndGetUserId(userPrincipal);
         groupCommentService.createGroupComment(request, groupPostId, userId);
         return ResponseEntity.status(201).body("그룹 게시글 댓글이 생성되었습니다.");
+    }
+
+    // 그룹 게시글 댓글 목록 조회
+    @GetMapping("/{groupPostId}/comments")
+    @Operation(summary = "게시글 댓글 목록 조회", description = "특정 그룹의 게시글 댓글의 목록을 조회합니다.")
+    public ResponseEntity<List<GroupCommentApiResponse>> getComments(@PathVariable Long groupPostId){
+        return ResponseEntity.ok(
+                groupCommentService.getGroupCommentList(groupPostId).stream()
+                        .map(GroupCommentApiResponse::new)
+                        .toList()
+        );
     }
 
     // 그룹 게시글 댓글 삭제

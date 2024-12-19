@@ -1,6 +1,7 @@
 package com.wsws.moduleapplication.group.service;
 
 import com.wsws.moduleapplication.group.dto.CreateGroupPostRequest;
+import com.wsws.moduleapplication.group.dto.GroupPostDetailServiceResponse;
 import com.wsws.moduleapplication.group.dto.GroupPostServiceResponse;
 import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
@@ -9,10 +10,14 @@ import com.wsws.moduleapplication.usercontext.user.exception.ProfileImageProcess
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.group.GroupPost;
+import com.wsws.moduledomain.group.dto.GroupCommentDto;
+import com.wsws.moduledomain.group.dto.GroupPostDetailDto;
+import com.wsws.moduledomain.group.repo.GroupCommentRepository;
 import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.feed.like.LikeRepository;
 import com.wsws.moduledomain.feed.like.TargetType;
+import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +31,7 @@ public class GroupPostService {
     private final GroupPostRepository groupPostRepository;
     private final FileStorageService fileStorageService;
     private final LikeRepository likeRepository;
-
+    private final GroupCommentRepository groupCommentRepository;
 
     // 게시물 생성
     @Transactional
@@ -45,26 +50,30 @@ public class GroupPostService {
                 .toList();
     }
 
-    // 게시물 삭제
+    // 그룹 게시물 상세조회
     @Transactional
-    public void deleteGroupPost(Long groupPostId) {
-        groupPostRepository.findById(groupPostId)
-                .ifPresentOrElse(
-                        groupPost -> groupPostRepository.deleteById(groupPostId), // 엔티티 삭제
-                        () -> {
-                            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
-                        }
-                );
+    public GroupPostDetailServiceResponse getGroupPostDetail(Long groupPostId, String userId) {
+
+        GroupPostDetailDto groupPostDetailDto = groupPostRepository.findByGroupPostId(groupPostId)
+                .orElseThrow(() -> new IllegalArgumentException("그룹 게시물을 찾을 수 없습니다."));
+
+
+        List<GroupCommentDto> comments = groupCommentRepository.findByGroupPostId(groupPostId);
+
+        return new GroupPostDetailServiceResponse(groupPostDetailDto, comments);
+
     }
 
+    // 게시물 삭제
+    @Transactional
+    public void deleteGroupPost(Long groupPostId, String userId) {
+        GroupPost groupPost = groupPostRepository.findById(groupPostId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
-//    //게시물 상세 조회
-//    @Transactional
-//    public GroupPostDetailResponse getGroupPostDetail(Long groupPostId) {
-//        GroupPostDetailDto groupPostDetailDto = groupPostRepository.findById(groupPostId)
-//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
-//        return new GroupPostDetailResponse(groupPostDetailDto);
-//    }
+        validateUser(groupPost, userId); // 본인 여부 확인
+
+        groupPostRepository.deleteById(groupPostId); // 게시물 삭제
+    }
 
     @Transactional
     public void addLikeToGroupPost(LikeServiceRequest request) {
@@ -134,5 +143,12 @@ public class GroupPostService {
             }
         }
         return null;
+    }
+
+    // 본인 여부 확인
+    private void validateUser(GroupPost groupPost, String userId) {
+        if (!groupPost.getUserId().equals(UserId.of(userId))) {
+            throw new IllegalStateException("권한이 있는 사용자가 아닙니다. 본인 게시글만 삭제 가능합니다.");
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.wsws.moduleinfra.repo.group;
 
 import com.wsws.moduledomain.group.GroupPost;
+import com.wsws.moduledomain.group.dto.GroupPostDetailDto;
 import com.wsws.moduledomain.group.dto.GroupPostDto;
 import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduleinfra.entity.group.GroupPostEntity;
@@ -31,24 +32,17 @@ public class GroupPostRepositoryImpl implements GroupPostRepository {
         jpaGroupPostRepository.deleteById(groupPostId);
     }
 
-    //상세조회 댓글 생성후 구현예정
-//    @Override
-//    public Optional<GroupPost> findById(Long groupPostId) {
-//        return jpaGroupPostRepository.findById(groupPostId)
-//                .map(GroupPostMapper::toDomain);
-//    }
+    @Override
+    public Optional<GroupPostDetailDto> findByGroupPostId(Long groupPostId) {
+        return jpaGroupPostRepository.findByGroupPostId(groupPostId);
+    }
+
 
     @Override
     public List<GroupPostDto> findByGroupId(Long groupId) {
        return jpaGroupPostRepository.findByGroupId(groupId);
     }
 
-//    @Override
-//    public void delete(GroupPost groupPost) {
-//        GroupPostEntity groupPostEntity = GroupPostMapper.toEntity(groupPost);
-//        jpaGroupPostRepository.delete(groupPostEntity);
-//
-//    }
 
     @Override
     public Optional<GroupPost> findById(Long groupPostId) {
@@ -56,7 +50,6 @@ public class GroupPostRepositoryImpl implements GroupPostRepository {
                 .map(GroupPostMapper::toDomain);
 
     }
-
 
     @Override
     @Transactional
@@ -73,7 +66,7 @@ public class GroupPostRepositoryImpl implements GroupPostRepository {
 
         // 좋아요 수정
         groupPostEntity.editEntity(
-                groupPost.getLikeCount() // 좋아요 수 업데이트
+                groupPost.getLikeCount()
         );
 
     }
