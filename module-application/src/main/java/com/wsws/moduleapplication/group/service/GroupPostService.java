@@ -17,6 +17,7 @@ import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.feed.like.LikeRepository;
 import com.wsws.moduledomain.feed.like.TargetType;
+import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -65,14 +66,13 @@ public class GroupPostService {
 
     // 게시물 삭제
     @Transactional
-    public void deleteGroupPost(Long groupPostId) {
-        groupPostRepository.findById(groupPostId)
-                .ifPresentOrElse(
-                        groupPost -> groupPostRepository.deleteById(groupPostId), // 엔티티 삭제
-                        () -> {
-                            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
-                        }
-                );
+    public void deleteGroupPost(Long groupPostId, String userId) {
+        GroupPost groupPost = groupPostRepository.findById(groupPostId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+
+        validateUser(groupPost, userId); // 본인 여부 확인
+
+        groupPostRepository.deleteById(groupPostId); // 게시물 삭제
     }
 
     @Transactional
@@ -145,4 +145,10 @@ public class GroupPostService {
         return null;
     }
 
+    // 본인 여부 확인
+    private void validateUser(GroupPost groupPost, String userId) {
+        if (!groupPost.getUserId().equals(UserId.of(userId))) {
+            throw new IllegalStateException("권한이 있는 사용자가 아닙니다. 본인 게시글만 삭제 가능합니다.");
+        }
+    }
 }

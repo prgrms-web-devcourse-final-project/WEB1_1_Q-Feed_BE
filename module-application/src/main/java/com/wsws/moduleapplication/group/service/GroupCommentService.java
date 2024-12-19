@@ -13,6 +13,7 @@ import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.feed.like.LikeRepository;
 import com.wsws.moduledomain.feed.like.TargetType;
+import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -56,9 +57,12 @@ public class GroupCommentService {
     }
 
 
-    // 그룹 게시글 댓글 삭제
+    // 그룹 게시글 댓글 삭제 (본인 확인 추가)
     @Transactional
     public void deleteGroupComment(Long groupCommentId, String userId) {
+        GroupComment groupComment = getGroupComment(groupCommentId);
+
+        validateUser(groupComment, userId); // 본인 확인
         groupCommentRepository.deleteById(groupCommentId);
     }
 
@@ -123,6 +127,13 @@ public class GroupCommentService {
     private GroupComment getGroupComment(Long groupCommentId) {
         return groupCommentRepository.findById(groupCommentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
+    }
+
+    // 본인 여부 확인
+    private void validateUser(GroupComment groupComment, String userId) {
+        if (!groupComment.getUserId().equals(UserId.of(userId))) {
+            throw new IllegalStateException("권한이 있는 사용자가 아닙니다. 본인의 댓글만 삭제 가능합니다.");
+        }
     }
 }
 

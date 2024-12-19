@@ -61,7 +61,7 @@ public class GroupPostController {
             @PathVariable Long groupPostId,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         return processAuthenticatedRequest(userPrincipal, userId -> {
-            groupPostService.deleteGroupPost(groupPostId);
+            groupPostService.deleteGroupPost(groupPostId, userId);
             return ResponseEntity.ok("그룹 게시글이 삭제되었습니다.");
         });
     }
