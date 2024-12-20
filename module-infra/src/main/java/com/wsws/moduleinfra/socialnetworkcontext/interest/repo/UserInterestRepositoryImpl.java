@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.wsws.moduleinfra.socialnetworkcontext.follow.entity.QFollowEntity.followEntity;
 import static com.wsws.moduleinfra.socialnetworkcontext.interest.entity.QUserInterestEntity.userInterestEntity;
 
 
@@ -65,11 +66,14 @@ public class UserInterestRepositoryImpl implements UserInterestRepository {
     }
 
     @Override
-    public List<String> findUserIdsByInterestCategories(List<Long> categoryIds) {
+    public List<String> findUserIdsByInterestCategories(List<Long> categoryIds, String userId) {
         return queryFactory
                 .select(userInterestEntity.user.id)
                 .from(userInterestEntity)
-                .where(userInterestEntity.category.id.in(categoryIds))
+                .leftJoin(followEntity).on(followEntity.id.followerId.eq(userId)
+                        .and(followEntity.id.followeeId.eq(userInterestEntity.user.id)))
+                .where(userInterestEntity.category.id.in(categoryIds)
+                        .and(followEntity.id.followeeId.isNull()))
                 .distinct()
                 .fetch();
     }
