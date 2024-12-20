@@ -41,7 +41,8 @@ public class NotificationController {
     }
 
     @PutMapping("/read-all")
-    public ResponseEntity<String> markAllAsRead(@RequestParam String recipientId) {
+    public ResponseEntity<String> markAllAsRead(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        String recipientId = userPrincipal.getId();
         notificationService.markAllAsRead(recipientId);
         return ResponseEntity.ok("모든 알림이 읽음 처리되었습니다.");
     }

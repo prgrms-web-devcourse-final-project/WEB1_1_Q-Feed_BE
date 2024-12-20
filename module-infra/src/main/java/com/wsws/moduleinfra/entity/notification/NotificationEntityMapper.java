@@ -8,22 +8,26 @@ public class NotificationEntityMapper {
 
     // Entity -> Domain
     public Notification toDomain(NotificationEntity entity) {
-        return new Notification(
+        return Notification.create(
                 entity.getId(),
                 entity.getType(),
                 entity.getSender(),
                 entity.getRecipient(),
-                entity.isRead()
+                entity.getContent(),
+                null,
+                null,
+                null
         );
     }
 
+
     // Domain -> Entity
     public NotificationEntity toEntity(Notification notification) {
-        return new NotificationEntity.create(
+        return NotificationEntity.create(
                 notification.getType(),
-                notification.getSender(),
-                notification.getRecipient(),
-                notification.isRead()
+                notification.getContent().getValue(),
+                notification.getSender().getValue(),
+                notification.getRecipient().getValue()
         );
     }
 }
