@@ -6,11 +6,13 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum FcmType {
-    COMMENT("댓글"),
-    LIKE("좋아요"),
-    CHAT("채팅"),
     FOLLOW("팔로우"),
-    Q_SPACE_LIKE("좋아요"),
-    Q_SPACE_COMMENT("댓글");
+    CHAT("채팅"),
+    ANSWER_COMMENT("댓글"),
+    ANSWER_LIKE("좋아요"),
+    COMMENT_LIKE("좋아요"),
+    Q_SPACE_POST_COMMENT("댓글"),
+    Q_SPACE_POST_LIKE("좋아요"),
+    Q_SPACE_COMMENT_LIKE("좋아요");
     private final String type;
 }
