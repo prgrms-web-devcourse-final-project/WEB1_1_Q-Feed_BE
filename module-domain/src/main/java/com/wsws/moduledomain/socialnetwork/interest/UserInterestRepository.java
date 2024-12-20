@@ -11,6 +11,6 @@ public interface UserInterestRepository {
 
     void deleteByUserId(UserId userId);
 
-    List<String> findUserIdsByInterestCategories(List<Long> categoryIds);
+    List<String> findUserIdsByInterestCategories(List<Long> categoryIds, String userId);
 
 }

@@ -3,6 +3,7 @@ package com.wsws.moduleapplication.socialnetwork.recommendation;
 import com.wsws.moduleapplication.socialnetwork.recommendation.mapper.UserRecommendationMapper;
 import com.wsws.moduleapplication.socialnetwork.recommendation.dto.UserRecommendationResponse;
 import com.wsws.moduledomain.socialnetwork.follow.repo.FollowReadRepository;
+import com.wsws.moduledomain.socialnetwork.follow.repo.FollowRepository;
 import com.wsws.moduledomain.socialnetwork.recommendation.UserRecommendation;
 import com.wsws.moduledomain.socialnetwork.recommendation.UserRecommendationRepository;
 import com.wsws.moduledomain.socialnetwork.interest.UserInterestRepository;
@@ -24,6 +25,7 @@ public class RecommendationService {
     private final UserInterestRepository userInterestRepository;
     private final FollowReadRepository followReadRepository;
     private final UserRepository userRepository;
+    private final FollowRepository followRepository;
 
 
     public List<UserRecommendationResponse> getRecommendations(String userId, int limit) {
@@ -34,7 +36,7 @@ public class RecommendationService {
                 .toList();
 
         //관심사 기반 사용자 IO 필터링
-        List<String> filteredUserIds = userInterestRepository.findUserIdsByInterestCategories(interestCategoryIds);
+        List<String> filteredUserIds = userInterestRepository.findUserIdsByInterestCategories(interestCategoryIds, userId);
         if (filteredUserIds.isEmpty()) {
             return Collections.emptyList();
         }
