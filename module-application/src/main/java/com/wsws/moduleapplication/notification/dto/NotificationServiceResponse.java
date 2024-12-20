@@ -1,6 +1,5 @@
 package com.wsws.moduleapplication.notification.dto;
 
-import com.wsws.moduledomain.notification.Notification;
 import com.wsws.moduledomain.notification.dto.NotificationDto;
 
 public record NotificationServiceResponse(

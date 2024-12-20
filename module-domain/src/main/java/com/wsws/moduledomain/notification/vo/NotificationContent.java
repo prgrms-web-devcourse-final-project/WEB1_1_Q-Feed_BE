@@ -1,6 +1,5 @@
 package com.wsws.moduledomain.notification.vo;
 
-import com.wsws.modulecommon.exception.DomainException;
 import com.wsws.moduledomain.notification.exception.EmptyNotificationException;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
