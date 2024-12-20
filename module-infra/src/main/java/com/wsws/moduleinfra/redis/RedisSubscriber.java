@@ -1,6 +1,8 @@
 package com.wsws.moduleinfra.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.wsws.moduledomain.chat.ChatMessageDomainResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +33,8 @@ public class RedisSubscriber implements MessageListener {
                            ObjectMapper objectMapper,
                            SimpMessageSendingOperations messagingTemplate, @Lazy RedisMessageListenerContainer redisMessageListenerContainer) {
         this.redisTemplate = redisTemplate;
-        this.objectMapper = objectMapper;
+        this.objectMapper = objectMapper.registerModule(new JavaTimeModule())
+                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         this.messagingTemplate = messagingTemplate;
         this.redisMessageListenerContainer = redisMessageListenerContainer;
 
@@ -43,6 +46,7 @@ public class RedisSubscriber implements MessageListener {
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
             System.out.println("발행된 메시지: " + publishMessage);  // 메시지 확인
             ChatMessageDomainResponse roomMessage = objectMapper.readValue(publishMessage, ChatMessageDomainResponse.class);
+            System.out.println("시간확인: " + roomMessage);  // 메시지 확인
            messagingTemplate.convertAndSend("/sub/chat/" + roomMessage.chatRoomId(), roomMessage);
         } catch (Exception e) {
             throw new RuntimeException(e);

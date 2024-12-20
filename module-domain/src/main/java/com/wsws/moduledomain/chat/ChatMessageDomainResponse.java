@@ -1,5 +1,6 @@
 package com.wsws.moduledomain.chat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wsws.moduledomain.usercontext.user.aggregate.User;
 
@@ -15,6 +16,7 @@ public record ChatMessageDomainResponse(
         String content,
         String type,
         String url,
+        //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS")
         LocalDateTime createdAt
 
 ) {
