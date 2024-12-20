@@ -48,12 +48,28 @@ public class RedisServiceImpl implements RedisService {
         redisTemplate.delete(getSessionKey(sessionId));
     }
 
+    @Override
+    public boolean isRoomSubscribed(Long chatRoomId) {
+        String key = getRoomSubscriptionKey(chatRoomId);
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
+
+    @Override
+    public void markRoomAsSubscribed(Long chatRoomId) {
+        String key = getRoomSubscriptionKey(chatRoomId);
+        redisTemplate.opsForValue().set(key, "subscribed", DEFAULT_TTL);
+    }
+
     private String getSessionKey(String sessionId) {
         return "session:" + sessionId;
     }
 
     private String getUserKey(String userId) {
         return "userId:" + userId;
+    }
+
+    private String getRoomSubscriptionKey(Long chatRoomId) {
+        return "room:subscribed:" + chatRoomId;
     }
 
 }

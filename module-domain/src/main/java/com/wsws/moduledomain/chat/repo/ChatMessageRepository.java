@@ -18,4 +18,6 @@ public interface ChatMessageRepository {
     Optional<ChatMessage> findTopByChatRoomIdOrderByCreatedAtDesc(Long chatRoomId);
 
     long countUnreadMessages(Long chatRoomId,String userId);
+
+    void saveAll(List<ChatMessage> messages);
 }

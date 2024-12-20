@@ -29,4 +29,8 @@ public interface RedisService {
     String getUserBySessionId(String sessionId);
 
     void removeSessionUserMapping(String sessionId);
+
+    boolean isRoomSubscribed(Long chatRoomId);
+
+    void markRoomAsSubscribed(Long chatRoomId);
 }

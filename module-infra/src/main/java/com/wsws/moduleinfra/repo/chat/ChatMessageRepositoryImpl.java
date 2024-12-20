@@ -60,5 +60,24 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepository {
         return jpaChatMessageRepository.countUnreadMessages(chatRoomId, userId);
     }
 
+    @Override
+    public void saveAll(List<ChatMessage> messages) {
+        //모든 메시지가 동일한 chatRoomId
+        Long chatRoomId = messages.get(0).getChatRoomId();
+
+        ChatRoomEntity chatRoomEntity = jpaChatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("ChatRoom not found for ID " + chatRoomId));
+
+        //ChatMessage -> ChatMessageEntity 변환
+        List<ChatMessageEntity> entities = messages.stream()
+                .map(chatMessage -> {
+                    ChatMessageEntity entity = ChatMessageMapper.toEntity(chatMessage);
+                    entity.setChatRoom(chatRoomEntity); // 연관관계 설정
+                    return entity;
+                }).toList();
+
+        jpaChatMessageRepository.saveAll(entities);
+
+    }
 
 }
