@@ -35,16 +35,20 @@ public class NotificationEntity {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = true)
+    private String url;
+
     @Column(nullable = false)
     private boolean isRead;
 
 
-    public static NotificationEntity create(String type, String content, String sender, String recipient) {
+    public static NotificationEntity create(String type, String content, String sender, String recipient, String url) {
         NotificationEntity notification = new NotificationEntity();
         notification.type = type;
         notification.content = content;
         notification.sender = sender;
         notification.recipient = recipient;
+        notification.url = url;
         notification.isRead = false;
         notification.createdAt = LocalDateTime.now();
         return notification;

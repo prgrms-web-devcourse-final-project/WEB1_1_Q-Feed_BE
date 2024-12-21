@@ -32,7 +32,7 @@ public class NotificationRepositoryImpl implements NotificationRepository {
                         entity.getSender(),
                         entity.getRecipient(),
                         entity.isRead(),
-                        null, // URL은 ServiceResponse에서 생성
+                        entity.getUrl(),
                         null, // targetId, commentId, groupId  엔티티에 저장x
                         null,
                         null

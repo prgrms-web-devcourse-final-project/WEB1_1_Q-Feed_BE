@@ -17,7 +17,14 @@ import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.feed.like.LikeRepository;
 import com.wsws.moduledomain.feed.like.TargetType;
+import com.wsws.moduledomain.notification.Notification;
+import com.wsws.moduledomain.notification.repo.NotificationRepository;
+import com.wsws.moduledomain.usercontext.user.aggregate.User;
+import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
 import com.wsws.moduledomain.usercontext.user.vo.UserId;
+import com.wsws.moduleexternalapi.fcm.dto.fcmRequestDto;
+import com.wsws.moduleexternalapi.fcm.service.FcmService;
+import com.wsws.moduleexternalapi.fcm.util.FcmType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +39,9 @@ public class GroupPostService {
     private final FileStorageService fileStorageService;
     private final LikeRepository likeRepository;
     private final GroupCommentRepository groupCommentRepository;
+    private final NotificationRepository notificationRepository;
+    private final FcmService fcmService;
+    private final UserRepository userRepository;
 
     // 게시물 생성
     @Transactional
@@ -78,6 +88,9 @@ public class GroupPostService {
     @Transactional
     public void addLikeToGroupPost(LikeServiceRequest request) {
         handleLikeAction(request, true); // 좋아요 추가 처리
+
+        // 좋아요 알림 전송
+        sendLikeNotification(request.userId(), request.targetId(), "GROUP_POST_LIKE");
     }
 
     @Transactional
@@ -150,5 +163,43 @@ public class GroupPostService {
         if (!groupPost.getUserId().equals(UserId.of(userId))) {
             throw new IllegalStateException("권한이 있는 사용자가 아닙니다. 본인 게시글만 삭제 가능합니다.");
         }
+    }
+
+    // 좋아요 알림 전송
+    private void sendLikeNotification(String likerId, Long groupPostId, String notificationType) {
+        // 좋아요 누른 사용자 조회
+        User liker = userRepository.findById(UserId.of(likerId))
+                .orElseThrow(() -> new IllegalArgumentException("좋아요를 누른 사용자를 찾을 수 없습니다."));
+
+        // 게시글 작성자 조회
+        GroupPost groupPost = groupPostRepository.findById(groupPostId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        User postAuthor = userRepository.findById(UserId.of(groupPost.getUserId().getValue()))
+                .orElseThrow(() -> new IllegalArgumentException("게시글 작성자를 찾을 수 없습니다."));
+
+        // 알림 내용 생성
+        String title = fcmService.makeFcmTitle(FcmType.Q_SPACE_POST_LIKE.getType());
+        String body = fcmService.makeLikeBody(liker.getNickname().getValue(),FcmType.Q_SPACE_POST_LIKE.getType());
+        fcmRequestDto fcmDTO = fcmService.makeFcmDTO(title, body);
+
+        // URL 생성
+        String url = "/groups/posts/" + groupPostId;
+
+        // 알림 저장
+        Notification notification = Notification.create(
+                null,
+                FcmType.Q_SPACE_POST_LIKE.getType(),
+                liker.getNickname().getValue(),
+                postAuthor.getNickname().getValue(),
+                body,
+                groupPostId,
+                null, // 댓글 ID 없음
+                groupPost.getGroupId().getValue(),
+                url
+        );
+        notificationRepository.save(notification);
+
+        // FCM 전송
+        fcmService.fcmSend(postAuthor.getNickname().getValue(), fcmDTO);
     }
 }

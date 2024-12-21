@@ -16,7 +16,8 @@ public class NotificationEntityMapper {
                 entity.getContent(),
                 null,
                 null,
-                null
+                null,
+                entity.getUrl()
         );
     }
 
@@ -27,7 +28,8 @@ public class NotificationEntityMapper {
                 notification.getType(),
                 notification.getContent().getValue(),
                 notification.getSender().getValue(),
-                notification.getRecipient().getValue()
+                notification.getRecipient().getValue(),
+                notification.getUrl()
         );
     }
 }

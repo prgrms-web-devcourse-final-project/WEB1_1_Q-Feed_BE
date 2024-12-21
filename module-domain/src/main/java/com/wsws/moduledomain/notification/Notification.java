@@ -1,5 +1,6 @@
 package com.wsws.moduledomain.notification;
 
+import com.wsws.moduledomain.group.vo.GroupId;
 import com.wsws.moduledomain.notification.vo.NotificationContent;
 import com.wsws.moduledomain.notification.vo.NotificationId;
 import com.wsws.moduledomain.usercontext.user.vo.UserId;
@@ -21,9 +22,10 @@ public class Notification {
     private LocalDateTime createdAt;
     private Long targetId; // 게시글 ID 또는 댓글이 달린 게시글 ID
     private Long commentId; // 댓글 ID (댓글 알림인 경우)
-    private Long groupId; // 그룹 ID (그룹 알림인 경우)
+    private GroupId groupId; // 그룹 ID (그룹 알림인 경우)
+    private String url;
 
-    public static Notification create(Long notificationId,String type, String sender, String recipient, String content, Long targetId, Long commentId, Long groupId ) {
+    public static Notification create(Long notificationId,String type, String sender, String recipient, String content, Long targetId, Long commentId, Long groupId, String url ) {
         Notification notification = new Notification();
         notification.notificationId = NotificationId.of(notificationId);
         notification.type = type;
@@ -33,7 +35,8 @@ public class Notification {
         notification.content = NotificationContent.from(content);
         notification.targetId = targetId;
         notification.commentId = commentId;
-        notification.groupId = groupId;
+        notification.groupId = GroupId.of(groupId);
+        notification.url = url;
         return notification;
     }
 
