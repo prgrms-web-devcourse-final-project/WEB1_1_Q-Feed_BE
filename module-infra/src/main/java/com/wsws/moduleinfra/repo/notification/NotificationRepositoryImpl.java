@@ -38,9 +38,6 @@ public class NotificationRepositoryImpl implements NotificationRepository {
                         null
                 ))
                 .collect(Collectors.toList());
-//                .stream()
-//                .map(mapper::toDomain)
-//                .collect(Collectors.toList());
     }
 
     @Override

@@ -21,7 +21,6 @@ public class NotificationService {
         return notificationRepository.findByRecipientIdAndIsReadFalse(recipientId).stream()
                 .map(NotificationServiceResponse::new)
                 .toList();
-//                .collect(Collectors.toList());
     }
 
     // 개별 읽음 처리
@@ -38,8 +37,5 @@ public class NotificationService {
     @Transactional
     public void markAllAsRead(String recipientId) {
         notificationRepository.markAllAsReadByRecipientId(recipientId);
-
     }
-
-
 }
