@@ -1,5 +1,6 @@
 package com.wsws.moduledomain.chat;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wsws.moduledomain.chat.vo.Content;
 import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ChatMessage {
     private Long id;
     private Content content;

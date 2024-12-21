@@ -1,7 +1,10 @@
 package com.wsws.moduledomain.chat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wsws.moduledomain.usercontext.user.aggregate.User;
+
+import java.time.LocalDateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record ChatMessageDomainResponse(
@@ -12,8 +15,9 @@ public record ChatMessageDomainResponse(
         String senderProfileImage,
         String content,
         String type,
-        String url
-        //LocalDateTime createdAt
+        String url,
+        //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS")
+        LocalDateTime createdAt
 
 ) {
     public static ChatMessageDomainResponse createFrom(ChatMessage chatMessage, User sender) {
@@ -25,8 +29,8 @@ public record ChatMessageDomainResponse(
                 sender.getProfileImage(),
                 chatMessage.getContent().getValue(),
                 chatMessage.getType().name(),
-                chatMessage.getUrl()
-                //chatMessage.getCreatedAt()
+                chatMessage.getUrl(),
+                chatMessage.getCreatedAt()
         );
     }
 }

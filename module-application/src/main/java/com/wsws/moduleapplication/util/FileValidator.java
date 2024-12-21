@@ -15,7 +15,7 @@ public class FileValidator {
     );
 
     private static final Map<String, String[]> ALLOWED_FORMATS = Map.of(
-            "image", new String[]{"image/jpeg", "image/png", "image/gif"},
+            "image", new String[]{"image/jpeg", "image/png", "image/gif","image/jpg"},
             "audio", new String[]{"audio/mpeg", "audio/wav"}
     );
 

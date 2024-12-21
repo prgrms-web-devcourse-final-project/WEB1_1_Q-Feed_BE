@@ -9,13 +9,11 @@ import java.time.LocalDateTime;
 public record WebSocketChatRequest(
         Long roomId,
         String senderId,
-        String message
-//        MessageType type,
-//        MultipartFile url,
-//        LocalDateTime createdAt
+        String message,
+        MessageType type,
+        String url
         ) {
     public ChatMessageRequest toChatMessageRequest() {
-        return new ChatMessageRequest(this.message());
+        return new ChatMessageRequest(this.message(), this.type(), this.url());
     }
-
 }
