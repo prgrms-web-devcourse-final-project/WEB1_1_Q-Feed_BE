@@ -50,7 +50,7 @@ public class ChatMessageService {
         validateChatRoom(chatRoomId);
         User user = validateUser(senderId);
 
-//        String fileProcess = processFile(request.file(),request.type());
+        //String fileProcess = processFile(request.file(),request.type());
 
         // 메시지 생성
         ChatMessage chatMessage = createChatMessage(chatRoomId, senderId, request);
@@ -84,8 +84,8 @@ public class ChatMessageService {
         return ChatMessage.create(
                 null,
                 request.content(),
-                MessageType.TEXT,
-                null,
+                request.type(),
+                request.file(),
                 false,
                 LocalDateTime.now(),
                 senderId,
@@ -116,12 +116,14 @@ public class ChatMessageService {
 
     //이미지 or 음성 처리
     private String processFile(MultipartFile file, MessageType type) {
+        System.out.println("!11111111");
         if (file != null && !file.isEmpty()) {
             try {
                 // 타입에 따른 파일 검증 및 저장 처리
                 switch (type) {
                     case IMAGE -> {
                         FileValidator.validate(file,"image");
+                        System.out.println("!222222222222");
                         return fileStorageService.saveFile(file);
                     }
                     case AUDIO -> {
