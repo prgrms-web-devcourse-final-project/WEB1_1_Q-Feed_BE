@@ -26,7 +26,7 @@ public class NotificationController {
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         String recipientId = userPrincipal.getId();
-        List<NotificationServiceResponse> serviceResponses = notificationService.getUnreadNotifications(recipientId);
+        List<NotificationServiceResponse> serviceResponses = notificationService.getNotifications(recipientId);
 
         // Application 계층의 DTO를 API 전용 DTO로 변환
         List<NotificationApiResponse> apiResponses = serviceResponses.stream()

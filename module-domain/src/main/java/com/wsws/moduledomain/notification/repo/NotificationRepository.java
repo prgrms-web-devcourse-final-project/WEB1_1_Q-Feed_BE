@@ -3,6 +3,7 @@ package com.wsws.moduledomain.notification.repo;
 import com.wsws.moduledomain.notification.Notification;
 import com.wsws.moduledomain.notification.dto.NotificationDto;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,4 +17,6 @@ public interface NotificationRepository {
     void markAllAsReadByRecipientId(String recipientId);
 
     void edit(Notification notification);
+
+    List<NotificationDto> findByRecipientId(String recipientId);
 }

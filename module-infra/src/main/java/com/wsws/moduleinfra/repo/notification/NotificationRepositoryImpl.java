@@ -71,4 +71,23 @@ public class NotificationRepositoryImpl implements NotificationRepository {
         // 읽음 상태로 수정
         entity.markAsRead();
     }
+
+    @Override
+    public List<NotificationDto> findByRecipientId(String recipientId) {
+        return jpaRepository.findByRecipient(recipientId)
+                .stream()
+                .map(entity -> new NotificationDto(
+                        entity.getId(),
+                        entity.getType(),
+                        entity.getContent(),
+                        entity.getSender(),
+                        entity.getRecipient(),
+                        entity.isRead(),
+                        entity.getUrl(),
+                        null, // targetId, commentId, groupId 엔티티에 저장x
+                        null,
+                        null
+                ))
+                .collect(Collectors.toList());
+    }
 }
