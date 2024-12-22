@@ -1,6 +1,5 @@
 package com.wsws.moduledomain.notification.vo;
 
-import com.wsws.modulecommon.exception.DomainException;
 import com.wsws.moduledomain.notification.exception.EmptyNotificationException;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -14,13 +13,17 @@ import lombok.NoArgsConstructor;
 @Getter
 public class NotificationContent {
 
-    private String content;
+    private String value;
 
-    public NotificationContent(String content) {
+    private NotificationContent(String content) {
         if (content == null || content.isBlank()){
             throw EmptyNotificationException.EXCEPTION;
         }
-        this.content = content;
+        this.value = content;
+    }
+
+    public static NotificationContent from(String content) {
+        return new NotificationContent(content);
     }
 }
 

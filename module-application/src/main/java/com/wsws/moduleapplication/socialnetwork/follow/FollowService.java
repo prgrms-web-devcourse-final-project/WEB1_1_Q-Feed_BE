@@ -48,7 +48,7 @@ public class FollowService {
         evictFollowerFollowingCache(followerId, followeeId);
 
         // 알림 저장 및 FCM 전송
-//        sendFollowNotification(followerId, followeeId);
+        sendFollowNotification(followerId, followeeId);
     }
 
     @Transactional
@@ -79,12 +79,22 @@ public class FollowService {
         String body = fcmService.makeFollowBody(followeeUser.getNickname().getValue(), FcmType.FOLLOW.getType());
         fcmRequestDto fcmDTO = fcmService.makeFcmDTO(title, body);
 
+        // URL 생성
+        String url = "/users/" + followerId;
+        
         // 알림 저장
-        Notification notification = Notification.builder()
-                .type(FcmType.FOLLOW.getType())
-                .sender(followeeUser.getNickname().getValue())
-                .recipient(followerUser.getNickname().getValue())
-                .build();
+        Notification notification = Notification.create(
+                null,
+                FcmType.FOLLOW.getType(),
+                followeeUser.getNickname().getValue(),
+                followerUser.getNickname().getValue(),
+                body,
+                null, //팔로우 알림엔 필요 없음 null 처리
+                null,
+                null,
+                url
+        );
+
         notificationRepository.save(notification);
 
         // FCM 전송

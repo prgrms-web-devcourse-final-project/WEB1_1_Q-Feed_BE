@@ -32,7 +32,7 @@ public class FcmService {
     }
 
     // 메시지 생성
-    public Message makeMessage(fcmRequestDto fcmRequestDto, String token){ // 나중에 토큰도 추가
+    public Message makeMessage(fcmRequestDto fcmRequestDto, String token){
         Notification.Builder notificationBuilder =
                 Notification.builder()
                         .setTitle(fcmRequestDto.title())
@@ -71,7 +71,7 @@ public class FcmService {
         return sender
                 + " 님이 회원님을" + type + " 했습니다." ;
     }
-    // 좋아요 알림 본문 생성
+    // 좋아요 알림 본문 생성 (피드 : answer/comment)
     public String makeLikeBody(String sender, String type) {
         return sender + " 님이 회원님의 글에" + type +"를 눌렀습니다." ;
     }
@@ -83,7 +83,7 @@ public class FcmService {
     public String makeCommentBody(String sender, String type) {
         return sender + " 님이 회원님의 글에 "+ type +"을 남겼습니다.";
     }
-    // Q-SPACE 내 좋아요 알림 본문 생성
+    // Q-SPACE 내 좋아요 알림 본문 생성 (그룹 : post/comment)
     public String makeQLikeBody(String sender, String type) {
         return "Q_SPACE 멤버 "+ sender + " 님이 회원님의 글에" + type +"를 눌렀습니다.";
     }

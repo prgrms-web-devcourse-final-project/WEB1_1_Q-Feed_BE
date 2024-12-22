@@ -11,6 +11,7 @@ import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.ProfileImageProcessingException;
+import com.wsws.moduleapplication.usercontext.user.exception.UserNotFoundException;
 import com.wsws.moduleapplication.util.FileValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.feed.answer.Answer;
@@ -18,6 +19,14 @@ import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.feed.like.LikeRepository;
 import com.wsws.moduledomain.feed.like.TargetType;
+import com.wsws.moduledomain.notification.Notification;
+import com.wsws.moduledomain.notification.repo.NotificationRepository;
+import com.wsws.moduledomain.usercontext.user.aggregate.User;
+import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
+import com.wsws.moduledomain.usercontext.user.vo.UserId;
+import com.wsws.moduleexternalapi.fcm.dto.fcmRequestDto;
+import com.wsws.moduleexternalapi.fcm.service.FcmService;
+import com.wsws.moduleexternalapi.fcm.util.FcmType;
 import com.wsws.moduleinfra.aop.DistributedLock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -32,8 +41,11 @@ import java.time.LocalDateTime;
 public class AnswerService {
     private final AnswerRepository answerRepository;
     private final LikeRepository likeRepository;
-
     private final FileStorageService fileStorageService;
+    private final NotificationRepository notificationRepository;
+    private final FcmService fcmService;
+    private final UserRepository userRepository;
+
 
     /**
      * 답변 생성
@@ -128,6 +140,8 @@ public class AnswerService {
 
         // 수정 반영
         answerRepository.edit(answer);
+        // 답변 좋아요 알림 전송
+        sendAnswerLikeNotification(request.userId(), answer);
 
     }
 
@@ -153,6 +167,44 @@ public class AnswerService {
 
 
     /* private 메서드 */
+
+    // 답변 좋아요 알림 전송
+    private void sendAnswerLikeNotification(String likerId, Answer answer) {
+        // 좋아요 누른 사용자 조회
+        User liker = userRepository.findById(UserId.of(likerId))
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
+
+
+        // 답변 작성자 조회
+        User answerAuthor = userRepository.findById(answer.getUserId())
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
+
+        // 알림 내용 생성
+        String title = fcmService.makeFcmTitle(FcmType.ANSWER_LIKE.getType());
+        String body = fcmService.makeLikeBody(liker.getNickname().getValue(), FcmType.ANSWER_LIKE.getType());
+        fcmRequestDto fcmDTO = fcmService.makeFcmDTO(title, body);
+
+        // URL 생성
+        String url = "/feed/answers/" + answer.getAnswerId().getValue();
+
+        // 알림 저장
+        Notification notification = Notification.create(
+                null,
+                FcmType.ANSWER_LIKE.getType(),
+                liker.getNickname().getValue(),
+                answerAuthor.getNickname().getValue(),
+                body,
+                answer.getAnswerId().getValue(), // targetId는 답변 ID
+                null, // commentId는 null
+                null,  // 그룹 관련 없음
+                url
+        );
+
+        notificationRepository.save(notification);
+
+        // FCM 전송
+        fcmService.fcmSend(answerAuthor.getNickname().getValue(), fcmDTO);
+    }
 
     // 이미지 처리
     private String processImage(MultipartFile image) {

@@ -1,22 +1,26 @@
 package com.wsws.moduleapplication.notification.dto;
 
-import com.wsws.moduledomain.notification.Notification;
+import com.wsws.moduledomain.notification.dto.NotificationDto;
 
 public record NotificationServiceResponse(
-        Long id,
+        Long notificationId,
         String type,
+        String content,
         String sender,
         String recipient,
-        boolean isRead
+        boolean isRead,
+        String url
 ) {
 
-    public NotificationServiceResponse(Notification notification) {
+    public NotificationServiceResponse(NotificationDto dto) {
         this(
-                notification.getId(),
-                notification.getType(),
-                notification.getSender(),
-                notification.getRecipient(),
-                notification.isRead()
+                dto.notificationId(),
+                dto.type(),
+                dto.content(),
+                dto.sender(),
+                dto.recipient(),
+                dto.isRead(),
+                dto.url()
         );
     }
 }
