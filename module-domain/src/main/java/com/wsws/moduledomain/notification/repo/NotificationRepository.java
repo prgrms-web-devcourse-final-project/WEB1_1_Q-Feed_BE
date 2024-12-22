@@ -3,7 +3,6 @@ package com.wsws.moduledomain.notification.repo;
 import com.wsws.moduledomain.notification.Notification;
 import com.wsws.moduledomain.notification.dto.NotificationDto;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
