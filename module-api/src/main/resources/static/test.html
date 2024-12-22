@@ -13,7 +13,7 @@
 
     function connect() {
         // Use native WebSocket instead of SockJS
-        const socket = new WebSocket('wss://q-feed.n-e.kr/ws');
+        const socket = new WebSocket('ws://localhost:8080/ws');
 
         stompClient = Stomp.over(socket);
 
@@ -26,7 +26,7 @@
             // Subscribe to a topic
             stompClient.subscribe('/sub/chat/13', (message) => {
                 console.log('Received: ' + message.body);
-            });
+            }, { senderId: '18312fd3-a56f-4b91-80d2-dab72c584857'});
         }, (error) => {
             console.error('Error during STOMP connection:', error);
         });
@@ -37,8 +37,10 @@
             // Send a message to the destination endpoint
             const payload = JSON.stringify({
                 roomId: 13,
-                senderId: '18312fd3-a56f-4b91-80d2-dab72c584857',
-                message: 'Hello, STOMP!'
+                senderId: 'abac57c8-4039-4c17-91fe-e9114c6c59ff',
+                message: '@@Hello, STOMP!',
+                type:'IMAGE',
+                url:'877babe8-1e3a-4be5-baf9-30347e50dfa3_Retriever25.jpg'
             });
             stompClient.send('/pub/chat/message', {}, payload);
         } else {
