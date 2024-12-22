@@ -179,7 +179,7 @@ public class GroupPostService {
 
         // 알림 내용 생성
         String title = fcmService.makeFcmTitle(FcmType.Q_SPACE_POST_LIKE.getType());
-        String body = fcmService.makeLikeBody(liker.getNickname().getValue(),FcmType.Q_SPACE_POST_LIKE.getType());
+        String body = fcmService.makeQLikeBody(liker.getNickname().getValue(),FcmType.Q_SPACE_POST_LIKE.getType());
         fcmRequestDto fcmDTO = fcmService.makeFcmDTO(title, body);
 
         // URL 생성

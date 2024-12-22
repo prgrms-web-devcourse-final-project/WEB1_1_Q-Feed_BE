@@ -162,7 +162,7 @@ public class GroupCommentService {
                 .orElseThrow(() -> new IllegalArgumentException("게시글 작성자를 찾을 수 없습니다."));
 
         String title = fcmService.makeFcmTitle(FcmType.Q_SPACE_POST_COMMENT.getType());
-        String body = fcmService.makeCommentBody(commenter.getNickname().getValue(), FcmType.Q_SPACE_POST_COMMENT.getType());
+        String body = fcmService.makeQCommentBody(commenter.getNickname().getValue(), FcmType.Q_SPACE_POST_COMMENT.getType());
         fcmRequestDto fcmDTO = fcmService.makeFcmDTO(title, body);
 
         String url = generateCommentUrl(groupPost.getGroupPostId(), commentId);
@@ -196,7 +196,7 @@ public class GroupCommentService {
 
         // 알림 내용 생성
         String title = fcmService.makeFcmTitle(FcmType.Q_SPACE_COMMENT_LIKE.getType());
-        String body = fcmService.makeLikeBody(liker.getNickname().getValue(), FcmType.Q_SPACE_COMMENT_LIKE.getType());
+        String body = fcmService.makeQLikeBody(liker.getNickname().getValue(), FcmType.Q_SPACE_COMMENT_LIKE.getType());
         fcmRequestDto fcmDTO = fcmService.makeFcmDTO(title, body);
 
         // URL 생성
