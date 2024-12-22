@@ -35,7 +35,7 @@ public class NotificationEntity {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = true)
+    @Column
     private String url;
 
     @Column(nullable = false)

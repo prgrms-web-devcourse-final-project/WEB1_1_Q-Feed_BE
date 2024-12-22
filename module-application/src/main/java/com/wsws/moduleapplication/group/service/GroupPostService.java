@@ -90,7 +90,7 @@ public class GroupPostService {
         handleLikeAction(request, true); // 좋아요 추가 처리
 
         // 좋아요 알림 전송
-        sendLikeNotification(request.userId(), request.targetId(), "GROUP_POST_LIKE");
+        sendLikeNotification(request.userId(), request.targetId());
     }
 
     @Transactional
@@ -166,7 +166,7 @@ public class GroupPostService {
     }
 
     // 좋아요 알림 전송
-    private void sendLikeNotification(String likerId, Long groupPostId, String notificationType) {
+    private void sendLikeNotification(String likerId, Long groupPostId) {
         // 좋아요 누른 사용자 조회
         User liker = userRepository.findById(UserId.of(likerId))
                 .orElseThrow(() -> new IllegalArgumentException("좋아요를 누른 사용자를 찾을 수 없습니다."));

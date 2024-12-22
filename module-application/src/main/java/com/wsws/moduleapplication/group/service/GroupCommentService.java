@@ -90,7 +90,7 @@ public class GroupCommentService {
         handleLikeAction(request, false); // 좋아요 취소 처리
 
         // 좋아요 알림 전송
-        sendLikeNotification(request.userId(), request.targetId(), "GROUP_COMMENT_LIKE");
+        sendLikeNotification(request.userId(), request.targetId());
     }
 
     // 좋아요 추가/취소 처리 통합 메서드
@@ -184,7 +184,7 @@ public class GroupCommentService {
     }
 
     // 댓글 좋아요 알림 전송
-    private void sendLikeNotification(String likerId, Long commentId, String notificationType) {
+    private void sendLikeNotification(String likerId, Long commentId) {
         // 좋아요 누른 사용자 조회
         User liker = userRepository.findById(UserId.of(likerId))
                 .orElseThrow(() -> new IllegalArgumentException("좋아요를 누른 사용자를 찾을 수 없습니다."));
