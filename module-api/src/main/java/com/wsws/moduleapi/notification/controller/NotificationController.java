@@ -20,7 +20,7 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @Operation(summary = "읽지 않은 알림 조회", description = "로그인한 사용자의 읽지 않은 알림을 조회합니다.")
+    @Operation(summary = " 알림 조회", description = "로그인한 사용자의 알림을 조회합니다.")
     @GetMapping
     public ResponseEntity<List<NotificationApiResponse>> getUnreadNotifications(
             @AuthenticationPrincipal UserPrincipal userPrincipal
