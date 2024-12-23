@@ -1,12 +1,14 @@
 package com.wsws.moduleinfra.repo.notification;
 
 import com.wsws.moduleinfra.entity.notification.NotificationEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -19,4 +21,10 @@ public interface JpaNotificationRepository extends JpaRepository<NotificationEnt
     void markAllAsReadByRecipientId(@Param("recipientId") String recipientId);
 
     List<NotificationEntity> findByRecipient(String recipientId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM NotificationEntity n WHERE n.createdAt < :thresholdDate")
+    int deleteNotificationsOlderThan(@Param("thresholdDate") LocalDateTime thresholdDate);
+
 }

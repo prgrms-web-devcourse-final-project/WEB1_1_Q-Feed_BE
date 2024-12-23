@@ -18,4 +18,6 @@ public interface NotificationRepository {
     void edit(Notification notification);
 
     List<NotificationDto> findByRecipientId(String recipientId);
+
+    int deleteNotificationsOlderThan(int i);
 }
