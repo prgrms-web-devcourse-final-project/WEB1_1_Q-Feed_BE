@@ -189,8 +189,8 @@ public class GroupPostService {
         Notification notification = Notification.create(
                 null,
                 FcmType.Q_SPACE_POST_LIKE.getType(),
-                liker.getNickname().getValue(),
-                postAuthor.getNickname().getValue(),
+                liker.getId().getValue(),
+                postAuthor.getId().getValue(),
                 body,
                 groupPostId,
                 null, // 댓글 ID 없음

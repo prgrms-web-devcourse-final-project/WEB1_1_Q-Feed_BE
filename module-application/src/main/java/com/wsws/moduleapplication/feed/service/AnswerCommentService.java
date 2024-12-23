@@ -202,8 +202,8 @@ public class AnswerCommentService {
         Notification notification = Notification.create(
                 null,
                 FcmType.ANSWER_COMMENT.getType(),
-                commenter.getNickname().getValue(),
-                answerAuthor.getNickname().getValue(),
+                commenter.getId().getValue(),
+                answerAuthor.getId().getValue(),
                 body,
                 answer.getAnswerId().getValue(), // targetId에 답변 ID 저장
                 null, // commentId는 댓글 상세 조회 시 추가 가능
@@ -238,8 +238,8 @@ public class AnswerCommentService {
         Notification notification = Notification.create(
                 null,
                 FcmType.COMMENT_LIKE.getType(),
-                liker.getNickname().getValue(),
-                commentAuthor.getNickname().getValue(),
+                liker.getId().getValue(),
+                commentAuthor.getId().getValue(),
                 body,
                 answerComment.getAnswerId().getValue(), // targetId에 댓글이 달린 답변 ID 저장
                 answerComment.getAnswerCommentId().getValue(), // commentId에 댓글 ID 저장

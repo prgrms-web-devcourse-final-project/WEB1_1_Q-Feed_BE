@@ -158,7 +158,7 @@ public class GroupCommentService {
         User commenter = userRepository.findById(UserId.of(commenterId))
                 .orElseThrow(() -> new IllegalArgumentException("댓글 작성자를 찾을 수 없습니다."));
 
-        User postAuthor = userRepository.findById(UserId.of(groupPost.getUserId().toString()))
+        User postAuthor = userRepository.findById(UserId.of(groupPost.getUserId().getValue()))
                 .orElseThrow(() -> new IllegalArgumentException("게시글 작성자를 찾을 수 없습니다."));
 
         String title = fcmService.makeFcmTitle(FcmType.Q_SPACE_POST_COMMENT.getType());
@@ -170,8 +170,8 @@ public class GroupCommentService {
         Notification notification = Notification.create(
                 null,
                 FcmType.Q_SPACE_POST_COMMENT.getType(),
-                commenter.getNickname().getValue(),
-                postAuthor.getNickname().getValue(),
+                commenter.getId().getValue(),
+                postAuthor.getId().getValue(),
                 body,
                 groupPost.getGroupPostId(),
                 commentId,
@@ -206,8 +206,8 @@ public class GroupCommentService {
         Notification notification = Notification.create(
                 null,
                 FcmType.Q_SPACE_COMMENT_LIKE.getType(),
-                liker.getNickname().getValue(),
-                commentAuthor.getNickname().getValue(),
+                liker.getId().getValue(),
+                commentAuthor.getId().getValue(),
                 body,
                 comment.getGroupPostId(),
                 commentId,

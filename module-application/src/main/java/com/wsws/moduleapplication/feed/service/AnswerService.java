@@ -191,8 +191,8 @@ public class AnswerService {
         Notification notification = Notification.create(
                 null,
                 FcmType.ANSWER_LIKE.getType(),
-                liker.getNickname().getValue(),
-                answerAuthor.getNickname().getValue(),
+                liker.getId().getValue(),
+                answerAuthor.getId().getValue(),
                 body,
                 answer.getAnswerId().getValue(), // targetId는 답변 ID
                 null, // commentId는 null

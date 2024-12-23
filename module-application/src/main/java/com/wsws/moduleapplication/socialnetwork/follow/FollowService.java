@@ -86,8 +86,8 @@ public class FollowService {
         Notification notification = Notification.create(
                 null,
                 FcmType.FOLLOW.getType(),
-                followeeUser.getNickname().getValue(),
-                followerUser.getNickname().getValue(),
+                followeeUser.getId().getValue(),
+                followerUser.getId().getValue(),
                 body,
                 null, //팔로우 알림엔 필요 없음 null 처리
                 null,
