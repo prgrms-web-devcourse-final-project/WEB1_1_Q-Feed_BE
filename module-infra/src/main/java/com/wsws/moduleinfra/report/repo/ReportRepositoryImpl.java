@@ -29,4 +29,21 @@ public class ReportRepositoryImpl implements ReportRepository {
                 .map(ReportEntityMapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<Report> findAllReports() {
+        List<ReportEntity> reports = jpaReportRepository.findAll();
+
+        return reports.stream()
+                .map(ReportEntityMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public Long countByReportedUserId(String userId) {
+        Long count = jpaReportRepository.countByReportedUserId(userId);
+        return count;
+    }
+
+
 }
