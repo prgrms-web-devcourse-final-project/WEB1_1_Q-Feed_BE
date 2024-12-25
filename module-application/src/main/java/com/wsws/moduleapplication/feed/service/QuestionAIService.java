@@ -67,17 +67,17 @@ public class QuestionAIService {
         // CREATED 상태 질문이 없다는 것은 질문 생성이 실패했다는 뜻이므로 갱신 작업을 진행하면 안됨.
         if(dailyQuestions.isEmpty()) return;
 
-        // 오늘 질문들 활성화
-        dailyQuestions
-                .forEach(question -> {
-                    question.activateQuestion();
-                    questionRepository.edit(question);
-                });
-
         // 어제 질문들 비활성화
         questionRepository.findByQuestionStatus(QuestionStatus.ACTIVATED)
                 .forEach(question -> {
                     question.inactivateQuestion();
+                    questionRepository.edit(question);
+                });
+
+        // 오늘 질문들 활성화
+        dailyQuestions
+                .forEach(question -> {
+                    question.activateQuestion();
                     questionRepository.edit(question);
                 });
 
