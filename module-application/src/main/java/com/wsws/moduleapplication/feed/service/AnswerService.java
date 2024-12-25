@@ -77,11 +77,7 @@ public class AnswerService {
 
         answer.editAnswer(request.content(), request.visibility(), url);
 
-        try {
-            answerRepository.edit(answer);
-        } catch (RuntimeException e) {
-            throw AnswerNotFoundException.EXCEPTION;
-        }
+        answerRepository.edit(answer);
     }
 
     /**
