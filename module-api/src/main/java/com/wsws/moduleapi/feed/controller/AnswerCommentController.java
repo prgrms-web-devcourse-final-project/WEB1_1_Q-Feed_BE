@@ -42,8 +42,8 @@ public class AnswerCommentController {
     public ResponseEntity<AnswerCommentPostApiResponse> postAnswerComment(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody AnswerCommentPostApiRequest request) {
-//        String userId = userPrincipal.getId();
-        String userId = "user_id1";
+        String userId = userPrincipal.getId();
+//        String userId = "user_id1";
         AnswerCommentCreateServiceResponse answerComment =
                 answerCommentService.createAnswerComment(request.toServiceDto(userId));
         return ResponseEntity.status(201).body(new AnswerCommentPostApiResponse(answerComment.answerCommentId(), "댓글이 추가되었습니다."));
