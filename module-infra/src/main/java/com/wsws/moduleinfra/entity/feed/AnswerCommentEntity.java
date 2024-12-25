@@ -23,7 +23,7 @@ public class AnswerCommentEntity {
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "answer_id")
+    @JoinColumn(name = "answer_id", nullable = false)
     private AnswerEntity answerEntity;
 
     @Column(nullable = false)

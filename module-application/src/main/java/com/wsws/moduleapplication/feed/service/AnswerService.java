@@ -8,6 +8,7 @@ import com.wsws.moduleapplication.feed.exception.AlreadyAnswerWrittenException;
 import com.wsws.moduleapplication.feed.exception.AnswerChangeNotAllowedException;
 import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
+import com.wsws.moduleapplication.feed.exception.QuestionNotFoundException;
 import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.ProfileImageProcessingException;
@@ -19,6 +20,7 @@ import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.feed.like.LikeRepository;
 import com.wsws.moduledomain.feed.like.TargetType;
+import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
 import com.wsws.moduledomain.notification.Notification;
 import com.wsws.moduledomain.notification.repo.NotificationRepository;
 import com.wsws.moduledomain.usercontext.user.aggregate.User;
@@ -41,6 +43,7 @@ import java.time.LocalDateTime;
 public class AnswerService {
     private final AnswerRepository answerRepository;
     private final LikeRepository likeRepository;
+    private final QuestionRepository questionRepository;
     private final FileStorageService fileStorageService;
     private final NotificationRepository notificationRepository;
     private final FcmService fcmService;
@@ -52,6 +55,8 @@ public class AnswerService {
      */
     @Transactional
     public AnswerCreateServiceResponse createAnswer(AnswerCreateServiceRequest request) {
+
+        questionRepository.findById(request.questionId()).orElseThrow(() -> QuestionNotFoundException.EXCEPTION);// 존재하는 질문인지 검증
 
         validateAlreadyAnswerWritten(request.userId(), request.questionId()); // 이미 답변을 작성한 적이 있는 질문인지 검증
 
@@ -89,11 +94,7 @@ public class AnswerService {
 
         answer.editAnswer(request.content(), request.visibility(), url);
 
-        try {
-            answerRepository.edit(answer);
-        } catch (RuntimeException e) {
-            throw AnswerNotFoundException.EXCEPTION;
-        }
+        answerRepository.edit(answer);
     }
 
     /**

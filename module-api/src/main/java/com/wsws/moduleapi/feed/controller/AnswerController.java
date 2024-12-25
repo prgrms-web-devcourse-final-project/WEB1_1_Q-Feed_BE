@@ -41,7 +41,7 @@ public class AnswerController {
      * 답변 목록 조회
      */
     @GetMapping
-    @Operation(summary = "답변 목록 조회", description = "답변의 목록을 최신순으로 조회합니다. " +
+    @Operation(summary = "답변 목록 조회", description = "오늘의 질문에 대한 답변목록을 최신순으로 조회합니다. " +
             "카테고리 Id를 넣지 않을 시 카테고리 상관없이 전체 글이 최신순으로 조회됩니다. " +
             "댓글의 상세내용은 제공되지 않습니다.")
     @ApiResponses(value = {
@@ -146,8 +146,8 @@ public class AnswerController {
     @Operation(summary = "답변 상세 조회", description = "답변의 상세목록을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "답변 조회 성공"),
-            @ApiResponse(responseCode = "404", description = "없는 답변 일 때", content = @Content),
-            @ApiResponse(responseCode = "404", description = "작성자 정보를 찾을 수 없을 때", content = @Content)
+            @ApiResponse(responseCode = "404_1", description = "없는 답변 일 때", content = @Content),
+            @ApiResponse(responseCode = "404_2", description = "작성자 정보를 찾을 수 없을 때", content = @Content)
     })
     public ResponseEntity<AnswerGetApiResponse> getAnswers(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
@@ -156,7 +156,7 @@ public class AnswerController {
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "2") int size
     ) {
         String userId = userPrincipal.getId();
-//        String reqUserId = "user_id1";
+//        String userId = "user_id1";
 
         LocalDateTime parsedCursor = commentCursor != null ? LocalDateTime.parse(commentCursor) : LocalDateTime.now();
 
