@@ -1,7 +1,5 @@
 package com.wsws.moduleinfra.repo.feed;
 
-import com.wsws.moduledomain.feed.answer.Answer;
-import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Pageable;
@@ -61,25 +59,48 @@ public interface JpaAnswerRepository extends JpaRepository<AnswerEntity, Long> {
 
 
     @Query("""
-            SELECT a 
-            FROM AnswerEntity a join fetch a.questionEntity q 
-            WHERE a.userId = :userId 
-            AND a.createdAt < :answerCursor 
+            SELECT a
+            FROM AnswerEntity a join fetch a.questionEntity q
+            WHERE a.userId = :userId
+            AND a.createdAt < :answerCursor
             ORDER BY a.createdAt DESC
             """)
     List<AnswerEntity> findAllByUserIdWithCursor(String userId, LocalDateTime answerCursor, Pageable pageable);
 
     @Query("""
             SELECT a
-            FROM AnswerEntity a join fetch a.questionEntity q 
-            WHERE a.userId = :userId 
-            AND a.createdAt < :answerCursor 
-            AND a.visibility = true 
+            FROM AnswerEntity a join fetch a.questionEntity q
+            WHERE a.userId = :userId
+            AND a.createdAt < :answerCursor
+            AND a.visibility = true
             ORDER BY a.createdAt DESC
             """)
     List<AnswerEntity> findAllByUserIdAndVisibilityTrueWithCursor(String userId, LocalDateTime answerCursor, Pageable pageable);
 
     @Query("SELECT COUNT(a) > 0 FROM AnswerEntity a WHERE a.userId = :userId AND a.questionEntity.id = :questionId")
     boolean existsByUserIdAndQuestionId(String userId, Long questionId);
+
+    /**
+     * 좋아요 수가 많은 인기답변 n개 (카테고리 O)
+     */
+    @Query("""
+            SELECT a
+            FROM AnswerEntity a join a.questionEntity q
+            WHERE q.categoryId = :categoryId
+            AND q.questionStatus = 'ACTIVATED'
+            ORDER BY a.likeCount DESC
+            """)
+    List<AnswerEntity> findAllByCategoryIdOrderByLikeCountDescWithCursor(Long categoryId, Pageable pageable);
+
+    /**
+     * 좋아요 수가 많은 인기답변 n개 (카테고리 X)
+     */
+    @Query("""
+            SELECT a
+            FROM AnswerEntity a join a.questionEntity q
+            WHERE q.questionStatus = 'ACTIVATED'
+            ORDER BY a.likeCount DESC
+            """)
+    List<AnswerEntity> findAllOrderByLikeCountDescWithCursor(Pageable pageable);
 
 }

@@ -1,19 +1,11 @@
 package com.wsws.moduleinfra.repo.feed;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
-import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
-import com.wsws.moduledomain.feed.question.Question;
-import com.wsws.moduleinfra.entity.feed.AnswerCommentEntity;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import com.wsws.moduleinfra.entity.feed.QuestionEntity;
-import com.wsws.moduleinfra.entity.feed.mapper.AnswerCommentEntityMapper;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerEntityMapper;
-import com.wsws.moduleinfra.entity.feed.mapper.QuestionEntityMapper;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -50,13 +41,13 @@ public class AnswerRepositoryImpl implements AnswerRepository {
 
     @Override
     public List<Answer> findAllByCategoryIdWithCursor(LocalDateTime cursor, int size, Long categoryId) {
-        Pageable pageable = PageRequest.of(0, size);
+        Pageable pageable = PageRequest.of(0, size); // 가져올 데이터 갯수 설정
         return categoryId == null
                 ?
-                jpaAnswerRepository.findAllWithCursor(cursor, pageable).stream()
+                jpaAnswerRepository.findAllWithCursor(cursor, pageable).stream() // categoryId가 없다면 전체 조회
                 .map(AnswerEntityMapper::toDomain)
                 .toList()
-                :jpaAnswerRepository.findAllByCategoryIdWithCursor(cursor, pageable, categoryId).stream()
+                :jpaAnswerRepository.findAllByCategoryIdWithCursor(cursor, pageable, categoryId).stream() // categoryId가 있다면 해당 카테고리로 조회
                 .map(AnswerEntityMapper::toDomain)
                 .toList();
     }
@@ -64,7 +55,7 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     @Override
     public List<AnswerQuestionDTO> findAllByUserIdWithCursor(
             String userId, LocalDateTime cursor, int size, boolean isMine) {
-        Pageable pageable = PageRequest.of(0, size);
+        Pageable pageable = PageRequest.of(0, size); // 가져올 데이터 갯수 설정
         List<AnswerEntity> answerEntities = isMine
                 ? jpaAnswerRepository.findAllByUserIdWithCursor(userId, cursor, pageable)
                 : jpaAnswerRepository.findAllByUserIdAndVisibilityTrueWithCursor(userId, cursor, pageable);
@@ -85,6 +76,18 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     public Optional<Answer> findAnswerByUserIdAndQuestionId(String userId, Long questionId) {
         return jpaAnswerRepository.findAnswerByUserIdAndQuestionId(userId, questionId)
                 .map(AnswerEntityMapper::toDomain);
+    }
+
+    @Override
+    public List<Answer> findAnswersByLikeCountAndCategoryIdWithCursor(Long categoryId, int limit) {
+        Pageable pageable = PageRequest.of(0, limit); // 가져올 데이터 갯수 설정
+        return categoryId == null
+                ? jpaAnswerRepository.findAllOrderByLikeCountDescWithCursor(pageable).stream() // categoryId가 없다면 전체 조회
+                .map(AnswerEntityMapper::toDomain)
+                .toList()
+                : jpaAnswerRepository.findAllByCategoryIdOrderByLikeCountDescWithCursor(categoryId, pageable).stream() // categoryId가 있다면 해당 categoryId로 조회
+                .map(AnswerEntityMapper::toDomain)
+                .toList();
     }
 
     /**
