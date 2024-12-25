@@ -40,6 +40,7 @@ public class AnswerCommentService {
     private final AnswerCommentRepository answerCommentRepository;
     private final AnswerRepository answerRepository;
     private final LikeRepository likeRepository;
+    private final UserRepository userRepository;
     private final FcmService fcmService;
     private final NotificationRepository notificationRepository;
 
