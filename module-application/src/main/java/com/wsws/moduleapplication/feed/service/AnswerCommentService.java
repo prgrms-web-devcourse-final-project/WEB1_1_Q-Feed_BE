@@ -39,7 +39,6 @@ public class AnswerCommentService {
 
     private final AnswerCommentRepository answerCommentRepository;
     private final AnswerRepository answerRepository;
-    private final UserRepository userRepository;
     private final LikeRepository likeRepository;
     private final FcmService fcmService;
     private final NotificationRepository notificationRepository;
@@ -50,6 +49,10 @@ public class AnswerCommentService {
      * 답변 댓글 추가
      */
     public AnswerCommentCreateServiceResponse createAnswerComment(AnswerCommentCreateServiceRequest request) {
+
+        answerRepository.findById(request.answerId())
+                .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);// 존재하는 질문인지 체크
+
         int depth = 0;
         Long parentCommentId = request.parentCommentId();
         AnswerComment parentAnswerComment = null;

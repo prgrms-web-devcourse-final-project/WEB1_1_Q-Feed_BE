@@ -1,5 +1,6 @@
 package com.wsws.moduledomain.feed.comment.repo;
 
+import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import org.springframework.stereotype.Repository;
 
