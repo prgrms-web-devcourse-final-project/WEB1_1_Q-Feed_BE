@@ -5,11 +5,13 @@ import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
+import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduleinfra.entity.feed.AnswerCommentEntity;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import com.wsws.moduleinfra.entity.feed.QuestionEntity;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerCommentEntityMapper;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerEntityMapper;
+import com.wsws.moduleinfra.entity.feed.mapper.QuestionEntityMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
@@ -91,10 +93,10 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     @Override
     @Transactional
     public Answer save(Answer answer) {
-        QuestionEntity questionEntity = jpaQuestionRepository.findById(answer.getQuestionId().getValue())
-                .orElse(null);
         AnswerEntity answerEntity = AnswerEntityMapper.toEntity(answer);
-        answerEntity.setQuestionEntity(questionEntity); // 연관관계 설정
+
+        QuestionEntity questionEntity = jpaQuestionRepository.findById(answer.getQuestionId().getValue()).orElse(null);
+        answerEntity.setQuestionEntity(questionEntity); // Quesiton 연관관계 설정
 
         AnswerEntity savedEntity = jpaAnswerRepository.save(answerEntity);// Answer를 엔티티로 변환하여 저장
         return AnswerEntityMapper.toDomain(savedEntity);
