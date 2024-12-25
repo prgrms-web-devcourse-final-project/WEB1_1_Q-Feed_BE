@@ -1,10 +1,12 @@
 package com.wsws.moduleinfra.repo.feed;
 
+import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.comment.repo.AnswerCommentRepository;
 import com.wsws.moduleinfra.entity.feed.AnswerCommentEntity;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerCommentEntityMapper;
+import com.wsws.moduleinfra.entity.feed.mapper.AnswerEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -52,10 +54,8 @@ public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
     public AnswerComment save(AnswerComment answerComment) {
         AnswerCommentEntity answerCommentEntity = AnswerCommentEntityMapper.toEntity(answerComment);
 
-        AnswerEntity answerEntity = jpaAnswerRepository.findById(answerComment.getAnswerId().getValue())
-                .orElse(null); // 연관관계에 잇는 AnswerEntity 가져오기
-
-        answerCommentEntity.setAnswerEntity(answerEntity); // 연관관계 설정
+        AnswerEntity answerEntity = jpaAnswerRepository.findById(answerComment.getAnswerId().getValue()).orElse(null);
+        answerCommentEntity.setAnswerEntity(answerEntity); // AnswerEntity 연관관계 설정
 
         if (answerComment.getParentAnswerCommentId().getValue() != null) { // NPE 방지
             AnswerCommentEntity parentCommentEntity =

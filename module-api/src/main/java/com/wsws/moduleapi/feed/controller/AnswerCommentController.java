@@ -35,11 +35,12 @@ public class AnswerCommentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "답변 댓글 작성 성공"),
             @ApiResponse(responseCode = "400", description = "Answer Id가 누락됨", content = @Content),
-            @ApiResponse(responseCode = "404", description = "부모 댓글이 요청으로 들어왔는데 해당 댓글이 없는 경우", content = @Content)
+            @ApiResponse(responseCode = "404_1", description = "존재하지 않는 답변에 대한 댓글인 경우", content = @Content),
+            @ApiResponse(responseCode = "404_2", description = "부모 댓글이 요청으로 들어왔는데 해당 댓글이 없는 경우", content = @Content)
     })
     @PostMapping
     public ResponseEntity<AnswerCommentPostApiResponse> postAnswerComment(
-//            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody AnswerCommentPostApiRequest request) {
 //        String userId = userPrincipal.getId();
         String userId = "user_id1";
