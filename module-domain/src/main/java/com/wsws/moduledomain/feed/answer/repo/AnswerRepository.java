@@ -2,7 +2,6 @@ package com.wsws.moduledomain.feed.answer.repo;
 
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
-import com.wsws.moduledomain.feed.question.Question;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,6 +38,11 @@ public interface AnswerRepository {
      * 특정 사용자의 특정 질문에 대한 답변
      */
     Optional<Answer> findAnswerByUserIdAndQuestionId(String userId, Long questionId);
+
+    /**
+     * 좋아요 수를 기준으로 인기 답변 조회(5개)
+     */
+    List<Answer> findAnswersByLikeCountAndCategoryIdWithCursor(Long categoryId, int limit);
 
     /**
      * 답변 저장

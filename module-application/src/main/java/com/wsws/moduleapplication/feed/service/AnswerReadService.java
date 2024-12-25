@@ -129,6 +129,19 @@ public class AnswerReadService {
         );
     }
 
+    /**
+     * 인기 답변 조회
+     * 좋아요 수를 기준으로 5개의 인기답변 조회
+     */
+    public TrendingAnswerListFindServiceResponse findTrendingAnswer(TrendingAnswerFindServiceRequest request) {
+        List<TrendingAnswerFindServiceResponse> trendingAnswers =
+                answerRepository.findAnswersByLikeCountAndCategoryIdWithCursor(request.categoryId(), request.limit())
+                        .stream().map(answer -> new TrendingAnswerFindServiceResponse(answer.getAnswerId().getValue(), answer.getContent()))
+                        .toList();
+        return new TrendingAnswerListFindServiceResponse(trendingAnswers);
+    }
+
+
 
 
 
@@ -307,8 +320,7 @@ public class AnswerReadService {
      * 조회 요청한 사용자와 대상자가 같은지
      */
     private boolean isMine(AnswerFindByUserServiceRequest request) {
-        boolean isMine = request.reqUserId().equals(request.targetUserId());
-        return isMine;
+        return request.reqUserId().equals(request.targetUserId());
     }
 
     /**

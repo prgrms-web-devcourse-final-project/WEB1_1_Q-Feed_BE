@@ -167,6 +167,25 @@ public class AnswerController {
     }
 
     /**
+     * 인기 답변 조회
+     */
+    @GetMapping("/trending")
+    @Operation(summary = "인기 답변 조회", description = "특정 오늘의 질문에 대한 인기 답변을 조회합니다." +
+            " 기본적으로 5개의 인기 답변이 조회됩니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "인기 답변 조회 성공"),
+    })
+    public ResponseEntity<TrendingAnswerListGetApiResponse> getTrendingAnswers(
+            @Parameter(description = "질문의 카테고리 ID. 생략시 모든 오늘의 질문에 대해 인기답변이 노출됨", example = "1~6")
+            @RequestParam(value = "category-id", required = false) Long categoryId
+    ) {
+        TrendingAnswerFindServiceRequest serviceRequest = new TrendingAnswerFindServiceRequest(categoryId, 5); // 5로 설정
+        TrendingAnswerListFindServiceResponse trendingAnswers = answerReadService.findTrendingAnswer(serviceRequest);
+
+        return ResponseEntity.ok(TrendingAnswerListGetApiResponse.toApiResponse(trendingAnswers));
+    }
+
+    /**
      * 답변 생성
      */
     @PostMapping
@@ -182,7 +201,7 @@ public class AnswerController {
             , @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         String userId = userPrincipal.getId(); // 사용자 아이디를 가져온다.
-//        String userId = "user_id1";
+//        String userId = "user_id6";
         AnswerCreateServiceResponse serviceResponse = answerService.createAnswer(answerPostApiRequest.toServiceDto(userId)); // 답변 생성
 
         return ResponseEntity.status(201).body(new AnswerPostApiResponse(serviceResponse));
