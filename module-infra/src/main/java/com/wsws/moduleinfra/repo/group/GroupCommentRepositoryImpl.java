@@ -21,7 +21,7 @@ public class GroupCommentRepositoryImpl implements GroupCommentRepository {
     private final JpaGroupPostRepository jpaGroupPostRepository;
 
     @Override
-    public void save(GroupComment groupComment) {
+    public GroupComment save(GroupComment groupComment) {
 
         GroupPostEntity groupPostEntity = jpaGroupPostRepository.findById(groupComment.getGroupPostId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
@@ -32,6 +32,10 @@ public class GroupCommentRepositoryImpl implements GroupCommentRepository {
         groupCommentEntity.setGroupPost(groupPostEntity);
 
         jpaGroupCommentRepository.save(groupCommentEntity);
+
+        GroupCommentEntity savedEntity = jpaGroupCommentRepository.saveAndFlush(groupCommentEntity);
+        // Entity -> Domain 변환
+        return GroupCommentMapper.toDomain(savedEntity);
     }
 
     @Override

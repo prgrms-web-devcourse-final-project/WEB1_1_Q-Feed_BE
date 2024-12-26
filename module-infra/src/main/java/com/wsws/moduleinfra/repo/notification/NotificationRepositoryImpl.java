@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ public class NotificationRepositoryImpl implements NotificationRepository {
 
     private final JpaNotificationRepository jpaRepository;
     private final NotificationEntityMapper mapper;
+    private final JpaNotificationRepository jpaNotificationRepository;
 
     @Override
     public List<NotificationDto> findByRecipientIdAndIsReadFalse(String recipientId) {
@@ -89,5 +91,11 @@ public class NotificationRepositoryImpl implements NotificationRepository {
                         null
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public int deleteNotificationsOlderThan(int days) {
+        LocalDateTime thresholdDate = LocalDateTime.now().minusDays(days);
+        return jpaNotificationRepository.deleteNotificationsOlderThan(thresholdDate);
     }
 }
