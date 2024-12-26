@@ -4,6 +4,12 @@ import com.wsws.moduleapplication.notification.dto.NotificationServiceResponse;
 import com.wsws.moduledomain.notification.Notification;
 import com.wsws.moduledomain.notification.dto.NotificationDto;
 import com.wsws.moduledomain.notification.repo.NotificationRepository;
+import com.wsws.moduledomain.usercontext.user.aggregate.User;
+import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
+import com.wsws.moduledomain.usercontext.user.vo.UserId;
+import com.wsws.moduleexternalapi.fcm.dto.fcmRequestDto;
+import com.wsws.moduleexternalapi.fcm.service.FcmService;
+import com.wsws.moduleexternalapi.fcm.util.FcmType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +21,8 @@ import java.util.List;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-
-    // 알림 목록 출력
-//    @Transactional
-//    public List<NotificationServiceResponse> getUnreadNotifications(String recipientId) {
-//        return notificationRepository.findByRecipientIdAndIsReadFalse(recipientId).stream()
-//                .map(NotificationServiceResponse::new)
-//                .toList();
-//    }
+    private final FcmService fcmService;
+    private final UserRepository userRepository;
 
     // 모든 알림 목록 출력 (읽음/안읽음 포함)
     @Transactional
@@ -31,6 +31,7 @@ public class NotificationService {
                 .map(NotificationServiceResponse::new)
                 .toList();
     }
+
 
     // 개별 읽음 처리
     @Transactional
@@ -57,5 +58,35 @@ public class NotificationService {
         }
 
         notificationRepository.markAllAsReadByRecipientId(recipientId);
+    }
+
+    // 알림 생성 및 저장
+    public void sendNotification(String senderId, String recipientId, Long targetId, Long commentId, Long groupId, String url, FcmType fcmType) {
+        User sender = userRepository.findById(UserId.of(senderId))
+                .orElseThrow(() -> new IllegalArgumentException("발신자를 찾을 수 없습니다."));
+        User recipient = userRepository.findById(UserId.of(recipientId))
+                .orElseThrow(() -> new IllegalArgumentException("수신자를 찾을 수 없습니다."));
+
+        // 알림 내용 생성
+        String title = fcmService.makeFcmTitle(fcmType.getType());
+        String body = fcmService.makeQLikeBody(sender.getNickname().getValue(),fcmType.getType());
+        fcmRequestDto fcmDTO = fcmService.makeFcmDTO(title, body);
+
+        // FCM 전송
+        fcmService.fcmSend(sender.getNickname().getValue(), fcmDTO);
+
+        // 알림 저장
+        Notification notification = Notification.create(
+                null,
+                fcmType.getType(),
+                recipient.getId().getValue(),
+                sender.getId().getValue(),
+                fcmDTO.body(), // FCM 전송 body
+                targetId,
+                commentId,
+                groupId,
+                url
+        );
+        notificationRepository.save(notification);
     }
 }

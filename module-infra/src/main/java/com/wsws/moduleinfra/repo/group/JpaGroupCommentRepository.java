@@ -18,10 +18,4 @@ public interface JpaGroupCommentRepository extends JpaRepository<GroupCommentEnt
             "WHERE c.groupPost.groupPostId = :groupPostId")
     List<GroupCommentDto> findByGroupPostId(@Param("groupPostId") Long groupPostId);
 
-//    @Query("SELECT new com.wsws.moduledomain.group.dto.GroupCommentDto( " +
-//            "c.groupCommentId, c.content, c.createdAt, c.userId, c.likeCount, c.groupPost.groupPostId) " +
-//            "FROM GroupCommentEntity c " +
-//            "WHERE c.groupPost.groupPostId = :groupPostId")
-//    List<GroupCommentDto> findByGroupPostId(@Param("groupPostId") Long groupPostId);
-
 }
