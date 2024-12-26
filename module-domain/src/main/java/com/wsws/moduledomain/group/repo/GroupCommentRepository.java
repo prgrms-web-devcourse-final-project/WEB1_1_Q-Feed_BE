@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GroupCommentRepository {
-    void save(GroupComment groupComment);
+    GroupComment save(GroupComment groupComment);
     Optional<GroupComment> findById(Long groupCommentId);
     void deleteById(Long groupCommentId);
     void edit(GroupComment groupComment);

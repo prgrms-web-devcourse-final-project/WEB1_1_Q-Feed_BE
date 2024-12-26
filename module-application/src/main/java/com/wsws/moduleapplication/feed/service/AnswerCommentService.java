@@ -8,6 +8,7 @@ import com.wsws.moduleapplication.feed.exception.AnswerCommentNotFoundException;
 import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.feed.exception.ParentAnswerCommentNotFoundException;
 import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
+import com.wsws.moduleapplication.notification.service.NotificationService;
 import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
 import com.wsws.moduledomain.feed.answer.Answer;
@@ -43,6 +44,7 @@ public class AnswerCommentService {
     private final UserRepository userRepository;
     private final FcmService fcmService;
     private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
 
 
@@ -75,7 +77,19 @@ public class AnswerCommentService {
 
         AnswerComment saved = answerCommentRepository.save(answerComment);
         // 답변 댓글 알림 전송
-        sendAnswerCommentNotification(request.userId(), request.answerId());
+//        sendAnswerCommentNotification(request.userId(), request.answerId());
+
+        Answer answer = answerRepository.findById(request.answerId())
+                .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
+        notificationService.sendNotification(
+                request.userId(), //발신
+                answer.getUserId().getValue(), //수신자
+                answer.getAnswerId().getValue(), //commentId
+                null,
+                null,
+                "/feed/answers/" + answer.getAnswerId().getValue() + "#comment-" + saved.getAnswerCommentId().getValue(),
+                FcmType.ANSWER_COMMENT
+        );
         return new AnswerCommentCreateServiceResponse(saved.getAnswerCommentId().getValue());
     }
 
@@ -124,7 +138,16 @@ public class AnswerCommentService {
 
         answerCommentRepository.edit(answerComment); // 수정사항 반영
         // 댓글 좋아요 알림 전송
-        sendCommentLikeNotification(request.userId(), answerComment);
+//        sendCommentLikeNotification(request.userId(), answerComment);
+        notificationService.sendNotification(
+                request.userId(), // 발신자
+                answerComment.getUserId().getValue(), // 수신자
+                answerComment.getAnswerId().getValue(), // 답변 ID
+                answerComment.getAnswerCommentId().getValue(), // 댓글 ID
+                null,
+                "/feed/answers/" + answerComment.getAnswerId().getValue() + "#comment-" + answerComment.getAnswerCommentId().getValue(),
+                FcmType.COMMENT_LIKE
+        );
     }
 
 
@@ -180,81 +203,81 @@ public class AnswerCommentService {
         return likeRepository.existsByTargetIdAndUserIdAndTargetType(targetId, userId, targetType);
     }
 
-    // 게시글 답변 알림 전송
-    private void sendAnswerCommentNotification(String commenterId, Long answerId){
-        // 댓글 작성자 정보 조회
-        User commenter = userRepository.findById(UserId.of(commenterId))
-                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
-        // 답변 게시글 정보 조회
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
-
-        // 답변 작성자 정보 조회
-        String answerAuthorId = answer.getUserId().getValue();
-        User answerAuthor = userRepository.findById(UserId.of(answerAuthorId))
-                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
-
-        // 알림 내용 생성
-        String title = fcmService.makeFcmTitle(FcmType.ANSWER_COMMENT.getType());
-        String body = fcmService.makeCommentBody(commenter.getNickname().getValue(),FcmType.ANSWER_COMMENT.getType());
-        fcmRequestDto fcmDTO = fcmService.makeFcmDTO(title, body);
-
-        // URL 생성
-        String url = "/feed/answers/" + answer.getAnswerId().getValue();
-
-        // 알림 저장
-        Notification notification = Notification.create(
-                null,
-                FcmType.ANSWER_COMMENT.getType(),
-                commenter.getNickname().getValue(),
-                answerAuthor.getNickname().getValue(),
-                body,
-                answer.getAnswerId().getValue(), // targetId에 답변 ID 저장
-                null, // commentId는 댓글 상세 조회 시 추가 가능
-                null,  // 그룹 관련 없음
-                url
-        );
-        notificationRepository.save(notification);
-
-        // FCM 전송
-        fcmService.fcmSend(answerAuthor.getNickname().getValue(), fcmDTO);
-    }
-
-    // 댓글 좋아요 알림 전송
-    private void sendCommentLikeNotification(String likerId, AnswerComment answerComment) {
-        // 좋아요 누른 사용자 정보 조회
-        User liker = userRepository.findById(UserId.of(likerId))
-                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
-
-        // 댓글 작성자 정보 조회
-        User commentAuthor = userRepository.findById(answerComment.getUserId())
-                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
-
-        // 알림 내용 생성
-        String title = fcmService.makeFcmTitle(FcmType.COMMENT_LIKE.getType());
-        String body = fcmService.makeLikeBody(liker.getNickname().getValue(), FcmType.COMMENT_LIKE.getType());
-        fcmRequestDto fcmDTO = fcmService.makeFcmDTO(title, body);
-
-        // URL 생성
-        String url = "/feed/comments/" + answerComment.getAnswerCommentId().getValue();
-
-        // 알림 저장
-        Notification notification = Notification.create(
-                null,
-                FcmType.COMMENT_LIKE.getType(),
-                liker.getNickname().getValue(),
-                commentAuthor.getNickname().getValue(),
-                body,
-                answerComment.getAnswerId().getValue(), // targetId에 댓글이 달린 답변 ID 저장
-                answerComment.getAnswerCommentId().getValue(), // commentId에 댓글 ID 저장
-                null, // 그룹과 관련 없음
-                url
-        );
-        notificationRepository.save(notification);
-
-        // FCM 전송
-        fcmService.fcmSend(commentAuthor.getNickname().getValue(), fcmDTO);
-    }
+//    // 게시글 답변 알림 전송
+//    private void sendAnswerCommentNotification(String commenterId, Long answerId){
+//        // 댓글 작성자 정보 조회
+//        User commenter = userRepository.findById(UserId.of(commenterId))
+//                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
+//        // 답변 게시글 정보 조회
+//        Answer answer = answerRepository.findById(answerId)
+//                .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
+//
+//        // 답변 작성자 정보 조회
+//        String answerAuthorId = answer.getUserId().getValue();
+//        User answerAuthor = userRepository.findById(UserId.of(answerAuthorId))
+//                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
+//
+//        // 알림 내용 생성
+//        String title = fcmService.makeFcmTitle(FcmType.ANSWER_COMMENT.getType());
+//        String body = fcmService.makeCommentBody(commenter.getNickname().getValue(),FcmType.ANSWER_COMMENT.getType());
+//        fcmRequestDto fcmDTO = fcmService.makeFcmDTO(title, body);
+//
+//        // URL 생성
+//        String url = "/feed/answers/" + answer.getAnswerId().getValue();
+//
+//        // 알림 저장
+//        Notification notification = Notification.create(
+//                null,
+//                FcmType.ANSWER_COMMENT.getType(),
+//                commenter.getNickname().getValue(),
+//                answerAuthor.getNickname().getValue(),
+//                body,
+//                answer.getAnswerId().getValue(), // targetId에 답변 ID 저장
+//                null, // commentId는 댓글 상세 조회 시 추가 가능
+//                null,  // 그룹 관련 없음
+//                url
+//        );
+//        notificationRepository.save(notification);
+//
+//        // FCM 전송
+//        fcmService.fcmSend(answerAuthor.getNickname().getValue(), fcmDTO);
+//    }
+//
+//    // 댓글 좋아요 알림 전송
+//    private void sendCommentLikeNotification(String likerId, AnswerComment answerComment) {
+//        // 좋아요 누른 사용자 정보 조회
+//        User liker = userRepository.findById(UserId.of(likerId))
+//                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
+//
+//        // 댓글 작성자 정보 조회
+//        User commentAuthor = userRepository.findById(answerComment.getUserId())
+//                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
+//
+//        // 알림 내용 생성
+//        String title = fcmService.makeFcmTitle(FcmType.COMMENT_LIKE.getType());
+//        String body = fcmService.makeLikeBody(liker.getNickname().getValue(), FcmType.COMMENT_LIKE.getType());
+//        fcmRequestDto fcmDTO = fcmService.makeFcmDTO(title, body);
+//
+//        // URL 생성
+//        String url = "/feed/comments/" + answerComment.getAnswerCommentId().getValue();
+//
+//        // 알림 저장
+//        Notification notification = Notification.create(
+//                null,
+//                FcmType.COMMENT_LIKE.getType(),
+//                liker.getNickname().getValue(),
+//                commentAuthor.getNickname().getValue(),
+//                body,
+//                answerComment.getAnswerId().getValue(), // targetId에 댓글이 달린 답변 ID 저장
+//                answerComment.getAnswerCommentId().getValue(), // commentId에 댓글 ID 저장
+//                null, // 그룹과 관련 없음
+//                url
+//        );
+//        notificationRepository.save(notification);
+//
+//        // FCM 전송
+//        fcmService.fcmSend(commentAuthor.getNickname().getValue(), fcmDTO);
+//    }
 
     /* private 메서드 */
 

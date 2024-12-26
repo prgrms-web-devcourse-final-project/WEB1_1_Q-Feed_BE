@@ -71,10 +71,17 @@ public class FcmService {
         return sender
                 + " 님이 회원님을" + type + " 했습니다." ;
     }
-    // 좋아요 알림 본문 생성 (피드 : answer/comment)
-    public String makeLikeBody(String sender, String type) {
+
+    // 피드 답변 좋아요 알림 본문 생성
+    public String makeAnswerLikeBody(String sender, String type) {
         return sender + " 님이 회원님의 글에" + type +"를 눌렀습니다." ;
     }
+
+    // 피드 댓글 좋아요 알림 본문 생성
+    public String makeCommentLikeBody(String sender, String type) {
+        return sender + " 님이 회원님의 댓글에" + type +"를 눌렀습니다." ;
+    }
+
     // 채팅 알림 본문 생성
     public String makeChatBody(String sender, String type) {
         return sender + "님이"+ type +"을 보냈습니다.";
@@ -84,9 +91,14 @@ public class FcmService {
         return sender + " 님이 회원님의 글에 "+ type +"을 남겼습니다.";
     }
     // Q-SPACE 내 좋아요 알림 본문 생성 (그룹 : post/comment)
-    public String makeQLikeBody(String sender, String type) {
+    public String makeQPostLikeBody(String sender, String type) {
         return "Q_SPACE 멤버 "+ sender + " 님이 회원님의 글에" + type +"를 눌렀습니다.";
     }
+
+    public String makeQCommentLikeBody(String sender, String type) {
+        return "Q_SPACE 멤버 "+ sender + " 님이 회원님의 댓글에" + type +"를 눌렀습니다.";
+    }
+
     // Q-SPACE 댓글 알림 본문 생성
     public String makeQCommentBody(String sender, String type) {
         return "Q_SPACE 멤버 "+ sender + " 님이 회원님의 글에 "+ type +"을 남겼습니다.";
