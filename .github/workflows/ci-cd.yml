@@ -48,8 +48,18 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
+      - name: .json 파일 생성
+        run: |
+          echo "${{ secrets.FCM_SECRET_KEY }}" > ./firebase/q-feed-firebase-adminsdk.json 
+
+      - name: Firebase 환경 변수 설정
+        run: |
+          export GOOGLE_APPLICATION_CREDENTIALS="./firebase/q-feed-firebase-adminsdk.json"
+
       - name: 테스트 및 빌드하기
-        run: ./gradlew clean build --stacktrace --info
+        run: |         
+          GOOGLE_APPLICATION_CREDENTIALS="./firebase/q-feed-firebase-adminsdk.json" ./gradlew clean build --stacktrace --info
+
 
       - name: AWS Resource에 접근할 수 있게 AWS credentials 설정
         uses: aws-actions/configure-aws-credentials@v4
@@ -117,8 +127,9 @@ jobs:
             echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
             echo "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}" >> .env
             
+            echo "${{ secrets.FCM_SECRET_KEY }}" > ./firebase/q-feed-firebase-adminsdk.json
             
             
             docker pull ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
             
-            docker run -d --name q-feed-server -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul --env-file ./.env -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
+            docker run -d --name q-feed-server -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul --env-file ./.env -e GOOGLE_APPLICATION_CREDENTIALS="./firebase/q-feed-firebase-adminsdk.json" -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
