@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - hotfix/ci-cd-에러-해결
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -26,11 +27,11 @@ jobs:
       KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
       KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
       FCM_FIREBASE_CONFIG_PATH: ${{ secrets.FCM_FIREBASE_CONFIG_PATH }}
-      AWS_ACCESS_KEY:  ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
       AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-#      GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+    #      GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
 
     steps:
@@ -79,7 +80,7 @@ jobs:
           docker push ${{ steps.login-ecr.outputs.registry }}/q-feed-server:${IMAGE_TAG}
           docker push ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
 
-      
+
 
       - name: SSH로 EC2에 접속하기
         uses: appleboy/ssh-action@v1.0.3
@@ -89,13 +90,12 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true
           script: |
-            
             if [ "$(docker ps -q -f name=q-feed-server)" ]; then
               docker stop q-feed-server
               docker rm q-feed-server
             fi
-          
-            docker image prune -af            
+            
+            docker image prune -af
             
             echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env
             echo "REDIS_VECTOR_URI=${{ secrets.REDIS_VECTOR_URI }}" >> .env
@@ -118,10 +118,7 @@ jobs:
             echo "AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" >> .env
             echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
             echo "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}" >> .env
-#            echo "GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" >> .env
-            
-            
-            
             docker pull ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
             
             docker run -d --name q-feed-server -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul --env-file ./.env -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
+
