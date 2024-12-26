@@ -30,7 +30,6 @@ public class ScheduledQuestionCreateService {
      */
 
     @Scheduled(cron = "0 30 23 * * ?", zone = "Asia/Seoul")
-//    @Scheduled(cron = "*/30 * * * * ?", zone = "Asia/Seoul")
     public void createQuestion() {
         log.info("질문 생성 스케줄링 시작");
         int maxRetries = 10; // 최대 재시도 횟수
