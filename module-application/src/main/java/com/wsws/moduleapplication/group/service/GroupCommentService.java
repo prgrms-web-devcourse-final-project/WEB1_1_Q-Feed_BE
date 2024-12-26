@@ -14,12 +14,9 @@ import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.feed.like.LikeRepository;
 import com.wsws.moduledomain.feed.like.TargetType;
-import com.wsws.moduledomain.notification.Notification;
 import com.wsws.moduledomain.notification.repo.NotificationRepository;
-import com.wsws.moduledomain.usercontext.user.aggregate.User;
 import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
 import com.wsws.moduledomain.usercontext.user.vo.UserId;
-import com.wsws.moduleexternalapi.fcm.dto.fcmRequestDto;
 import com.wsws.moduleexternalapi.fcm.service.FcmService;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
 import jakarta.transaction.Transactional;
@@ -37,9 +34,6 @@ public class GroupCommentService {
     private final GroupCommentRepository groupCommentRepository;
     private final LikeRepository likeRepository;
     private final GroupPostRepository groupPostRepository;
-    private final NotificationRepository notificationRepository;
-    private final FcmService fcmService;
-    private final UserRepository userRepository;
     private final NotificationService notificationService;
 
 
