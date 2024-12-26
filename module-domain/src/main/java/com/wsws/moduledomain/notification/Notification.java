@@ -27,7 +27,7 @@ public class Notification {
 
     public static Notification create(Long notificationId,String type, String sender, String recipient, String content, Long targetId, Long commentId, Long groupId, String url ) {
         Notification notification = new Notification();
-//        notification.notificationId = NotificationId.of(notificationId);
+        notification.notificationId = NotificationId.of(notificationId);
         notification.type = type;
         notification.sender = UserId.of(sender);
         notification.recipient = UserId.of(recipient);

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,8 @@ public class NotificationService {
     private final FcmService fcmService;
     private final UserRepository userRepository;
 
+    // ID 생성
+    private final AtomicLong notificationIdGenerator = new AtomicLong(1);
 
     // 모든 알림 목록 출력 (읽음/안읽음 포함)
     @Transactional
@@ -67,6 +70,10 @@ public class NotificationService {
         User recipient = userRepository.findById(UserId.of(recipientId))
                 .orElseThrow(() -> new IllegalArgumentException("수신자를 찾을 수 없습니다."));
 
+
+        Long notificationId = notificationIdGenerator.getAndIncrement();
+
+
         // 알림 내용 생성
         String title = fcmService.makeFcmTitle(fcmType.getType());
         String body = createNotificationBody(fcmType, sender.getNickname().getValue());
@@ -79,7 +86,7 @@ public class NotificationService {
         fcmService.fcmSend(sender.getNickname().getValue(), fcmDTO);
         // 알림 저장
         Notification notification = Notification.create(
-                null,
+                notificationId,
                 fcmType.getType(),
                 recipient.getId().getValue(),
                 sender.getId().getValue(),
