@@ -16,13 +16,6 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    // 알림 목록 출력
-//    @Transactional
-//    public List<NotificationServiceResponse> getUnreadNotifications(String recipientId) {
-//        return notificationRepository.findByRecipientIdAndIsReadFalse(recipientId).stream()
-//                .map(NotificationServiceResponse::new)
-//                .toList();
-//    }
 
     // 모든 알림 목록 출력 (읽음/안읽음 포함)
     @Transactional
