@@ -16,7 +16,8 @@ public class GroupPostMapper {
                 entity.getContent(),
                 entity.getUrl(),
                 entity.getUserId(),
-                entity.getLikeCount()
+                entity.getLikeCount(),
+              entity.getGroupCommentCount()
         );
     }
 
@@ -30,7 +31,8 @@ public class GroupPostMapper {
                 domain.getGroupId().getValue(),
                 domain.getUserId().getValue(),
                 domain.getUrl(),
-                domain.getLikeCount()
+                domain.getLikeCount(),
+                domain.getGroupCommentCount()
         );
     }
 }

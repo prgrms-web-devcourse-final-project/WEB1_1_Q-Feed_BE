@@ -14,6 +14,7 @@ public record GroupPostDetailApiResponse (
         LocalDateTime createAt,
         String userId,
         Long likeCount,
+        Long groupCommentCount,
         List<GroupCommentApiResponse> comments
         ) {
 
@@ -26,6 +27,7 @@ public record GroupPostDetailApiResponse (
                         response.createAt(),
                         response.userId(),
                         response.likeCount(),
+                        response.groupCommentCount(),
                         response.comments().stream()
                                 .map(GroupCommentApiResponse::new)
                                 .collect(Collectors.toList())

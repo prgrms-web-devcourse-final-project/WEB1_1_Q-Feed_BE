@@ -9,6 +9,7 @@ public record GroupPostDetailDto(
         String content,
         LocalDateTime createAt,
         String userId,
-        Long likeCount
+        Long likeCount,
+        Long groupCommentCount
 ) {
 }

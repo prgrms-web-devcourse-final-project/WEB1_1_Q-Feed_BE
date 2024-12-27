@@ -53,20 +53,35 @@ public class GroupPostRepositoryImpl implements GroupPostRepository {
 
     @Override
     @Transactional
-    public void edit(GroupPost groupPost) {
+    public void editLike(GroupPost groupPost) {
 
-        // Null 체크
         if (groupPost.getGroupPostId() == null) {
             throw new IllegalArgumentException("GroupPostId가 null입니다.");
         }
 
-        // 엔티티 조회
         GroupPostEntity groupPostEntity = jpaGroupPostRepository.findById(groupPost.getGroupPostId())
                 .orElseThrow(() -> new RuntimeException("그룹 게시글을 찾을 수 없습니다."));
 
         // 좋아요 수정
         groupPostEntity.editEntity(
                 groupPost.getLikeCount()
+        );
+
+    }
+
+    @Override
+    @Transactional
+    public void editComment(GroupPost groupPost) {
+
+        if (groupPost.getGroupPostId() == null) {
+            throw new IllegalArgumentException("GroupPostId가 null입니다.");
+        }
+
+        GroupPostEntity groupPostEntity = jpaGroupPostRepository.findById(groupPost.getGroupPostId())
+                .orElseThrow(() -> new RuntimeException("그룹 게시글을 찾을 수 없습니다."));
+
+        groupPostEntity.editComment(
+                groupPost.getGroupCommentCount()
         );
 
     }

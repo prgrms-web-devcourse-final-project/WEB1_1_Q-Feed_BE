@@ -38,11 +38,14 @@ public class GroupPostEntity {
     @Column(name = "like_count", nullable = false)
     private long likeCount;
 
+    @Column(name = "group_comment_count", nullable = false)
+    private long groupCommentCount;
+
     @OneToMany(mappedBy = "groupPost", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GroupCommentEntity> comments = new ArrayList<>();
 
 
-        public static GroupPostEntity create(String content, Long groupId, String userId, String url, Long likeCount) {
+        public static GroupPostEntity create(String content, Long groupId, String userId, String url, Long likeCount, Long groupCommentCount) {
             GroupPostEntity entity = new GroupPostEntity();
             entity.content = content;
             entity.groupId = groupId;
@@ -50,11 +53,16 @@ public class GroupPostEntity {
             entity.url = url;
             entity.createAt = LocalDateTime.now();
             entity.likeCount = likeCount;
+            entity.groupCommentCount = groupCommentCount;
             return entity;
         }
 
     public void editEntity(long likeCount) {
             this.likeCount = likeCount;
+    }
+
+    public void editComment(long groupCommentCount) {
+        this.groupCommentCount = groupCommentCount;
     }
 
 
