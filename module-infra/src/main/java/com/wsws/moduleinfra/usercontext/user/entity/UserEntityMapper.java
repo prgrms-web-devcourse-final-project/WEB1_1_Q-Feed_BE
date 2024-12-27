@@ -13,7 +13,8 @@ public class UserEntityMapper {
                 entity.getPassword(),
                 entity.getNickname(),
                 entity.getProfileImage(),
-                entity.getDescription()
+                entity.getDescription(),
+                entity.getUserRole()
         );
     }
 

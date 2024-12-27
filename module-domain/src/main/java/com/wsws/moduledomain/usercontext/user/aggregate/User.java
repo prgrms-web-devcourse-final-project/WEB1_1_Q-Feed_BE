@@ -51,7 +51,7 @@ public class User {
         return user;
     }
 
-    public static User transform(String userid,String email,String encodedPassword, String nickname, String profileImage, String description){
+    public static User transform(String userid,String email,String encodedPassword, String nickname, String profileImage, String description, UserRole userRole){
         User user = new User();
         user.id = UserId.of(userid);
         user.email = Email.from(email);
@@ -59,6 +59,7 @@ public class User {
         user.nickname = Nickname.from(nickname);
         user.profileImage = profileImage;
         user.description = description;
+        user.userRole = userRole;
         return user;
     }
 
