@@ -5,6 +5,7 @@ import com.wsws.moduleapplication.authcontext.exception.EmailNotFoundException;
 import com.wsws.moduleapplication.authcontext.exception.InvalidVerificationCodeException;
 import com.wsws.moduleapplication.authcontext.exception.RefreshTokenExpiredException;
 import com.wsws.moduleapplication.authcontext.dto.AuthServiceResponse;
+import com.wsws.moduledomain.authcontext.auth.ParsedTokenInfo;
 import com.wsws.moduledomain.authcontext.auth.repo.EmailService;
 import com.wsws.moduledomain.authcontext.auth.RefreshToken;
 import com.wsws.moduledomain.authcontext.auth.repo.TokenProvider;
@@ -19,6 +20,7 @@ import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
 import com.wsws.moduledomain.usercontext.user.vo.Email;
 import com.wsws.moduledomain.usercontext.user.vo.Nickname;
 import com.wsws.moduledomain.authcontext.social.aggregate.SocialLogin;
+import com.wsws.moduledomain.usercontext.user.vo.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,13 +52,16 @@ public class AuthService {
     public LoginServiceResponse login(LoginServiceRequest loginServiceRequest) {
         Email email = Email.from(loginServiceRequest.email());
         User user = findUserByEmail(email.getValue());
+        UserRole role = user.getUserRole();
 
         // 비밀번호 검증
         user.getPassword().matches(loginServiceRequest.password(), passwordEncoder);
 
+
+
         // JWT 토큰 생성
-        String accessToken = tokenProvider.createAccessToken(user.getId().getValue());
-        String refreshToken = tokenProvider.createRefreshToken(user.getId().getValue());
+        String accessToken = tokenProvider.createAccessToken(user.getId().getValue(),role.name() );
+        String refreshToken = tokenProvider.createRefreshToken(user.getId().getValue(), role.name() );
 
         // RefreshToken 저장 (7일 유효)
         authRepository.save(RefreshToken.create(refreshToken, LocalDateTime.now().plusDays(7)));
@@ -79,6 +84,8 @@ public class AuthService {
                         socialLogin.getProfileImageUrl()
                 )));
 
+        UserRole role = user.getUserRole();
+
         // 4. SocialLogin 정보 저장 (최초 로그인일 경우에만)
         if (!socialLoginRepository.existsByProviderAndProviderId(socialLogin.getProvider(), socialLogin.getProviderId())) {
             socialLoginRepository.save(
@@ -88,8 +95,8 @@ public class AuthService {
         }
 
         // 5. JWT 생성 및 반환
-        String accessToken = tokenProvider.createAccessToken(user.getId().getValue());
-        String refreshToken = tokenProvider.createRefreshToken(user.getId().getValue());
+        String accessToken = tokenProvider.createAccessToken(user.getId().getValue(), role.name());
+        String refreshToken = tokenProvider.createRefreshToken(user.getId().getValue(), role.name());
         authRepository.save(RefreshToken.create(refreshToken, LocalDateTime.now().plusDays(7)));
 
 
@@ -115,8 +122,13 @@ public class AuthService {
             throw RefreshTokenExpiredException.EXCEPTION;
         }
 
-        String newAccessToken = tokenProvider.createAccessToken(rToken.getToken());
-        String newRefreshToken = tokenProvider.createRefreshToken(rToken.getToken());
+        ParsedTokenInfo parsedToken = tokenProvider.parseToken(refreshToken);
+        String userId = parsedToken.getUserId();
+        String role = parsedToken.getRole();
+
+
+        String newAccessToken = tokenProvider.createAccessToken(userId, role);
+        String newRefreshToken = tokenProvider.createRefreshToken(userId, role);
 
         authRepository.deleteByToken(refreshToken);
         authRepository.save(RefreshToken.create(newRefreshToken, LocalDateTime.now().plusDays(7)));

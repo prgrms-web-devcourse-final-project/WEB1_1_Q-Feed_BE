@@ -25,7 +25,6 @@ public class RecommendationService {
     private final UserInterestRepository userInterestRepository;
     private final FollowReadRepository followReadRepository;
     private final UserRepository userRepository;
-    private final FollowRepository followRepository;
 
 
     public List<UserRecommendationResponse> getRecommendations(String userId, int limit) {

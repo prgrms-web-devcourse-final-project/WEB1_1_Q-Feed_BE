@@ -1,5 +1,6 @@
 package com.wsws.modulesecurity.security;
 
+import com.wsws.moduledomain.authcontext.auth.ParsedTokenInfo;
 import com.wsws.moduledomain.authcontext.auth.repo.TokenProvider;
 import com.wsws.modulesecurity.exception.InvalidTokenException;
 import com.wsws.modulesecurity.exception.TokenExpiredException;
@@ -35,19 +36,17 @@ public class JwtProvider implements TokenProvider {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    @Override
-    public String createAccessToken(String userId) {
-        return createToken(userId, accessExpiration);
+    public String createAccessToken(String userId, String role) {
+        return createToken(userId, role, accessExpiration);
+    }
+    public String createRefreshToken(String userId, String role) {
+        return createToken(userId, role, refreshExpiration);
     }
 
-    @Override
-    public String createRefreshToken(String userId) {
-        return createToken(userId, refreshExpiration);
-    }
-
-    private String createToken(String userId, long expiration) {
+    private String createToken(String userId, String role,long expiration) {
         return Jwts.builder()
                 .setSubject(userId)
+                .claim("role",role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -73,7 +72,24 @@ public class JwtProvider implements TokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
         String userId = claims.getSubject();
+        String role = claims.get("role", String.class);
 
-        return new UsernamePasswordAuthenticationToken(new UserPrincipal(userId), null, null);
+        UserPrincipal principal = new UserPrincipal(userId, role);
+
+        return new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+    }
+
+    @Override
+    public ParsedTokenInfo parseToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        String userId = claims.getSubject();
+        String role   = claims.get("role", String.class);
+
+        return new ParsedTokenInfo(userId, role);
     }
 }
