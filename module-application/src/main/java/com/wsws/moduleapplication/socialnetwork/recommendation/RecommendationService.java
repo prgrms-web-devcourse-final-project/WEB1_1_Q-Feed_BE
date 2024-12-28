@@ -13,10 +13,7 @@ import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -45,17 +42,29 @@ public class RecommendationService {
         //사용자 정보 조회 및 결합
         List<User> users = userRepository.findUsersByIds(filteredUserIds);
 
+        //우선 순위 큐로 자료구조 개선
+        PriorityQueue<UserRecommendation> pq = new PriorityQueue<>(
+                Comparator.comparingLong(UserRecommendation::getFollowerCount).reversed()
+        );
 
-        List<UserRecommendation> recommendations = users.stream()
-                .map(user -> new UserRecommendation(
-                        user.getId().getValue(),
-                        user.getNickname().getValue(),
-                        user.getProfileImage(),
-                        followerCounts.getOrDefault(user.getId().getValue(), 0L)
-                ))
-                .sorted(Comparator.comparingLong(UserRecommendation::getFollowerCount).reversed())
-                .limit(limit)
-                .toList();
+        for(User user : users) {
+            UserRecommendation recommendation = new UserRecommendation(
+                    user.getId().getValue(),
+                    user.getNickname().getValue(),
+                    user.getProfileImage(),
+                    followerCounts.getOrDefault(user.getId().getValue(), 0L)
+            );
+
+            pq.offer(recommendation);
+        }
+
+        // limit개만큼만 추출
+        List<UserRecommendation> recommendations = new ArrayList<>(pq);
+        for (int i = 0; i < limit && !pq.isEmpty(); i++) {
+            recommendations.add(pq.poll()); // 내림차순 정렬된 순서로 추출
+        }
+
+
 
 
         return UserRecommendationMapper.toDtoList(recommendations);
