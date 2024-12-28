@@ -15,6 +15,7 @@ public record GroupPostDetailServiceResponse (
         LocalDateTime createAt,
         String userId,
         Long likeCount,
+        Long groupCommentCount,
         List<GroupCommentServiceResponse>comments
 ){
     public GroupPostDetailServiceResponse (GroupPostDetailDto groupPost, List<GroupCommentDto> comments) {
@@ -26,6 +27,7 @@ public record GroupPostDetailServiceResponse (
                 groupPost.createAt(),
                 groupPost.userId(),
                 groupPost.likeCount(),
+                groupPost.groupCommentCount(),
                 comments.stream()
                         .map(GroupCommentServiceResponse::new)
                         .collect(Collectors.toList())

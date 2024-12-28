@@ -23,7 +23,7 @@ public interface JpaGroupPostRepository extends JpaRepository<GroupPostEntity, L
 
     // postId로 게시물 상세 조회
     @Query("SELECT new com.wsws.moduledomain.group.dto.GroupPostDetailDto( " +
-            "g.groupPostId, u.nickname, u.profileImage, g.content, g.createAt, g.userId, g.likeCount) " +
+            "g.groupPostId, u.nickname, u.profileImage, g.content, g.createAt, g.userId, g.likeCount, g.groupCommentCount) " +
             "FROM GroupPostEntity g " +
             "JOIN UserEntity u ON u.id = g.userId " +
             "WHERE g.groupPostId = :groupPostId")

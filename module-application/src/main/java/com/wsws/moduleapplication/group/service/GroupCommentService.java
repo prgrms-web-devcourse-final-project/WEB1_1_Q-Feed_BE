@@ -53,6 +53,10 @@ public class GroupCommentService {
         // 저장 후 반환된 엔티티를 통해 ID 설정
         GroupComment savedComment = groupCommentRepository.save(groupComment);
 
+        // 댓글 수 증가
+        groupPost.incrementGroupComment();
+        groupPostRepository.editComment(groupPost);
+
         notificationService.sendNotification(
                 userId,
                 groupPost.getUserId().getValue(),
@@ -79,6 +83,11 @@ public class GroupCommentService {
 
         validateUser(groupComment, userId); // 본인 확인
         groupCommentRepository.deleteById(groupCommentId);
+
+        // 댓글 수 감소
+        GroupPost groupPost = getGroupPost(groupComment.getGroupPostId());
+        groupPost.decrementGroupComment();
+        groupPostRepository.editComment(groupPost); // 변경사항 저장
     }
 
     @Transactional
@@ -165,11 +174,6 @@ public class GroupCommentService {
         if (!groupComment.getUserId().equals(UserId.of(userId))) {
             throw new IllegalStateException("권한이 있는 사용자가 아닙니다. 본인의 댓글만 삭제 가능합니다.");
         }
-    }
-
-    // URL 생성 메서드
-    private String generateCommentUrl(Long groupPostId, Long commentId) {
-        return "/groups/posts/" + groupPostId + "#comment-" + commentId;
     }
 }
 

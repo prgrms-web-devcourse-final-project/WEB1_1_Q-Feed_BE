@@ -41,7 +41,7 @@ public class GroupPostService {
     public void createGroupPost(CreateGroupPostRequest request, Long groupId, String userId) {
         GroupPost post = GroupPost.create(
                 null, groupId, request.content(),
-                processGroupPostImage(request.url()), userId, 0L
+                processGroupPostImage(request.url()), userId, 0L, 0L
         );
         groupPostRepository.save(post);
     }
@@ -113,7 +113,7 @@ public class GroupPostService {
             post.decrementLike();
         }
 
-        groupPostRepository.edit(post); // 변경된 게시글 저장
+        groupPostRepository.editLike(post); // 변경된 게시글 저장
     }
 
     // 좋아요 생성 처리

@@ -18,8 +18,9 @@ public class GroupPost {
     private UserId userId;
     private String url;
     private long likeCount = 0;
+    private long groupCommentCount = 0;
 
-    public static GroupPost create(Long groupPostId, Long groupId, String content, String url, String userId, Long likeCount) {
+    public static GroupPost create(Long groupPostId, Long groupId, String content, String url, String userId, Long likeCount, Long groupCommentCount) {
         GroupPost post = new GroupPost();
         post.groupPostId = groupPostId;
         post.groupId = GroupId.of(groupId);
@@ -28,6 +29,7 @@ public class GroupPost {
         post.userId = UserId.of(userId);
         post.createdAt = LocalDateTime.now();
         post.likeCount = likeCount;
+        post.groupCommentCount = groupCommentCount;
         return post;
     }
 
@@ -42,5 +44,17 @@ public class GroupPost {
             this.likeCount -= 1;
         }
     }
+
+    // 댓글 수 증가
+    public void incrementGroupComment() {
+        this.groupCommentCount +=1;
+    }
+    // 댓글 수 감소
+    public void decrementGroupComment() {
+        if (this.groupCommentCount > 0) {
+            this.groupCommentCount -= 1;
+        }
+    }
+
 
 }
