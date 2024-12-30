@@ -11,6 +11,7 @@ public record GroupCommentServiceResponse(
         String userId,
         String nickName,
         Long likeCount,
+        String profileImage,
         Long groupPostId
 ) {
     public GroupCommentServiceResponse (GroupCommentDto groupCommentDto) {
@@ -21,6 +22,7 @@ public record GroupCommentServiceResponse(
                 groupCommentDto.userId(),
                 groupCommentDto.nickname(),
                 groupCommentDto.likeCount(),
+                groupCommentDto.profileImage(),
                 groupCommentDto.groupPostId()
         );
 

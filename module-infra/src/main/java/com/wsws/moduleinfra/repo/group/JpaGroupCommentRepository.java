@@ -12,7 +12,7 @@ public interface JpaGroupCommentRepository extends JpaRepository<GroupCommentEnt
 
     // POSTID로 댓글 조회
     @Query("SELECT new com.wsws.moduledomain.group.dto.GroupCommentDto( " +
-            "c.groupCommentId, c.content, c.createdAt, c.userId, u.nickname, c.likeCount, c.groupPost.groupPostId) " +
+            "c.groupCommentId, c.content, c.createdAt, c.userId, u.nickname, c.likeCount, u.profileImage, c.groupPost.groupPostId) " +
             "FROM GroupCommentEntity c " +
             "JOIN UserEntity u ON u.id = c.userId " +
             "WHERE c.groupPost.groupPostId = :groupPostId")
