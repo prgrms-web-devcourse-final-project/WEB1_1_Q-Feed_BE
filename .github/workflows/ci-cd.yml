@@ -80,6 +80,13 @@ jobs:
           docker push ${{ steps.login-ecr.outputs.registry }}/q-feed-server:${IMAGE_TAG}
           docker push ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
 
+      - name : create-json
+        id : create-json
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: "fcmSecret.json"
+          json: ${{ secrets.FCM_SECRET_KEY }}
+          dir: 'module-external-api/src/main/resources/firebase/'
 
 
       - name: SSH로 EC2에 접속하기
