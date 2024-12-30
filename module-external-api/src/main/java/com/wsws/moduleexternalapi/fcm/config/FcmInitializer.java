@@ -29,8 +29,8 @@ public class FcmInitializer {
                 log.info("Firebase 초기화 완료");
             }
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("Firebase 초기화 실패: {}", e.getMessage());
+            throw new IllegalStateException("Firebase 초기화 실패", e);
         }
     }
-
 }
