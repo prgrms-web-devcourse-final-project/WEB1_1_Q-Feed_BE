@@ -11,6 +11,7 @@ public record GroupCommentApiResponse(
         String userId,
         String nickname,
         long likeCount,
+        String profileImage,
         Long groupPostId
 ) {
 
@@ -22,6 +23,7 @@ public record GroupCommentApiResponse(
                 dto.userId(),
                 dto.nickName(),
                 dto.likeCount(),
+                dto.profileImage(),
                 dto.groupPostId()
         );
     }

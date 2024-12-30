@@ -10,6 +10,7 @@ public record GroupCommentDto(
         String userId,
         String nickname,
         Long likeCount,
+        String profileImage,
         Long groupPostId
 ) {
 }
