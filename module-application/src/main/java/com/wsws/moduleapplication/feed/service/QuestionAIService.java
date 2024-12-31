@@ -2,6 +2,7 @@ package com.wsws.moduleapplication.feed.service;
 
 import com.wsws.moduledomain.category.Category;
 import com.wsws.moduledomain.category.repo.CategoryRepository;
+import com.wsws.moduledomain.category.vo.CategoryName;
 import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduledomain.feed.question.ai.QuestionGenerateClient;
 import com.wsws.moduledomain.feed.question.ai.VectorClient;
@@ -13,10 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +27,10 @@ public class QuestionAIService {
     private final QuestionGenerateClient questionGenerateClient; // 질문 생성 AI
     private final QuestionRepository questionRepository;
     private final CategoryRepository categoryRepository;
+
+    private List<String> categories;
+    private Map<String, Set<String>> questionBlackListMap; // 카테고리 별로 중복된 질문을 담는 블랙 리스트
+    private Map<String, String> questionTempStore; // 카테고리 별로 검증이 끝난 질문 임시 저장소
 
     /**
      * 데이터베이스에 질문 저장
@@ -65,7 +69,7 @@ public class QuestionAIService {
         List<Question> dailyQuestions = questionRepository.findByQuestionStatus(QuestionStatus.CREATED);
 
         // CREATED 상태 질문이 없다는 것은 질문 생성이 실패했다는 뜻이므로 갱신 작업을 진행하면 안됨.
-        if(dailyQuestions.isEmpty()) return;
+        if (dailyQuestions.isEmpty()) return;
 
         // 어제 질문들 비활성화
         questionRepository.findByQuestionStatus(QuestionStatus.ACTIVATED)
@@ -83,12 +87,72 @@ public class QuestionAIService {
 
     }
 
+    /**
+     * 질문 생성 및
+     */
+    public Map<String, String> generateAndValidateQuestions() {
+        initList(); // 리스트 초기화
+
+        while (!categories.isEmpty()) {
+            Map<String, String> createdQuestions = generateQuestions(categories, questionBlackListMap); // AI로 부터 질문 생성
+
+            for (String categoryName : createdQuestions.keySet()) {
+                String question = createdQuestions.get(categoryName);
+                List<String> similarQuestions = findSimilarText(question); // 유사 질문 검색
+
+                // 질문 검증
+                if (similarQuestions.isEmpty()) {
+                    log.info("질문 검증 완료: {}: {}", categoryName, question);
+                    questionTempStore.put(categoryName, question);
+                    removeCategoryFromList(categoryName);
+                } else {
+                    log.info("질문 중복: {}: {}", categoryName, question);
+                    addQuestionsToBlackListMap(categoryName, question, similarQuestions);
+                }
+            }
+        }
+
+        return questionTempStore;
+    }
+
+    /**
+     * 유사 질문 검색
+     */
     public List<String> findSimilarText(String question) {
         return vectorClient.findSimilarText(question);
     }
 
-    public Map<String, String> createQuestions(List<String> categories, Map<String, Set<String>> questionBlackListMap) {
-        return questionGenerateClient.createQuestions(categories, questionBlackListMap);
+    /**
+     * AI 질문 생성
+     */
+    public Map<String, String> generateQuestions(List<String> categories, Map<String, Set<String>> questionBlackListMap) {
+        return questionGenerateClient.generateQuestions(categories, questionBlackListMap);
+    }
+
+
+    /**
+     * 카테고리 리스트 초기화
+     */
+    private void initList() {
+
+        categories = new CopyOnWriteArrayList<>(Arrays.stream(CategoryName.values())
+                .map(Enum::name)
+                .toList());
+        questionBlackListMap = new ConcurrentHashMap<>();
+        questionTempStore = new ConcurrentHashMap<>();
+    }
+
+    private void addQuestionsToBlackListMap(String categoryName, String question, List<String> similarQuestions) {
+        questionBlackListMap.computeIfAbsent(categoryName, k -> new HashSet<>()).add(question);
+        questionBlackListMap.get(categoryName).addAll(similarQuestions); // 중복된 질문들을 블랙 리스트에 저장
+    }
+
+    /**
+     * 해당 카테고리 리스트에서 제외
+     */
+    private void removeCategoryFromList(String categoryName) {
+        categories.remove(categoryName);
+        questionBlackListMap.remove(categoryName);
     }
 }
 

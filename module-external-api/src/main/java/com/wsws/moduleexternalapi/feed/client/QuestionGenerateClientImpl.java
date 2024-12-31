@@ -48,7 +48,7 @@ public class QuestionGenerateClientImpl implements QuestionGenerateClient {
     /**
      * 생성해야하는 카테고리 목록들을 받아 프롬프트를 작성해 질문 생성
      */
-    public Map<String, String> createQuestions(List<String> categories, Map<String, Set<String>> questionBlackListMap) {
+    public Map<String, String> generateQuestions(List<String> categories, Map<String, Set<String>> questionBlackListMap) {
         log.info("질문 생성 시도");
         log.info("질문 블랙리스트: {}", questionBlackListMap);
         Prompt prompt = createPrompt(categories, questionBlackListMap);
