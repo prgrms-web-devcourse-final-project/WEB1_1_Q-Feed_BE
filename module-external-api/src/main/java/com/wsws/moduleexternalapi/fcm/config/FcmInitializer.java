@@ -14,17 +14,22 @@ import java.io.IOException;
 @Slf4j
 public class FcmInitializer {
 
-    private static final String FIREBASE_CONFIG_PATH = "module-external-api/src/main/resources/firebase/firebase-service-key.json";
+    private static final String FIREBASE_CONFIG_PATH = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
 
     @PostConstruct
     public void initialize() {
         try {
+            if (FIREBASE_CONFIG_PATH == null || FIREBASE_CONFIG_PATH.isEmpty()) {
+                throw new IllegalStateException("환경 변수 GOOGLE_APPLICATION_CREDENTIALS가 설정되지 않았습니다.");
+            }
+
             FileSystemResource resource = new FileSystemResource(FIREBASE_CONFIG_PATH);
             GoogleCredentials googleCredentials = GoogleCredentials
                     .fromStream(resource.getInputStream());
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(googleCredentials)
                     .build();
+
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
                 log.info("Firebase 초기화 완료");

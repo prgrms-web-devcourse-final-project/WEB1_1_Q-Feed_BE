@@ -28,9 +28,7 @@ jobs:
       AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-#      GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-
-
+      GOOGLE_APPLICATION_CREDENTIALS: module-external-api/src/main/resources/firebase/firebase-service-key.json  # Firebase 키 설정
 
     name: 빌드 및 분석
     runs-on: ubuntu-latest
@@ -56,6 +54,10 @@ jobs:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
+
+      - name: Firebase 환경 변수 설정
+        run: export GOOGLE_APPLICATION_CREDENTIALS=module-external-api/src/main/resources/firebase/firebase-service-key.json
+
       - name: 빌드 및 분석
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
