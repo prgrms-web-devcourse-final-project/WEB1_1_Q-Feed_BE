@@ -56,9 +56,7 @@ jobs:
           echo ${{ secrets.FIREBASE_SERVICE_KEY_BASE64_ENCODE }} | base64 -d > module-external-api/src/main/resources/firebase/firebase-service-key.json
 
       - name: 테스트 및 빌드하기
-        run: |
-          export GOOGLE_APPLICATION_CREDENTIALS=module-external-api/src/main/resources/firebase/firebase-service-key.json
-          ./gradlew clean build --stacktrace --info
+        run: ./gradlew clean build --stacktrace --info
 
       - name: AWS Resource에 접근할 수 있게 AWS credentials 설정
         uses: aws-actions/configure-aws-credentials@v4
@@ -121,6 +119,7 @@ jobs:
             echo "AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" >> .env
             echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
             echo "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}" >> .env
+            echo "GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" >> .env
             docker pull ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest
 
             docker run -d --name q-feed-server -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul --env-file ./.env -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/q-feed-server:latest

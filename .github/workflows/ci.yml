@@ -55,8 +55,10 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
-      - name: Firebase 환경 변수 설정
-        run: export GOOGLE_APPLICATION_CREDENTIALS=module-external-api/src/main/resources/firebase/firebase-service-key.json
+      - name: Firebase JSON 파일 생성
+        run: |
+          mkdir -p module-external-api/src/main/resources/firebase
+          echo ${{ secrets.FIREBASE_SERVICE_KEY_BASE64_ENCODE }} | base64 -d > module-external-api/src/main/resources/firebase/firebase-service-key.json
 
       - name: 빌드 및 분석
         env:
