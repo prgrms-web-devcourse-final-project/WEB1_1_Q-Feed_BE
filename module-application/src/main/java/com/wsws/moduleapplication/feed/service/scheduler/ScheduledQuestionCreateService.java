@@ -2,8 +2,6 @@ package com.wsws.moduleapplication.feed.service.scheduler;
 
 import com.wsws.moduleapplication.feed.service.QuestionAIService;
 import com.wsws.moduledomain.category.vo.CategoryName;
-import com.wsws.moduledomain.feed.question.ai.QuestionGenerateClient;
-import com.wsws.moduledomain.feed.question.ai.VectorClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,7 +28,7 @@ public class ScheduledQuestionCreateService {
      */
 
     @Scheduled(cron = "0 30 23 * * ?", zone = "Asia/Seoul")
-    public void createQuestion() {
+    public void createQuestionsScheduling() {
         log.info("질문 생성 스케줄링 시작");
         int maxRetries = 10; // 최대 재시도 횟수
         int attempt = 0;
