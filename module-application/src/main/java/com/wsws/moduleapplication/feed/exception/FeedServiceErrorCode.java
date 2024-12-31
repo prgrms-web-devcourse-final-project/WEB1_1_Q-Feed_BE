@@ -15,6 +15,7 @@ public enum FeedServiceErrorCode implements BaseErrorCode {
     ANSWER_COMMENT_CHANGE_NOT_ALLOWED(FORBIDDEN, "FEED_APP_403_2","해당 답변 댓글을 변경할 수 있는 권한이 없습니다."),
     ANSWER_COMMENT_NOT_FOUND(NOT_FOUND, "FEED_APP_404_3", "존재하지 않는 답변 댓글입니다."),
     PARENT_ANSWER_COMMENT_NOT_FOUND(NOT_FOUND, "FEED_APP_404_4", "없는 부모 답변 댓글입니다."),
+    CATEGORY_NOT_FOUND(NOT_FOUND, "FEED_APP_404_5", "없는 카테고리입니다."),
     FILE_SIZE_EXCEEDED(BAD_REQUEST, "FEED_APP_400_1","파일 크기가 초과되었습니다."),
     UNSUPPORTED_FILE_FORMAT(BAD_REQUEST, "FEED_APP_400_2","지원하지 않는 파일 형식입니다."),
     ALREADY_ANSWER_WRITTEN(CONFLICT, "FEED_APP_409_1", "이미 답변을 작성한적이 있는 질문입니다."),
