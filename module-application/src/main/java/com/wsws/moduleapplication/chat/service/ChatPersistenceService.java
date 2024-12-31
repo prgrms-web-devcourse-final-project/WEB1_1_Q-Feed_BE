@@ -26,9 +26,9 @@ public class ChatPersistenceService {
         try {
             String key = "chatRoomId:messages:" + chatRoomId;
             redisTemplate.opsForList().rightPush(key, chatMessage);
-            log.info("Cached message in Redis for room {}", chatRoomId);
+            log.info("채팅방 {}에 메시지를 Redis에 저장했습니다.", chatRoomId);
         } catch (Exception e) {
-            log.error("Failed to cache message in Redis for room {}", chatRoomId, e);
+            log.error("채팅방 {}에 메시지를 Redis에 저장하는데 실패했습니다.", chatRoomId, e);
         }
     }
 
@@ -42,11 +42,11 @@ public class ChatPersistenceService {
             if (messages != null && !messages.isEmpty()) {
                 try {
                     chatMessageRepository.saveAll(messages); // 배치 저장
-                    log.info("Persisted {} messages to DB for key {}", messages.size(), key);
+                    log.info("키 {}에 있는 {}개의 메시지를 DB에 저장했습니다.", key, messages.size());
                     redisTemplate.delete(key); // Redis에서 삭제
-                    log.info("Deleted cached messages from Redis for key {}", key);
+                    log.info("키 {}의 Redis 캐시 메시지를 삭제했습니다.", key);
                 } catch (Exception e) {
-                    log.error("Failed to persist messages to database for key {}", key, e);
+                    log.error("키 {}의 메시지를 DB에 저장하는 중 오류가 발생했습니다. {}", key, e.getMessage());
                 }
             }
         }
