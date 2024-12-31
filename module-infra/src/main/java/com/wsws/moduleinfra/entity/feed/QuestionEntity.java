@@ -1,5 +1,6 @@
 package com.wsws.moduleinfra.entity.feed;
 
+import com.wsws.moduledomain.feed.question.Question;
 import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -33,8 +34,9 @@ public class QuestionEntity {
     }
 
     /* 수정 로직*/
-    public void editQuestionEntity(QuestionStatus questionStatus) {
-        this.questionStatus = questionStatus;
+    public void editQuestionEntity(Question question) {
+        this.content = question.getContent();
+        this.questionStatus = question.getQuestionStatus();
     }
 
 

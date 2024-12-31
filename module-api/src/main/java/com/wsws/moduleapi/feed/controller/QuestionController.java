@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @RestController
@@ -62,12 +63,15 @@ public class QuestionController {
     }
 
     @PostMapping
-    public ResponseEntity<MessageResponse> postQuestions(QuestionApiRequest apiRequest) {
+    public ResponseEntity<MessageResponse> postQuestions(@RequestBody QuestionApiRequest apiRequest) {
+        questionService.saveQuestions(apiRequest.questions(), LocalDate.now());
+        questionService.updateQuestionStatus();
         return ResponseEntity.ok(new MessageResponse("저장되었습니다."));
     }
 
     @PutMapping
-    public ResponseEntity<MessageResponse> putQuestions(QuestionApiRequest apiRequest) {
+    public ResponseEntity<MessageResponse> putQuestions(@RequestBody QuestionApiRequest apiRequest) {
+        questionService.updateQuestions(apiRequest.questions());
         return ResponseEntity.ok(new MessageResponse("수정되었습니다."));
     }
 

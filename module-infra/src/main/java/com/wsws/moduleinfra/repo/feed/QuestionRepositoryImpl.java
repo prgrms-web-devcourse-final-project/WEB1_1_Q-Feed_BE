@@ -56,7 +56,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         Optional<QuestionEntity> questionEntity = jpaQuestionRepository.findById(question.getQuestionId().getValue());
 
         questionEntity
-                .ifPresent(entity -> entity.editQuestionEntity(question.getQuestionStatus()));
+                .ifPresent(entity -> entity.editQuestionEntity(question));
     }
 
     /**

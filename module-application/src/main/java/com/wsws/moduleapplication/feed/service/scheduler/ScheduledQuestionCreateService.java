@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 
@@ -35,7 +36,7 @@ public class ScheduledQuestionCreateService {
                 Map<String, String> questionsMap = questionAIService.generateAndValidateQuestions();// 질문 생성 및 검증
 
                 log.info("모든 질문 생성완료.");
-                questionService.saveQuestions(questionsMap); // 질문 저장
+                questionService.saveQuestions(questionsMap, LocalDate.now().plusDays(1)); // 질문 저장
                 log.info("질문 생성 스케줄링 성공");
                 break; // 성공 시 루프 종료
             } catch (Exception e) {
