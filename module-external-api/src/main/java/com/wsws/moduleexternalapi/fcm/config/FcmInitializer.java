@@ -5,7 +5,9 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -19,13 +21,17 @@ public class FcmInitializer {
     @PostConstruct
     public void initialize() {
         try {
-            if (FIREBASE_CONFIG_PATH == null || FIREBASE_CONFIG_PATH.isEmpty()) {
-                throw new IllegalStateException("환경 변수 GOOGLE_APPLICATION_CREDENTIALS가 설정되지 않았습니다.");
+            Resource resource;
+
+            if (FIREBASE_CONFIG_PATH != null && !FIREBASE_CONFIG_PATH.isEmpty()) {
+                log.info("환경 변수에서 Firebase 설정 파일 경로를 읽어옵니다: {}", FIREBASE_CONFIG_PATH);
+                resource = new FileSystemResource(FIREBASE_CONFIG_PATH);
+            } else {
+                log.info("JAR 내부의 Firebase 설정 파일을 읽어옵니다.");
+                resource = new ClassPathResource("firebase/firebase-service-key.json");
             }
 
-            FileSystemResource resource = new FileSystemResource(FIREBASE_CONFIG_PATH);
-            GoogleCredentials googleCredentials = GoogleCredentials
-                    .fromStream(resource.getInputStream());
+            GoogleCredentials googleCredentials = GoogleCredentials.fromStream(resource.getInputStream());
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(googleCredentials)
                     .build();
