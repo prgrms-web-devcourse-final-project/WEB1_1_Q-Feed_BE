@@ -58,19 +58,24 @@ jobs:
       - name: Firebase JSON 파일 생성
         run: |
           mkdir -p module-external-api/src/main/resources/firebase
-          echo ${{ secrets.FIREBASE_SERVICE_KEY_BASE64_ENCODE }} | base64 -d > module-external-api/src/main/resources/firebase/firebase-service-key.json
+          echo ${{ secrets.FIREBASE_SERVICE_KEY_BASE64_ENCODE }} | base64 -d > module-external-api/src/main/resources/firebase/firebase-service-key.json || echo "Base64 디코딩 실패: Firebase JSON 파일이 생성되지 않았습니다."
 
       - name: 작업 디렉토리 확인
         run: |
           echo "현재 작업 디렉토리:"
           pwd
 
+      - name: 환경 변수 확인
+        run: |
+          echo "GOOGLE_APPLICATION_CREDENTIALS 값:"
+          echo $GOOGLE_APPLICATION_CREDENTIALS
+
       - name: Firebase JSON 파일 확인
         run: |
           echo "Firebase JSON 파일 경로 및 내용 확인:"
-          ls -la module-external-api/src/main/resources/firebase/
+          ls -la module-external-api/src/main/resources/firebase/ || echo "디렉토리를 찾을 수 없습니다."
           echo "Firebase JSON 파일 내용:"
-          cat module-external-api/src/main/resources/firebase/firebase-service-key.json
+          cat module-external-api/src/main/resources/firebase/firebase-service-key.json || echo "Firebase JSON 파일이 없습니다."
 
       - name: 빌드 및 분석
         env:
