@@ -63,13 +63,70 @@ public class QuestionController {
     }
 
     @PostMapping
+    @Operation(
+            summary = "질문 저장",
+            description = "질문 생성 오류시 관리자가 새로 생성된 질문을 저장합니다",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "요청 예시",
+                                    value = """
+                {
+                    "questions": {
+                        "SPORTS": "스포츠를 통해 배운 가장 중요한 삶의 교훈은 무엇인가요? 그 교훈이 당신에게 어떻게 도움이 되었나요?",
+                        "TRAVEL": "장기 여행을 떠날 수 있다면, 어느 나라를 선택하고 싶은가요? 그곳에서 어떤 경험을 해보고 싶나요?",
+                        "ETC": "가장 기억에 남는 친구와의 특별한 순간이나 활동은 무엇인가요? 그 순간이 왜 특별했나요?",
+                        "DELICIOUS_RESTAURANT": "가장 좋아하는 길거리 음식은 무엇이며, 그 음식을 먹을 때의 추억이나 특별한 경험이 있다면 공유해 줄 수 있나요?",
+                        "FASHION": "올 가을에 가장 끌리는 패션 트렌드는 무엇인가요? 그 스타일을 어떻게 표현하고 싶나요?",
+                        "CULTURE": "요즘 스트레스를 해소하기 위해 즐겨하는 취미나 활동은 무엇인가요? 그 활동이 주는 즐거움은 어떤 건가요?"
+                    }
+                }
+                """
+                            )
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "질문 저장 성공"),
+            @ApiResponse(responseCode = "404", description = "없는 카테고리일 때", content = @Content)
+    })
     public ResponseEntity<MessageResponse> postQuestions(@RequestBody QuestionApiRequest apiRequest) {
         questionService.saveQuestions(apiRequest.questions(), LocalDate.now());
         questionService.updateQuestionStatus();
-        return ResponseEntity.ok(new MessageResponse("저장되었습니다."));
+        return ResponseEntity.status(201).body(new MessageResponse("저장되었습니다."));
     }
 
+
     @PutMapping
+    @Operation(
+            summary = "질문 수정",
+            description = "관리자가 질문을 수정합니다",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "요청 예시",
+                                    value = """
+                {
+                    "questions": {
+                        "SPORTS": "스포츠를 통해 배운 가장 중요한 삶의 교훈은 무엇인가요? 그 교훈이 당신에게 어떻게 도움이 되었나요?",
+                        "TRAVEL": "장기 여행을 떠날 수 있다면, 어느 나라를 선택하고 싶은가요? 그곳에서 어떤 경험을 해보고 싶나요?",
+                        "ETC": "가장 기억에 남는 친구와의 특별한 순간이나 활동은 무엇인가요? 그 순간이 왜 특별했나요?",
+                        "DELICIOUS_RESTAURANT": "가장 좋아하는 길거리 음식은 무엇이며, 그 음식을 먹을 때의 추억이나 특별한 경험이 있다면 공유해 줄 수 있나요?",
+                        "FASHION": "올 가을에 가장 끌리는 패션 트렌드는 무엇인가요? 그 스타일을 어떻게 표현하고 싶나요?",
+                        "CULTURE": "요즘 스트레스를 해소하기 위해 즐겨하는 취미나 활동은 무엇인가요? 그 활동이 주는 즐거움은 어떤 건가요?"
+                    }
+                }
+                """
+                            )
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "질문 수정 성공"),
+            @ApiResponse(responseCode = "404", description = "없는 카테고리일 때", content = @Content)
+    })
     public ResponseEntity<MessageResponse> putQuestions(@RequestBody QuestionApiRequest apiRequest) {
         questionService.updateQuestions(apiRequest.questions());
         return ResponseEntity.ok(new MessageResponse("수정되었습니다."));
