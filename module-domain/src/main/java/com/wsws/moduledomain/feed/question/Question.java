@@ -45,4 +45,11 @@ public class Question {
         this.questionStatus = QuestionStatus.INACTIVATED;
     }
 
+    /**
+     * 질문 수정
+     */
+    public void editQuestion(String newContent) {
+        this.content = newContent;
+    }
+
 }

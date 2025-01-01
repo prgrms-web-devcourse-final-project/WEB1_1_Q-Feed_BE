@@ -1,15 +1,23 @@
 package com.wsws.moduleapplication.feed.service;
 
 import com.wsws.moduleapplication.feed.dto.question.QuestionFindServiceResponse;
+import com.wsws.moduleapplication.feed.exception.CategoryNotFoundException;
 import com.wsws.moduleapplication.feed.exception.QuestionNotFoundException;
 import com.wsws.moduledomain.cache.CacheManager;
+import com.wsws.moduledomain.category.Category;
+import com.wsws.moduledomain.category.repo.CategoryRepository;
 import com.wsws.moduledomain.feed.question.Question;
+import com.wsws.moduledomain.feed.question.ai.VectorClient;
 import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
+import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +25,8 @@ import java.time.LocalDate;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
+    private final CategoryRepository categoryRepository;
+    private final VectorClient vectorClient; // 벡터 데이터베이스
     private final CacheManager cacheManager;
 
     /**
@@ -42,10 +52,91 @@ public class QuestionService {
         QuestionFindServiceResponse serviceResponse = new QuestionFindServiceResponse(question);
 
         // 캐시에 데이터가 없다면 캐시에 해당 Question 저장
-        if(question.getQuestionDate().equals(LocalDate.now())) // 만약 질문 생성이 실패된 경우, 어제 질문이 오늘의 질문으로 캐시에 저장되는 현상을 방지
+        if (question.getQuestionDate().equals(LocalDate.now())) // 만약 질문 생성이 실패된 경우, 어제 질문이 오늘의 질문으로 캐시에 저장되는 현상을 방지
             cacheManager.set(questionCacheKey, serviceResponse, 24 * 60);
 
         return serviceResponse;
+    }
+
+    /**
+     * 데이터베이스에 질문 저장
+     * 질문 저장은 모든 질문들의 검증이 끝난 후에 이루어진다.
+     * -> 저장해야하는 데이터베이스가 두 개이기 때문에 데이터 불일치를 방지하기 위함.
+     */
+    @Transactional
+    public void saveQuestions(Map<String, String> questions, LocalDate savedDate) {
+        log.info("데이터베이스에 질문을 저장");
+
+        List<Category> categoryList = categoryRepository.findAllCategories(); // 카테고리 전부 로드
+        // RDBMS에 질문 저장
+        for (String categoryName : questions.keySet()) {
+            Category category = categoryList.stream()
+                    .filter(c -> categoryName.equals(c.getCategoryName().name()))
+                    .findAny().orElseThrow(() -> new CategoryNotFoundException(categoryName));
+
+            questionRepository.save(
+                    Question.create(
+                            null,
+                            questions.get(categoryName),
+                            QuestionStatus.CREATED,
+                            savedDate,
+                            category.getId().getValue()
+                    )
+            );
+        }
+
+        // 벡터 데이터베이스에 질문 저장
+        vectorClient.store(questions.values().stream().toList());
+    }
+
+    @Transactional
+    public void updateQuestions(Map<String, String> questions) {
+
+        List<Category> categoryList = categoryRepository.findAllCategories(); // 모든 카테고리 조회
+        List<Question> activatedQuestions = questionRepository.findByQuestionStatus(QuestionStatus.ACTIVATED); // 활성화된 오늘 질문 조회
+
+        for (String categoryName : questions.keySet()) {
+            // categoryName의 categoryId 조회
+            Long categoryId = categoryList.stream()
+                    .filter(c -> categoryName.equals(c.getCategoryName().name()))
+                    .findFirst().orElseThrow(() -> new CategoryNotFoundException(categoryName))
+                    .getId().getValue();
+
+            // 해당 categoryId의 질문을 찾아 update
+            Question question = activatedQuestions.stream()
+                    .filter(q -> q.getCategoryId().equals(categoryId))
+                    .findFirst().orElseThrow(() -> QuestionNotFoundException.EXCEPTION);
+
+            question.editQuestion(questions.get(categoryName));
+            questionRepository.edit(question); // 데이터베이스에 반영
+
+            // 기존 캐시 데이터 삭제
+            cacheManager.evictAllByPrefix("QUESTION");
+        }
+
+    }
+
+    @Transactional
+    public void updateQuestionStatus() {
+        List<Question> createdQuestions = questionRepository.findByQuestionStatus(QuestionStatus.CREATED);
+
+        // CREATED 상태 질문이 없다는 것은 질문 생성이 실패했다는 뜻이므로 갱신 작업을 진행하면 안됨.
+        if (createdQuestions.isEmpty()) return;
+
+        // 어제 질문들 비활성화
+        questionRepository.findByQuestionStatus(QuestionStatus.ACTIVATED)
+                .forEach(question -> {
+                    question.inactivateQuestion();
+                    questionRepository.edit(question);
+                });
+
+        // 오늘 질문들 활성화
+        createdQuestions
+                .forEach(question -> {
+                    question.activateQuestion();
+                    questionRepository.edit(question);
+                });
+
     }
 
 }

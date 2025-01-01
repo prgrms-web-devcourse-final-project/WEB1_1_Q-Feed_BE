@@ -1,6 +1,6 @@
 package com.wsws.moduleapplication.feed.service.scheduler;
 
-import com.wsws.moduleapplication.feed.service.QuestionAIService;
+import com.wsws.moduleapplication.feed.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class ScheduledQuestionUpdateService {
-    private final QuestionAIService questionAIService;
+    private final QuestionService questionService;
 
     /**
      * 매일 자정에 Question 테이블의 Question Status 컬럼 변경
@@ -18,7 +18,7 @@ public class ScheduledQuestionUpdateService {
      * 오늘 질문들은 isToday: CREATED -> ACTIVATED
      */
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul") // 매일 00시 00분에 실행되도록 설정
-    public void updateQuestions() {
+    public void updateQuestionsScheduling() {
         int maxRetries = 3; // 최대 재시도 횟수
         int attempt = 0;    // 현재 시도 횟수
 
@@ -28,7 +28,7 @@ public class ScheduledQuestionUpdateService {
                 log.info("질문 업데이트 스케줄링 작업 실행, 시도 횟수: {}", attempt);
 
                 // 질문 상태 업데이트 로직
-                questionAIService.updateQuestions();
+                questionService.updateQuestionStatus();
 
                 // 성공하면 루프 종료
                 log.info("질문 업데이트 스케줄링 작업 완료, 시도 횟수: {}", attempt);
