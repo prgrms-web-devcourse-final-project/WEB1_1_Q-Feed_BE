@@ -8,4 +8,5 @@ public interface CacheManager {
 
     void evict(String key);
 
+    void evictAllByPrefix(String prefix);
 }
