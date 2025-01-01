@@ -109,6 +109,9 @@ public class QuestionService {
 
             question.editQuestion(questions.get(categoryName));
             questionRepository.edit(question); // 데이터베이스에 반영
+
+            // 기존 캐시 데이터 삭제
+            cacheManager.evictAllByPrefix("QUESTION");
         }
 
     }
