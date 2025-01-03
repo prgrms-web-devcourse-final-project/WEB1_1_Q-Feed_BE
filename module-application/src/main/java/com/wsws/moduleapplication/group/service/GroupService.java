@@ -163,6 +163,6 @@ public class GroupService {
                 throw ProfileImageProcessingException.EXCEPTION;
             }
         }
-        return null; // 이미지가 없는 경우
+        return null;
     }
 }
