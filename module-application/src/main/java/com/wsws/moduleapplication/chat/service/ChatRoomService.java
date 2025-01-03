@@ -4,6 +4,7 @@ import com.wsws.moduleapplication.chat.dto.ChatRoomServiceRequest;
 import com.wsws.moduleapplication.chat.dto.ChatRoomServiceResponse;
 import com.wsws.moduleapplication.chat.exception.AlreadyChatRoomException;
 import com.wsws.moduleapplication.chat.exception.ChatRoomNotFoundException;
+import com.wsws.moduleapplication.chat.exception.UnauthorizedAccessException;
 import com.wsws.moduleapplication.usercontext.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.chat.ChatMessage;
 import com.wsws.moduledomain.chat.ChatRoom;
@@ -125,7 +126,7 @@ public class ChatRoomService {
     private void checkOwnership(ChatRoom chatRoom, String userId) {
         if (!chatRoom.getUserId().equals(userId) && !chatRoom.getUserId2().equals(userId)) {
             // 소유자가 아니면 예외를 발생시켜 권한이 없음을 알림
-            throw new IllegalStateException("채팅방을 삭제할 권한이 없습니다.");
+            throw UnauthorizedAccessException.EXCEPTION;
 
         }
     }
