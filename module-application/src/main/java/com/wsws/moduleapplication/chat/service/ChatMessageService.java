@@ -4,8 +4,10 @@ import com.wsws.moduleapplication.chat.dto.ChatMessageRequest;
 import com.wsws.moduleapplication.chat.dto.ChatMessageServiceResponse;
 import com.wsws.moduleapplication.chat.exception.ChatRoomNotFoundException;
 import com.wsws.moduleapplication.chat.exception.FileProcessingException;
+import com.wsws.moduleapplication.usercontext.user.exception.ProfileImageProcessingException;
 import com.wsws.moduleapplication.usercontext.user.exception.UserNotFoundException;
 import com.wsws.moduleapplication.util.FileValidator;
+import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.modulecommon.service.RedisService;
 import com.wsws.moduledomain.chat.ChatMessage;
@@ -50,7 +52,7 @@ public class ChatMessageService {
         validateChatRoom(chatRoomId);
         User user = validateUser(senderId);
 
-        //String fileProcess = processFile(request.file(),request.type());
+        //String fileProcess = processChatImage(request.file());
 
         // 메시지 생성
         ChatMessage chatMessage = createChatMessage(chatRoomId, senderId, request);
@@ -114,23 +116,36 @@ public class ChatMessageService {
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
     }
 
-    private String processFile(MultipartFile file, MessageType type) {
-        if (file != null && !file.isEmpty()) {
-            try {
-                switch (type) {
-                    case IMAGE -> {
-                        FileValidator.validate(file,"image");
-                        return fileStorageService.saveFile(file);
-                    }
-                    case AUDIO -> {
-                        FileValidator.validate(file,"audio");
-                        return fileStorageService.saveFile(file);
-                    }
-                }
-            } catch (Exception e) {
-                throw FileProcessingException.EXCEPTION;
-            }
-        }
-        return null;
-    }
+//    private String processChatImage(byte[] imageData) {
+//        if (imageData != null && imageData.length > 0) {
+//            try {
+//                // S3에 업로드하고 URL을 반환
+//                return fileStorageService.saveFileByte(imageData);
+//            } catch (Exception e) {
+//                throw ProfileImageProcessingException.EXCEPTION;
+//            }
+//        }
+//        return null;
+//    }
+
+
+//    private String processFile(MultipartFile file, MessageType type) {
+//        if (file != null && !file.isEmpty()) {
+//            try {
+//                switch (type) {
+//                    case IMAGE -> {
+//                        FileValidator.validate(file,"image");
+//                        return fileStorageService.saveFile(file);
+//                    }
+//                    case AUDIO -> {
+//                        FileValidator.validate(file,"audio");
+//                        return fileStorageService.saveFile(file);
+//                    }
+//                }
+//            } catch (Exception e) {
+//                throw FileProcessingException.EXCEPTION;
+//            }
+//        }
+//        return null;
+//    }
 }

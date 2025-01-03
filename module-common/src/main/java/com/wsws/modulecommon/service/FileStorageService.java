@@ -4,5 +4,5 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface FileStorageService {
     String saveFile(MultipartFile file);
-    String saveFile(MultipartFile file, String type);
+//    String saveFileByte(byte[] imageData);
 }
