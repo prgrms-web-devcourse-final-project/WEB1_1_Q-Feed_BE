@@ -7,7 +7,6 @@ import com.wsws.moduleapplication.group.dto.UpdateGroupRequest;
 import com.wsws.moduleapplication.group.exception.GroupNotFoundException;
 import com.wsws.moduleapplication.group.exception.UnauthorizedAccessException;
 import com.wsws.moduleapplication.usercontext.user.exception.ProfileImageProcessingException;
-import com.wsws.moduleapplication.usercontext.user.exception.UserNotFoundException;
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
 import com.wsws.moduledomain.group.Group;
