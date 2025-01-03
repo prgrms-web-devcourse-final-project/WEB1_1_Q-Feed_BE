@@ -1,6 +1,7 @@
 package com.wsws.moduleapplication.group.service;
 
 import com.wsws.moduleapplication.group.dto.GroupMemberDetailServiceResponse;
+import com.wsws.moduleapplication.group.exception.*;
 import com.wsws.moduledomain.group.Group;
 import com.wsws.moduledomain.group.GroupMember;
 import com.wsws.moduledomain.group.dto.GroupMemberDetailDto;
@@ -26,9 +27,8 @@ public class GroupMemberService {
     public void joinGroup(Long groupId, String userId) {
         findGroupById(groupId);
 
-        if (groupMemberRepository.existsByUserIdAndGroupId(userId, groupId)) {
-            throw new IllegalStateException("이미 그룹에 가입되어 있습니다.");
-        }
+        validateAlreadyInGroup(userId, groupId);
+
         GroupMember groupMember = GroupMember.create(null,userId, groupId);
         groupMemberRepository.save(groupMember);
     }
@@ -37,8 +37,7 @@ public class GroupMemberService {
     public void leaveGroup(Long groupId, String userId) {
         findGroupById(groupId);
 
-        GroupMember groupMember = groupMemberRepository.findByUserIdAndGroupId(userId, groupId)
-                .orElseThrow(() -> new IllegalArgumentException("그룹에서 해당 멤버를 찾을 수 없습니다."));
+        GroupMember groupMember = findByUserIdAndGroupId(userId, groupId);
 
         groupMemberRepository.deleteById(groupMember.getGroupMemberId());
     }
@@ -68,23 +67,34 @@ public class GroupMemberService {
 
     private Group findGroupById(Long groupId) {
         return groupRepository.findById(GroupId.of(groupId))
-                .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
-    }
-
-    private void validateAdminPermission(Group group, String adminId) {
-        if (!group.getAdminId().equals(UserId.of(adminId))) {
-            throw new IllegalStateException("권한이 없습니다. 그룹 관리자만 멤버를 강제 퇴장시킬 수 있습니다.");
-        }
+                .orElseThrow(() -> GroupNotFoundException.EXCEPTION);
     }
 
     private GroupMember findMemberById(Long memberId) {
         return groupMemberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
+                .orElseThrow(() -> MemberNotFoundException.EXCEPTION);
+    }
+
+    private GroupMember findByUserIdAndGroupId(String userId, Long groupId) {
+        return groupMemberRepository.findByUserIdAndGroupId(userId, groupId)
+                .orElseThrow(() -> MemberNotFoundException.EXCEPTION);
+    }
+
+    private void validateAdminPermission(Group group, String adminId) {
+        if (!group.getAdminId().equals(UserId.of(adminId))) {
+            throw UnauthorizedAccessException.EXCEPTION;
+        }
+    }
+
+    public void validateAlreadyInGroup(String userId, Long groupId) {
+        if (groupMemberRepository.existsByUserIdAndGroupId(userId, groupId)) {
+            throw AlreadyInGroupException.EXCEPTION;
+        }
     }
 
     private void validateGroupMembers(GroupMember groupMember, Long memberId) {
         if (!groupMember.getGroupMemberId().equals(memberId)) {
-            throw new IllegalArgumentException("해당 멤버는 이 그룹에 속해 있지 않습니다.");
+            throw MemberNotInGroupException.EXCEPTION;
         }
     }
 }
