@@ -11,6 +11,7 @@ public record WebSocketChatRequest(
         String senderId,
         String message,
         MessageType type,
+        //byte[] file
         String url
         ) {
     public ChatMessageRequest toChatMessageRequest() {

@@ -4,6 +4,8 @@ import com.wsws.moduleapplication.group.dto.CreateGroupRequest;
 import com.wsws.moduleapplication.group.dto.GroupDetailServiceResponse;
 import com.wsws.moduleapplication.group.dto.GroupServiceResponse;
 import com.wsws.moduleapplication.group.dto.UpdateGroupRequest;
+import com.wsws.moduleapplication.group.exception.GroupNotFoundException;
+import com.wsws.moduleapplication.group.exception.UnauthorizedAccessException;
 import com.wsws.moduleapplication.usercontext.user.exception.ProfileImageProcessingException;
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
@@ -70,27 +72,27 @@ public class GroupService {
 
         //그룹 정보 수정
         group.updateGroupInfro(req.groupName(),req.description(),groupImageUrl);
-        try {
-            groupRepository.edit(group);
-        } catch (RuntimeException e) {
-            throw new RuntimeException("그룹이 존재하지않습니다.");
-        }
+        groupRepository.edit(group);
     }
 
     @Transactional
     public void deleteGroup(Long groupId, String adminId){
         Group group = findGroupById(groupId);
+
         validateAdminPermission(group, adminId);
+
         groupRepository.deleteById(groupId);
     }
 
     @Transactional
     public void ChangeGroupStatus(Long groupId, String adminId){
         Group group = findGroupById(groupId);
+
         validateAdminPermission(group, adminId);
 
         //(true -> false, false -> true)
         group.changeVisibility(!group.isOpen());
+
         groupRepository.changeStatus(group);
     }
 
@@ -108,8 +110,7 @@ public class GroupService {
     @Transactional(readOnly = true)
     public GroupDetailServiceResponse getGroupDetail(Long groupId,String userId) {
 
-        GroupDetailDto groupDetailDto = groupRepository.findGroupWithCategory(groupId)
-                .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
+        GroupDetailDto groupDetailDto = findGroupWithCategory(groupId);
 
         List<GroupMemberDto> groupMembers = groupRepository.findMembersByGroupId(groupId);
 
@@ -137,12 +138,17 @@ public class GroupService {
 
     private Group findGroupById(Long groupId) {
         return groupRepository.findById(GroupId.of(groupId))
-                .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
+                .orElseThrow(() -> GroupNotFoundException.EXCEPTION);
+    }
+
+    private GroupDetailDto findGroupWithCategory(Long groupId){
+        return groupRepository.findGroupWithCategory(groupId)
+                .orElseThrow(() -> GroupNotFoundException.EXCEPTION);
     }
 
     private void validateAdminPermission(Group group, String adminId) {
         if (!group.getAdminId().equals(UserId.of(adminId))) {
-            throw new IllegalStateException("권한이 없습니다. 관리자만 수정할 수 있습니다.");
+            throw UnauthorizedAccessException.EXCEPTION;
         }
     }
 
@@ -156,8 +162,6 @@ public class GroupService {
                 throw ProfileImageProcessingException.EXCEPTION;
             }
         }
-        return null; // 이미지가 없는 경우
+        return null;
     }
-
-
 }

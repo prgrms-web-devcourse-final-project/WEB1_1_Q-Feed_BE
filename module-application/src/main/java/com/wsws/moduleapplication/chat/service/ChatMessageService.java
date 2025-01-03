@@ -3,30 +3,20 @@ package com.wsws.moduleapplication.chat.service;
 import com.wsws.moduleapplication.chat.dto.ChatMessageRequest;
 import com.wsws.moduleapplication.chat.dto.ChatMessageServiceResponse;
 import com.wsws.moduleapplication.chat.exception.ChatRoomNotFoundException;
-import com.wsws.moduleapplication.chat.exception.FileProcessingException;
 import com.wsws.moduleapplication.usercontext.user.exception.UserNotFoundException;
-import com.wsws.moduleapplication.util.FileValidator;
 import com.wsws.modulecommon.service.FileStorageService;
-import com.wsws.modulecommon.service.RedisService;
 import com.wsws.moduledomain.chat.ChatMessage;
-import com.wsws.moduledomain.chat.ChatMessageDomainResponse;
 import com.wsws.moduledomain.chat.ChatRoom;
-import com.wsws.moduledomain.chat.MessageType;
 import com.wsws.moduledomain.chat.repo.ChatMessageRepository;
 import com.wsws.moduledomain.chat.repo.ChatRoomRepository;
 import com.wsws.moduledomain.chat.dto.ChatMessageDTO;
 import com.wsws.moduledomain.usercontext.user.aggregate.User;
 import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
 import com.wsws.moduledomain.usercontext.user.vo.UserId;
-import com.wsws.moduleinfra.redis.RedisSubscriber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,7 +40,7 @@ public class ChatMessageService {
         validateChatRoom(chatRoomId);
         User user = validateUser(senderId);
 
-        //String fileProcess = processFile(request.file(),request.type());
+        //String fileProcess = processChatImage(request.file());
 
         // 메시지 생성
         ChatMessage chatMessage = createChatMessage(chatRoomId, senderId, request);
@@ -114,27 +104,36 @@ public class ChatMessageService {
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
     }
 
-    //이미지 or 음성 처리
-    private String processFile(MultipartFile file, MessageType type) {
-        System.out.println("!11111111");
-        if (file != null && !file.isEmpty()) {
-            try {
-                // 타입에 따른 파일 검증 및 저장 처리
-                switch (type) {
-                    case IMAGE -> {
-                        FileValidator.validate(file,"image");
-                        System.out.println("!222222222222");
-                        return fileStorageService.saveFile(file);
-                    }
-                    case AUDIO -> {
-                        FileValidator.validate(file,"audio");
-                        return fileStorageService.saveFile(file);
-                    }
-                }
-            } catch (Exception e) {
-                throw FileProcessingException.EXCEPTION;
-            }
-        }
-        return null;
-    }
+//    private String processChatImage(byte[] imageData) {
+//        if (imageData != null && imageData.length > 0) {
+//            try {
+//                // S3에 업로드하고 URL을 반환
+//                return fileStorageService.saveFileByte(imageData);
+//            } catch (Exception e) {
+//                throw ProfileImageProcessingException.EXCEPTION;
+//            }
+//        }
+//        return null;
+//    }
+
+
+//    private String processFile(MultipartFile file, MessageType type) {
+//        if (file != null && !file.isEmpty()) {
+//            try {
+//                switch (type) {
+//                    case IMAGE -> {
+//                        FileValidator.validate(file,"image");
+//                        return fileStorageService.saveFile(file);
+//                    }
+//                    case AUDIO -> {
+//                        FileValidator.validate(file,"audio");
+//                        return fileStorageService.saveFile(file);
+//                    }
+//                }
+//            } catch (Exception e) {
+//                throw FileProcessingException.EXCEPTION;
+//            }
+//        }
+//        return null;
+//    }
 }

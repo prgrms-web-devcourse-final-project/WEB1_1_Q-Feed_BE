@@ -24,14 +24,15 @@ public class ChatWebSocketService {
             if (!isRoomSubscribed(chatRoomId)) {
                 redisSubscriber.subscribeToChatRoom(chatRoomId);
                 markRoomAsSubscribed(chatRoomId);
+                log.info("채팅방 {}에 구독을 추가했습니다.", chatRoomId);
             }
 
             ChatMessageDomainResponse response = ChatMessageDomainResponse.createFrom(chatMessage, user);
-            log.info("ChatMessageDomainResponse{}", response);
+            log.info("채팅 메시지 응답 생성: {}", response);
             String channel = "/sub/chat/" + chatRoomId;
             redisTemplate.convertAndSend(channel, response);
         } catch (Exception e) {
-            log.error("Failed to notify subscribers for chat room {}", chatRoomId, e);
+            log.error("채팅방 {}의 구독자에게 메세지를 보내는 데 실패했습니다.", chatRoomId, e);
         }
     }
 

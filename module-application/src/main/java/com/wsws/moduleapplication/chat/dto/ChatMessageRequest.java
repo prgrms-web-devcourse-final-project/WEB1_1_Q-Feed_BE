@@ -6,5 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 public record ChatMessageRequest(
         String content,
         MessageType type,
+//        byte[] file
         String file
 ) {}
