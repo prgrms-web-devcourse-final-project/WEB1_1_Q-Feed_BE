@@ -21,18 +21,16 @@ public class UserInterestEntity {
     @Column(name = "user_interest_id")
     private Long id;
 
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
-    private CategoryEntity category;
+    @Column(name = "user_id", nullable = false)
+    private String userId;
 
-    public UserInterestEntity(UserEntity user, CategoryEntity category) {
-        this.user = user;
-        this.category = category;
+    @Column(name = "category_id")
+    private Long categoryId;
+
+    public UserInterestEntity(String userId, Long categoryId) {
+        this.userId = userId;
+        this.categoryId = categoryId;
     }
 
 
