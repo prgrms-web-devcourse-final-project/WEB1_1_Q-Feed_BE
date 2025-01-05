@@ -3,6 +3,7 @@ package com.wsws.moduledomain.usercontext.user.aggregate;
 import com.wsws.moduledomain.category.vo.CategoryId;
 import com.wsws.moduledomain.socialnetwork.interest.UserInterest;
 import com.wsws.moduledomain.usercontext.user.encoder.PasswordEncoder;
+import com.wsws.moduledomain.usercontext.user.exception.AlreadyInactiveUserException;
 import com.wsws.moduledomain.usercontext.user.vo.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +31,6 @@ public class User {
 
     private UserRole userRole;
 
-    private List<UserInterest> interests = new ArrayList<>();
 
 
 
@@ -64,18 +64,7 @@ public class User {
     }
 
 
-    //사용자 관심사 추가
-    public void addInterest(CategoryId categoryId) {
-        UserInterest interest = UserInterest.create(categoryId);
-        if (!this.interests.contains(interest)) {
-            this.interests.add(interest);
-        }
-    }
 
-    // 관심사 제거
-    public void removeInterest(CategoryId categoryId) {
-        this.interests.removeIf(interest -> interest.getCategoryId().equals(categoryId));
-    }
 
 
     // 프로필 업데이트
@@ -123,6 +112,9 @@ public class User {
 
     // 사용자 상태 변경
     public void deactivate() {
+        if (!this.isUsable) {
+            throw AlreadyInactiveUserException.EXCEPTION;
+        }
         this.isUsable = false;
     }
 

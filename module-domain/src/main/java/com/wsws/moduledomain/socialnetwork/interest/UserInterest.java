@@ -1,6 +1,7 @@
 package com.wsws.moduledomain.socialnetwork.interest;
 
 import com.wsws.moduledomain.category.vo.CategoryId;
+import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -9,12 +10,15 @@ import lombok.Getter;
 public class UserInterest {
     private final CategoryId categoryId;
 
-    private UserInterest(CategoryId categoryId) {
+    private final UserId userId;
+
+    private UserInterest(CategoryId categoryId, UserId userId) {
         this.categoryId = categoryId;
+        this.userId = userId;
     }
 
-    public static UserInterest create(CategoryId categoryId) {
-        return new UserInterest(categoryId);
+    public static UserInterest create(CategoryId categoryId, UserId userId) {
+        return new UserInterest(categoryId, userId);
     }
 }
 
