@@ -19,7 +19,7 @@ public class AdminController {
     //신고 목록 조회
     @Operation(summary = "신고 목록 조회", description = "모든 신고 목록을 조회합니다.")
     @GetMapping("/report")
-    public ResponseEntity<?> getAllReports(){
+    public ResponseEntity<List<ReportDetails>> getAllReports(){
         List<ReportDetails> reportList = adminService.getReportList();
         return ResponseEntity.ok(reportList);
     }
