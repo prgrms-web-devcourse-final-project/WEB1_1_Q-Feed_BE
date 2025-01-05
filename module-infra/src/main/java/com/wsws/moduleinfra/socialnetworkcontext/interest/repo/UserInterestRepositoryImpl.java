@@ -4,12 +4,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wsws.moduledomain.socialnetwork.interest.UserInterestRepository;
 import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import com.wsws.moduledomain.socialnetwork.interest.UserInterest;
-import com.wsws.moduleinfra.entity.CategoryEntity;
-import com.wsws.moduleinfra.usercontext.user.entity.UserEntity;
 import com.wsws.moduleinfra.socialnetworkcontext.interest.entity.UserInterestEntity;
 import com.wsws.moduleinfra.socialnetworkcontext.interest.entity.UserInterestEntityMapper;
-import com.wsws.moduleinfra.repo.category.CategoryJpaRepository;
-import com.wsws.moduleinfra.usercontext.user.repo.JpaUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -26,8 +22,6 @@ public class UserInterestRepositoryImpl implements UserInterestRepository {
 
     private final JPAQueryFactory queryFactory;
     private final JpaUserInterestRepository jpaUserInterestRepository;
-    private final CategoryJpaRepository categoryJpaRepository;
-    private final JpaUserRepository jpaUserRepository;
     private final UserInterestEntityMapper mapper;
 
     @Override

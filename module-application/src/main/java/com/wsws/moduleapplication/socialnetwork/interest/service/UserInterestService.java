@@ -50,7 +50,7 @@ public class UserInterestService {
 
         // CategoryName → CategoryId
         List<CategoryId> categoryIds = interestCategoryNames.stream()
-                .map(CategoryName::valueOf) // String → CategoryName (ENUM)
+                .map(CategoryName::findByName) // String → CategoryName (ENUM)
                 .map(categoryRepository::findByCategoryName) // CategoryName → Category
                 .map(Category::getId) // Category → CategoryId
                 .toList();
