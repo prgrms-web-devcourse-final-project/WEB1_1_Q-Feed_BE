@@ -3,6 +3,7 @@ package com.wsws.moduledomain.usercontext.user.aggregate;
 import com.wsws.moduledomain.category.vo.CategoryId;
 import com.wsws.moduledomain.socialnetwork.interest.UserInterest;
 import com.wsws.moduledomain.usercontext.user.encoder.PasswordEncoder;
+import com.wsws.moduledomain.usercontext.user.exception.AlreadyInactiveUserException;
 import com.wsws.moduledomain.usercontext.user.vo.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -111,6 +112,9 @@ public class User {
 
     // 사용자 상태 변경
     public void deactivate() {
+        if (!this.isUsable) {
+            throw AlreadyInactiveUserException.EXCEPTION;
+        }
         this.isUsable = false;
     }
 
