@@ -2,6 +2,7 @@ package com.wsws.moduleapplication.socialnetwork.recommendation;
 
 import com.wsws.moduleapplication.socialnetwork.recommendation.mapper.UserRecommendationMapper;
 import com.wsws.moduleapplication.socialnetwork.recommendation.dto.UserRecommendationResponse;
+import com.wsws.moduledomain.cache.CacheManager;
 import com.wsws.moduledomain.socialnetwork.follow.repo.FollowReadRepository;
 import com.wsws.moduledomain.socialnetwork.recommendation.Recommendation;
 import com.wsws.moduledomain.socialnetwork.interest.UserInterestRepository;
@@ -20,9 +21,28 @@ public class RecommendationService {
     private final UserInterestRepository userInterestRepository;
     private final FollowReadRepository followReadRepository;
     private final UserRepository userRepository;
-
+    private final CacheManager cacheManager;
 
     public List<UserRecommendationResponse> getRecommendations(String userId, int limit) {
+        String cacheKey = "recommendation:" + userId;
+
+        List<UserRecommendationResponse> cachedRecommendations = cacheManager.get(cacheKey, List.class);
+
+        // 캐싱되어 있을 경우에는 해당 캐싱 데이터 반환
+        if (cachedRecommendations != null) {
+            return cachedRecommendations;
+        }
+        //없을 경우
+        List<UserRecommendationResponse> recommendations = generateRecommendations(userId, limit);
+
+        cacheManager.set(cacheKey, recommendations, 10);
+
+        return recommendations;
+
+    }
+
+
+    public List<UserRecommendationResponse> generateRecommendations(String userId, int limit) {
         // 사용자 관심사 조회
         List<Long> interestCategoryIds = userInterestRepository.findByUserId(UserId.of(userId))
                 .stream()
@@ -45,8 +65,8 @@ public class RecommendationService {
                 Comparator.comparingLong(Recommendation::getFollowerCount).reversed()
         );
 
-        for(User user : users) {
-            Recommendation recommendation = new Recommendation(
+        for (User user : users) {
+            Recommendation recommendation = Recommendation.of(
                     user.getId().getValue(),
                     user.getNickname().getValue(),
                     user.getProfileImage(),
@@ -63,8 +83,7 @@ public class RecommendationService {
         }
 
 
-
-
         return UserRecommendationMapper.toDtoList(recommendations);
     }
+
 }
