@@ -1,6 +1,9 @@
 package com.wsws.moduledomain.socialnetwork.follow.vo;
 
 
+import com.wsws.moduledomain.socialnetwork.follow.exception.InvalidFollowException;
+import com.wsws.moduledomain.socialnetwork.follow.exception.InvalidFolloweeIdException;
+import com.wsws.moduledomain.socialnetwork.follow.exception.InvalidFollowerIdException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -11,7 +14,18 @@ public class FollowId {
     private final String followeeId;
 
     private FollowId(String followerId, String followeeId) {
-        //팔로우 팔로워 있는지 검증 도메인 로직 추가 필요
+
+        if(followerId == null || followerId.isEmpty()){
+            throw InvalidFollowerIdException.EXCEPTION;
+        }
+
+        if(followeeId == null || followeeId.isEmpty()){
+            throw InvalidFolloweeIdException.EXCEPTION;
+        }
+
+        if(followerId.equals(followeeId)){
+            throw InvalidFollowException.EXCEPTION;
+        }
         this.followerId = followerId;
         this.followeeId = followeeId;
     }
