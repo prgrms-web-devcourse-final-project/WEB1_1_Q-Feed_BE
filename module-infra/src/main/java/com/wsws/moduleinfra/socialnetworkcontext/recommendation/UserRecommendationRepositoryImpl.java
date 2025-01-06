@@ -2,7 +2,7 @@ package com.wsws.moduleinfra.socialnetworkcontext.recommendation;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.wsws.moduledomain.socialnetwork.recommendation.UserRecommendation;
+import com.wsws.moduledomain.socialnetwork.recommendation.Recommendation;
 import com.wsws.moduledomain.socialnetwork.recommendation.UserRecommendationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -21,10 +21,10 @@ public class UserRecommendationRepositoryImpl implements UserRecommendationRepos
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<UserRecommendation> findTopRecommendations(String userId, List<Long> interestCategoryIds, int limit) {
+    public List<Recommendation> findTopRecommendations(String userId, List<Long> interestCategoryIds, int limit) {
         return queryFactory
                 .select(Projections.constructor(
-                        UserRecommendation.class,
+                        Recommendation.class,
                         userEntity.id,
                         userEntity.nickname,
                         userEntity.profileImage,
@@ -42,10 +42,10 @@ public class UserRecommendationRepositoryImpl implements UserRecommendationRepos
     }
 
     @Override
-    public List<UserRecommendation> findGeneralRecommendations(String userId, int limit) {
+    public List<Recommendation> findGeneralRecommendations(String userId, int limit) {
         return queryFactory
                 .select(Projections.constructor(
-                        UserRecommendation.class,
+                        Recommendation.class,
                         userEntity.id,
                         userEntity.nickname,
                         userEntity.profileImage,

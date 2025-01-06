@@ -3,9 +3,7 @@ package com.wsws.moduleapplication.socialnetwork.recommendation;
 import com.wsws.moduleapplication.socialnetwork.recommendation.mapper.UserRecommendationMapper;
 import com.wsws.moduleapplication.socialnetwork.recommendation.dto.UserRecommendationResponse;
 import com.wsws.moduledomain.socialnetwork.follow.repo.FollowReadRepository;
-import com.wsws.moduledomain.socialnetwork.follow.repo.FollowRepository;
-import com.wsws.moduledomain.socialnetwork.recommendation.UserRecommendation;
-import com.wsws.moduledomain.socialnetwork.recommendation.UserRecommendationRepository;
+import com.wsws.moduledomain.socialnetwork.recommendation.Recommendation;
 import com.wsws.moduledomain.socialnetwork.interest.UserInterestRepository;
 import com.wsws.moduledomain.usercontext.user.aggregate.User;
 import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
@@ -43,12 +41,12 @@ public class RecommendationService {
         List<User> users = userRepository.findUsersByIds(filteredUserIds);
 
         //우선 순위 큐로 자료구조 개선
-        PriorityQueue<UserRecommendation> pq = new PriorityQueue<>(
-                Comparator.comparingLong(UserRecommendation::getFollowerCount).reversed()
+        PriorityQueue<Recommendation> pq = new PriorityQueue<>(
+                Comparator.comparingLong(Recommendation::getFollowerCount).reversed()
         );
 
         for(User user : users) {
-            UserRecommendation recommendation = new UserRecommendation(
+            Recommendation recommendation = new Recommendation(
                     user.getId().getValue(),
                     user.getNickname().getValue(),
                     user.getProfileImage(),
@@ -59,7 +57,7 @@ public class RecommendationService {
         }
 
         // limit개만큼만 추출
-        List<UserRecommendation> recommendations = new ArrayList<>(pq);
+        List<Recommendation> recommendations = new ArrayList<>(pq);
         for (int i = 0; i < limit && !pq.isEmpty(); i++) {
             recommendations.add(pq.poll()); // 내림차순 정렬된 순서로 추출
         }
