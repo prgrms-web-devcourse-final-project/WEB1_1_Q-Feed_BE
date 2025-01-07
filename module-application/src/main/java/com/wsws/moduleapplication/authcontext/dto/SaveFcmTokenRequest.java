@@ -1,8 +1,6 @@
 package com.wsws.moduleapplication.authcontext.dto;
 
-public record LoginServiceRequest(
-        String email,
-        String password,
+public record SaveFcmTokenRequest(
         String fcmToken
 ) {
 }
