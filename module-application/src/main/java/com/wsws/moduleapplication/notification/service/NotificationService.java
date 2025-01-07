@@ -78,8 +78,6 @@ public class NotificationService {
         String title = fcmService.makeFcmTitle(fcmType.getType());
         String body = createNotificationBody(fcmType, sender.getNickname().getValue());
 
-//        String body = fcmService.makeQLikeBody(sender.getNickname().getValue(),fcmType.getType());
-
         fcmRequestDto fcmDTO = fcmService.makeFcmDTO(title, body);
 
         // FCM 전송

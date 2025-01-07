@@ -1,15 +1,16 @@
 package com.wsws.moduleapplication.socialnetwork.follow;
 
-import com.wsws.moduleapplication.notification.service.NotificationService;
 import com.wsws.moduleapplication.socialnetwork.follow.dto.FollowServiceRequestDto;
 import com.wsws.moduleapplication.socialnetwork.exception.AlreadyFollowedException;
 import com.wsws.moduleapplication.socialnetwork.exception.FollowNotFoundException;
+import com.wsws.moduleapplication.socialnetwork.follow.event.FollowEvent;
 import com.wsws.moduledomain.socialnetwork.follow.aggregate.Follow;
 import com.wsws.moduledomain.socialnetwork.follow.repo.FollowRepository;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
 import com.wsws.moduledomain.cache.CacheManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,7 +19,7 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final CacheManager cacheManager;
-    private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher;
 
     // 팔로우
     @Transactional
@@ -38,16 +39,11 @@ public class FollowService {
         // 캐시 무효화
         evictFollowerFollowingCache(followerId, followeeId);
 
-        // 알림 전송 및 저장
-        notificationService.sendNotification(
+        // 이벤트 발행
+        eventPublisher.publishEvent(new FollowEvent(
                 followerId,
                 followeeId,
-                null,
-                null,
-                null,
-                "/profile/users/" + followerId,
-                FcmType.FOLLOW
-        );
+                FcmType.FOLLOW));
     }
 
     @Transactional

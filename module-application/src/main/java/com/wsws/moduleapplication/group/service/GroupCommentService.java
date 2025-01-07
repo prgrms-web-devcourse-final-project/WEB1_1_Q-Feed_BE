@@ -4,7 +4,8 @@ package com.wsws.moduleapplication.group.service;
 import com.wsws.moduleapplication.group.dto.CreateGroupCommentRequest;
 import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.group.dto.GroupCommentServiceResponse;
-import com.wsws.moduleapplication.notification.service.NotificationService;
+import com.wsws.moduleapplication.group.event.GroupCommentCreatedEvent;
+import com.wsws.moduleapplication.group.event.GroupCommentLikedEvent;
 import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
 import com.wsws.moduledomain.group.GroupComment;
@@ -18,6 +19,7 @@ import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -31,7 +33,7 @@ public class GroupCommentService {
     private final GroupCommentRepository groupCommentRepository;
     private final LikeRepository likeRepository;
     private final GroupPostRepository groupPostRepository;
-    private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher;
 
 
 
@@ -57,15 +59,14 @@ public class GroupCommentService {
         groupPost.incrementGroupComment();
         groupPostRepository.editComment(groupPost);
 
-        notificationService.sendNotification(
+        // 그룹 댓글 생성 이벤트 발행
+        eventPublisher.publishEvent(new GroupCommentCreatedEvent(
                 userId,
                 groupPost.getUserId().getValue(),
                 groupPostId,
                 savedComment.getGroupCommentId(),
-                null,
-                "/groups/posts/" + groupPost.getGroupPostId() + "#comment-" + savedComment.getGroupCommentId(),
                 FcmType.Q_SPACE_POST_COMMENT
-        );
+        ));
     }
 
     // 게시글 댓글 목록 조회
@@ -76,7 +77,7 @@ public class GroupCommentService {
     }
 
 
-    // 그룹 게시글 댓글 삭제 (본인 확인 추가)
+    // 그룹 게시글 댓글 삭제
     @Transactional
     public void deleteGroupComment(Long groupCommentId, String userId) {
         GroupComment groupComment = getGroupComment(groupCommentId);
@@ -98,17 +99,14 @@ public class GroupCommentService {
 
         handleLikeAction(request, true); // 좋아요 추가 처리
 
-        // 좋아요 알림 전송
-        String likerId = request.userId();
-        notificationService.sendNotification(
-                likerId,
+        // 그룹 댓글 좋아요 이벤트 발행
+        eventPublisher.publishEvent(new GroupCommentLikedEvent(
                 request.userId(),
+                comment.getUserId().getValue(),
+                comment.getGroupCommentId(),
                 request.targetId(),
-                null,
-                null,
-                "/groups/posts/" + request.targetId() + "#comment-" + comment.getGroupCommentId(),
                 FcmType.Q_SPACE_COMMENT_LIKE
-        );
+        ));
     }
 
     @Transactional
