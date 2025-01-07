@@ -45,7 +45,7 @@ public class FollowService {
                 null,
                 null,
                 null,
-                "/users/" + followerId,
+                "/profile/users/" + followerId,
                 FcmType.FOLLOW
         );
     }
