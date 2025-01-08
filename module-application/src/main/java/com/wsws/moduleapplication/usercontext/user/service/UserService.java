@@ -16,7 +16,6 @@ import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
 import com.wsws.moduledomain.usercontext.user.vo.Email;
 import com.wsws.moduledomain.usercontext.user.vo.Nickname;
 import com.wsws.moduledomain.usercontext.user.vo.UserId;
-import com.wsws.moduleinfra.FcmRedis;
 import com.wsws.moduledomain.cache.CacheManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
