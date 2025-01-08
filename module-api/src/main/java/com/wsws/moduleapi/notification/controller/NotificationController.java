@@ -53,6 +53,7 @@ public class NotificationController {
         return ResponseEntity.ok("모든 알림이 읽음 처리되었습니다.");
     }
 
+    @Operation(summary = "FCM 토큰 저장", description = "사용자의 FCM 토큰을 저장합니다.")
     @PostMapping("/fcmTokenSaves")
     public ResponseEntity<String> saveFcmToken(
             SaveFcmTokenRequest request,
