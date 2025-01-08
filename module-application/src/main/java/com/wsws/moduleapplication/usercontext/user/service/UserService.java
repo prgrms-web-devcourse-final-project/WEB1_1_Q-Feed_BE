@@ -33,7 +33,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final FileStorageService fileStorageService;
-    private final FcmRedis fcmRedis;
     private final CacheManager cacheManager;
     private final UserInterestService userInterestService;
 
