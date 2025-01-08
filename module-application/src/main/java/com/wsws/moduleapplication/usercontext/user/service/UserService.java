@@ -3,7 +3,6 @@ package com.wsws.moduleapplication.usercontext.user.service;
 import com.wsws.moduleapplication.socialnetwork.interest.service.UserInterestService;
 import com.wsws.moduleapplication.usercontext.user.dto.PasswordChangeServiceDto;
 import com.wsws.moduleapplication.usercontext.user.dto.RegisterUserRequest;
-import com.wsws.moduleapplication.usercontext.user.dto.UpdateFcmTokenRequest;
 import com.wsws.moduleapplication.usercontext.user.dto.UpdateProfileServiceDto;
 import com.wsws.moduleapplication.usercontext.user.exception.DuplicateNicknameException;
 import com.wsws.moduleapplication.util.ProfileImageValidator;
@@ -17,14 +16,12 @@ import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
 import com.wsws.moduledomain.usercontext.user.vo.Email;
 import com.wsws.moduledomain.usercontext.user.vo.Nickname;
 import com.wsws.moduledomain.usercontext.user.vo.UserId;
-import com.wsws.moduleinfra.FcmRedis;
 import com.wsws.moduledomain.cache.CacheManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.Duration;
 
 
 @Service
@@ -35,7 +32,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final FileStorageService fileStorageService;
-    private final FcmRedis fcmRedis;
     private final CacheManager cacheManager;
     private final UserInterestService userInterestService;
 
@@ -141,13 +137,6 @@ public class UserService {
         return null; // 이미지가 없는 경우
     }
 
-    public void saveFcmToken(UpdateFcmTokenRequest request, String userId) {
-        User user = userRepository.findById(UserId.of(userId))
-                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
-        String value = request.fcmToken();
-        Duration twoMonths = Duration.ofDays(60); // 2달
-        fcmRedis.saveFcmToken(String.valueOf(user.getId()), value, twoMonths);
-    }
 
     private void evictProfileCache(String userId) {
         String profileCacheKey = "user:" + userId + ":profile";

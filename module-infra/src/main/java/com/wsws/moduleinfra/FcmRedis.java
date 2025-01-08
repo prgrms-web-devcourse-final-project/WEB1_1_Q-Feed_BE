@@ -24,7 +24,7 @@ public class FcmRedis {
         return (String) redisTemplate.opsForValue().get(redisKey);
     }
 
-    public void deleteFcmToken(Long userId) {
+    public void deleteFcmToken(String userId) {
         String key = PREFIX + userId;
         redisTemplate.delete(key);
     }

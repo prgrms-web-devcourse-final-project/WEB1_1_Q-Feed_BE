@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -78,14 +77,4 @@ public class UserController {
     }
 
 
-
-    @PostMapping("/fcmTokenSaves")
-    public ResponseEntity<String> saveFcmToken(
-            UpdateFcmTokenRequest request,
-            @AuthenticationPrincipal UserPrincipal userPrincipal
-    ){
-        String userId = userPrincipal.getId();
-        userService.saveFcmToken(request, userId);
-        return ResponseEntity.ok("FCM 토큰 저장 OK");
-    }
 }

@@ -5,6 +5,7 @@ import com.wsws.moduleapplication.authcontext.exception.EmailNotFoundException;
 import com.wsws.moduleapplication.authcontext.exception.InvalidVerificationCodeException;
 import com.wsws.moduleapplication.authcontext.exception.RefreshTokenExpiredException;
 import com.wsws.moduleapplication.authcontext.dto.AuthServiceResponse;
+import com.wsws.moduleapplication.notification.event.LogoutEvent;
 import com.wsws.moduledomain.authcontext.auth.ParsedTokenInfo;
 import com.wsws.moduledomain.authcontext.auth.repo.EmailService;
 import com.wsws.moduledomain.authcontext.auth.RefreshToken;
@@ -22,6 +23,7 @@ import com.wsws.moduledomain.usercontext.user.vo.Nickname;
 import com.wsws.moduledomain.authcontext.social.aggregate.SocialLogin;
 import com.wsws.moduledomain.usercontext.user.vo.UserRole;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +43,7 @@ public class AuthService {
     private final EmailService emailService;
     private final SocialLoginService socialLoginService;
     private final SocialLoginRepository socialLoginRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     //인증 코드 유효 시간
     private static final long CODE_TTL = 300; //5분
@@ -65,8 +68,6 @@ public class AuthService {
 
         // RefreshToken 저장 (7일 유효)
         authRepository.save(RefreshToken.create(refreshToken, LocalDateTime.now().plusDays(7)));
-
-
 
         return new LoginServiceResponse(accessToken, refreshToken, user.getId().getValue());
     }
@@ -104,8 +105,12 @@ public class AuthService {
     }
 
     // 로그아웃
-    public AuthServiceResponse logout(String refreshToken) {
+    public AuthServiceResponse logout(String refreshToken, String userId) {
         authRepository.deleteByToken(refreshToken);
+
+        // 로그아웃 이벤트 발행
+        eventPublisher.publishEvent(new LogoutEvent(userId));
+
         return new AuthServiceResponse("로그아웃이 완료되었습니다");
     }
 
@@ -236,7 +241,6 @@ public class AuthService {
         }
 
     }
-
 
 
 }

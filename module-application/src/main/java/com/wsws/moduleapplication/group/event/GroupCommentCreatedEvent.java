@@ -1,0 +1,12 @@
+package com.wsws.moduleapplication.group.event;
+
+import com.wsws.moduleexternalapi.fcm.util.FcmType;
+
+public record GroupCommentCreatedEvent (
+        String commenterId,
+        String userId,
+        Long postId,
+        Long commentId,
+        FcmType fcmType
+){
+}

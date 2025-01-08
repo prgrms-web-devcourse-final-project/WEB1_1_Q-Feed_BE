@@ -4,12 +4,12 @@ import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerCreateServiceReques
 import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerCreateServiceResponse;
 import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerEditServiceRequest;
 import com.wsws.moduleapplication.feed.dto.answer.edit.AnswerVisibilityEditServiceRequest;
+import com.wsws.moduleapplication.feed.event.AnswerLikedEvent;
 import com.wsws.moduleapplication.feed.exception.AlreadyAnswerWrittenException;
 import com.wsws.moduleapplication.feed.exception.AnswerChangeNotAllowedException;
 import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.feed.exception.QuestionNotFoundException;
-import com.wsws.moduleapplication.notification.service.NotificationService;
 import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.ProfileImageProcessingException;
@@ -24,6 +24,7 @@ import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
 import com.wsws.moduleinfra.aop.DistributedLock;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +39,7 @@ public class AnswerService {
     private final LikeRepository likeRepository;
     private final QuestionRepository questionRepository;
     private final FileStorageService fileStorageService;
-    private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher; // 이벤트 발행 도구
 
 
     /**
@@ -133,17 +134,13 @@ public class AnswerService {
         // 수정 반영
         answerRepository.edit(answer);
 
-        // 답변 좋아요 알림 전송
-        String likerId = request.userId();
-        notificationService.sendNotification(
-                likerId,
+        // 답변 이벤트 발행
+        eventPublisher.publishEvent(new AnswerLikedEvent(
                 request.userId(),
+                answer.getUserId().getValue(), //알림 받을
                 request.targetId(),
-                null,
-                null,
-                "/feed/answers/" + answer.getAnswerId().getValue(),
                 FcmType.ANSWER_LIKE
-        );
+        ));
 
     }
 

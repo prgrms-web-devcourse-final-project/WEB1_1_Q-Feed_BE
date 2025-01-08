@@ -4,7 +4,7 @@ import com.wsws.moduleapplication.group.dto.CreateGroupPostRequest;
 import com.wsws.moduleapplication.group.dto.GroupPostDetailServiceResponse;
 import com.wsws.moduleapplication.group.dto.GroupPostServiceResponse;
 import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
-import com.wsws.moduleapplication.notification.service.NotificationService;
+import com.wsws.moduleapplication.group.event.GroupPostLikeEvent;
 import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.ProfileImageProcessingException;
@@ -22,6 +22,7 @@ import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,7 +35,7 @@ public class GroupPostService {
     private final FileStorageService fileStorageService;
     private final LikeRepository likeRepository;
     private final GroupCommentRepository groupCommentRepository;
-    private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher; // 이벤트 발행 도구
 
     // 게시물 생성
     @Transactional
@@ -82,17 +83,17 @@ public class GroupPostService {
     public void addLikeToGroupPost(LikeServiceRequest request) {
         handleLikeAction(request, true); // 좋아요 추가 처리
 
-        // 좋아요 알림 전송
-        String likerId = request.userId();
-        notificationService.sendNotification(
-                likerId,
+        // 게시글 작성자 ID 가져오기
+        GroupPost post = groupPostRepository.findById(request.targetId())
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        // 좋아요 이벤트 발행
+        eventPublisher.publishEvent(new GroupPostLikeEvent(
                 request.userId(),
+                post.getUserId().getValue(), //좋아요 받을
                 request.targetId(),
-                null,
-                null,
-                "/groups/posts/" + request.targetId(),
                 FcmType.Q_SPACE_POST_LIKE
-        );
+        ));
     }
 
     @Transactional
