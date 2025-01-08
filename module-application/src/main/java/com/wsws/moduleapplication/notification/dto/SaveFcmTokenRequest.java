@@ -1,4 +1,4 @@
-package com.wsws.moduleapplication.authcontext.dto;
+package com.wsws.moduleapplication.notification.dto;
 
 public record SaveFcmTokenRequest(
         String fcmToken

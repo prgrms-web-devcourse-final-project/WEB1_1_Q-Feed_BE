@@ -5,7 +5,7 @@ import com.wsws.moduleapplication.authcontext.exception.EmailNotFoundException;
 import com.wsws.moduleapplication.authcontext.exception.InvalidVerificationCodeException;
 import com.wsws.moduleapplication.authcontext.exception.RefreshTokenExpiredException;
 import com.wsws.moduleapplication.authcontext.dto.AuthServiceResponse;
-import com.wsws.moduleapplication.usercontext.user.exception.UserNotFoundException;
+import com.wsws.moduleapplication.notification.event.LogoutEvent;
 import com.wsws.moduledomain.authcontext.auth.ParsedTokenInfo;
 import com.wsws.moduledomain.authcontext.auth.repo.EmailService;
 import com.wsws.moduledomain.authcontext.auth.RefreshToken;
@@ -21,14 +21,12 @@ import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
 import com.wsws.moduledomain.usercontext.user.vo.Email;
 import com.wsws.moduledomain.usercontext.user.vo.Nickname;
 import com.wsws.moduledomain.authcontext.social.aggregate.SocialLogin;
-import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import com.wsws.moduledomain.usercontext.user.vo.UserRole;
-import com.wsws.moduleinfra.FcmRedis;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -45,7 +43,7 @@ public class AuthService {
     private final EmailService emailService;
     private final SocialLoginService socialLoginService;
     private final SocialLoginRepository socialLoginRepository;
-    private final FcmRedis fcmRedis;
+    private final ApplicationEventPublisher eventPublisher;
 
     //인증 코드 유효 시간
     private static final long CODE_TTL = 300; //5분
@@ -71,18 +69,13 @@ public class AuthService {
         // RefreshToken 저장 (7일 유효)
         authRepository.save(RefreshToken.create(refreshToken, LocalDateTime.now().plusDays(7)));
 
-        // FCM 토큰 저장
-        if (loginServiceRequest.fcmToken() != null && !loginServiceRequest.fcmToken().isEmpty()) {
-            saveFcmToken(new SaveFcmTokenRequest(loginServiceRequest.fcmToken()), user.getId().getValue());
-        }
-
         return new LoginServiceResponse(accessToken, refreshToken, user.getId().getValue());
     }
 
     //외부 로그인
-    public LoginServiceResponse socialLogin(SocialLoginServiceRequest request) {
+    public LoginServiceResponse socialLogin(String authorizationCode) {
         // 1.SocialLoginInfo 가져오기
-        SocialLogin socialLogin = socialLoginService.getSocialLoginInfo(request.authorizationCode());
+        SocialLogin socialLogin = socialLoginService.getSocialLoginInfo(authorizationCode);
 
         // 2. Provider와 ProviderId로 SocialLogin 조회
         User user = userRepository.findByEmail(Email.from(socialLogin.getEmail()))
@@ -107,23 +100,16 @@ public class AuthService {
         String refreshToken = tokenProvider.createRefreshToken(user.getId().getValue(), role.name());
         authRepository.save(RefreshToken.create(refreshToken, LocalDateTime.now().plusDays(7)));
 
-        //fcm 토큰 저장
-        if ( request.fcmToken() != null && ! request.fcmToken().isEmpty()) {
-            saveFcmToken(new SaveFcmTokenRequest( request.fcmToken()), user.getId().getValue());
-            System.out.println("소셜 로그인 FCM 토큰 저장 완료: " +  request.fcmToken()); // 로그 추가
-        }
 
         return new LoginServiceResponse(accessToken, refreshToken, user.getId().getValue());
     }
 
     // 로그아웃
-    public AuthServiceResponse logout(String refreshToken) {
+    public AuthServiceResponse logout(String refreshToken, String userId) {
         authRepository.deleteByToken(refreshToken);
 
-        ParsedTokenInfo parsedToken = tokenProvider.parseToken(refreshToken); // RefreshToken에서 userId 추출
-        String userId = parsedToken.getUserId();
-
-        fcmRedis.deleteFcmToken(userId);
+        // 로그아웃 이벤트 발행
+        eventPublisher.publishEvent(new LogoutEvent(userId));
 
         return new AuthServiceResponse("로그아웃이 완료되었습니다");
     }
@@ -255,15 +241,6 @@ public class AuthService {
         }
 
     }
-
-    public void saveFcmToken(SaveFcmTokenRequest request, String userId) {
-        User user = userRepository.findById(UserId.of(userId))
-                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
-        String value = request.fcmToken();
-        Duration twoMonths = Duration.ofDays(60); // 2달
-        fcmRedis.saveFcmToken(String.valueOf(user.getId()), value, twoMonths);
-    }
-
 
 
 }

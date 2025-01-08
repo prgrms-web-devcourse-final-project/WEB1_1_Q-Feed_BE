@@ -1,6 +1,8 @@
 package com.wsws.moduleapplication.notification.service;
 
+import com.wsws.moduleapplication.notification.dto.SaveFcmTokenRequest;
 import com.wsws.moduleapplication.notification.dto.NotificationServiceResponse;
+import com.wsws.moduleapplication.usercontext.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.notification.Notification;
 import com.wsws.moduledomain.notification.dto.NotificationDto;
 import com.wsws.moduledomain.notification.repo.NotificationRepository;
@@ -10,10 +12,13 @@ import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import com.wsws.moduleexternalapi.fcm.dto.fcmRequestDto;
 import com.wsws.moduleexternalapi.fcm.service.FcmService;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
+import com.wsws.moduleinfra.FcmRedis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -24,6 +29,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final FcmService fcmService;
     private final UserRepository userRepository;
+    private final FcmRedis fcmRedis;
 
     // ID 생성
     private final AtomicLong notificationIdGenerator = new AtomicLong(1);
@@ -110,4 +116,22 @@ public class NotificationService {
             case Q_SPACE_COMMENT_LIKE -> fcmService.makeQCommentLikeBody(sender, fcmType.getType());
         };
     }
+
+    public void saveFcmToken(SaveFcmTokenRequest request, String userId) {
+        User user = userRepository.findById(UserId.of(userId))
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        String value = request.fcmToken();
+        Duration twoMonths = Duration.ofDays(60); // 2달
+        fcmRedis.saveFcmToken(String.valueOf(user.getId()), value, twoMonths);
+    }
+
+    // FCM 토큰 삭제 로직
+    public void deleteFcmToken(String userId) {
+
+        // Redis에서 토큰 삭제
+        fcmRedis.deleteFcmToken(String.valueOf(userId));
+        System.out.println("FCM 토큰 삭제 완료: ");
+    }
+
+
 }

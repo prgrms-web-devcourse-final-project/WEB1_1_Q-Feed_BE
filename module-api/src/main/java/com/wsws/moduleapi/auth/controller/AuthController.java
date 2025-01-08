@@ -1,13 +1,13 @@
 package com.wsws.moduleapi.auth.controller;
 
 import com.wsws.moduleapi.auth.dto.*;
-import com.wsws.moduleapplication.authcontext.dto.*;
+import com.wsws.moduleapplication.authcontext.dto.LoginServiceResponse;
+import com.wsws.moduleapplication.authcontext.dto.PasswordResetCheckDto;
+import com.wsws.moduleapplication.authcontext.dto.TokenReissueAppDto;
 import com.wsws.moduleapplication.authcontext.service.AuthService;
-import com.wsws.modulesecurity.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,14 +25,14 @@ public class AuthController {
     }
     @Operation(summary = "kakao 로그인", description = "사용자가 카카오 계정을 이용해 로그인합니다.")
     @GetMapping("/login/kakao")
-    public LoginServiceResponse kakaoLogin(@RequestParam("code")SocialLoginServiceRequest request) {
-        return authService.socialLogin(request);
+    public LoginServiceResponse kakaoLogin(@RequestParam("code") String authorizationCode) {
+        return authService.socialLogin(authorizationCode);
     }
 
     @Operation(summary = "로그아웃", description = "사용자가 리프레시 토큰을 이용해 로그아웃합니다.")
     @PostMapping("/logout")
     public ResponseEntity<AuthResponse> logout(@RequestBody LogoutRequest request) {
-        authService.logout(request.refreshToken());
+        authService.logout(request.refreshToken(),request.userId());
         return ResponseEntity.ok(new AuthResponse("로그아웃이 완료되었습니다"));
     }
 
@@ -93,13 +93,5 @@ public class AuthController {
         return ResponseEntity.ok(!exists);
     }
 
-    @PostMapping("/fcmTokenSaves")
-    public ResponseEntity<String> saveFcmToken(
-            SaveFcmTokenRequest request,
-            @AuthenticationPrincipal UserPrincipal userPrincipal
-    ){
-        String userId = userPrincipal.getId();
-        authService.saveFcmToken(request, userId);
-        return ResponseEntity.ok("FCM 토큰 저장 OK");
-    }
+
 }

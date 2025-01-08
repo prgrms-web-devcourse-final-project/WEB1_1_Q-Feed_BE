@@ -1,6 +1,7 @@
 package com.wsws.moduleapi.notification.controller;
 
 import com.wsws.moduleapi.notification.dto.NotificationApiResponse;
+import com.wsws.moduleapplication.notification.dto.SaveFcmTokenRequest;
 import com.wsws.moduleapplication.notification.dto.NotificationServiceResponse;
 import com.wsws.moduleapplication.notification.service.NotificationService;
 import com.wsws.modulesecurity.security.UserPrincipal;
@@ -50,5 +51,15 @@ public class NotificationController {
         String recipientId = userPrincipal.getId();
         notificationService.markAllAsRead(recipientId);
         return ResponseEntity.ok("모든 알림이 읽음 처리되었습니다.");
+    }
+
+    @PostMapping("/fcmTokenSaves")
+    public ResponseEntity<String> saveFcmToken(
+            SaveFcmTokenRequest request,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ){
+        String userId = userPrincipal.getId();
+        notificationService.saveFcmToken(request, userId);
+        return ResponseEntity.ok("FCM 토큰 저장 OK");
     }
 }
