@@ -15,6 +15,7 @@ import com.wsws.moduleexternalapi.fcm.service.FcmService;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
 import com.wsws.moduleinfra.FcmRedis;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -23,6 +24,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
@@ -123,7 +125,14 @@ public class NotificationService {
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
         String value = request.fcmToken();
         Duration twoMonths = Duration.ofDays(60); // 2달
+
+        // Redis 저장 시도
+        log.info("Redis에 FCM 토큰 저장 시도!! userId={}, fcmToken={}", userId, value);
+
         fcmRedis.saveFcmToken(String.valueOf(user.getId()), value, twoMonths);
+
+        // Redis 저장 완료
+        log.info("Redis에 FCM 토큰 저장 완료!! userId={}, fcmToken={}", userId, value);
     }
 
     // FCM 토큰 삭제 로직
