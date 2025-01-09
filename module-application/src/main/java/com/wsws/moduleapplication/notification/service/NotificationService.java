@@ -2,6 +2,7 @@ package com.wsws.moduleapplication.notification.service;
 
 import com.wsws.moduleapplication.notification.dto.SaveFcmTokenRequest;
 import com.wsws.moduleapplication.notification.dto.NotificationServiceResponse;
+import com.wsws.moduleapplication.notification.exception.*;
 import com.wsws.moduleapplication.usercontext.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.notification.Notification;
 import com.wsws.moduledomain.notification.dto.NotificationDto;
@@ -14,6 +15,7 @@ import com.wsws.moduleexternalapi.fcm.service.FcmService;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
 import com.wsws.moduleinfra.FcmRedis;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -22,6 +24,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
@@ -46,10 +49,10 @@ public class NotificationService {
     @Transactional
     public void markAsRead(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 알림이 존재하지 않습니다."));
+                .orElseThrow(() -> NotificationNotFoundException.EXCEPTION);
 
         if (notification.isRead()) {
-            throw new IllegalStateException("이미 읽음 처리된 알림입니다.");
+            throw NotificationAlreadyReadException.EXCEPTION;
         }
 
         notification.markAsRead();
@@ -63,7 +66,7 @@ public class NotificationService {
         List<NotificationDto> unreadNotifications = notificationRepository.findByRecipientIdAndIsReadFalse(recipientId);
 
         if (unreadNotifications.isEmpty()) {
-            throw new IllegalStateException("읽지 않은 알림이 없거나 알림이 존재하지 않습니다.");
+            throw NoUnreadNotificationsException.EXCEPTION;
         }
 
         notificationRepository.markAllAsReadByRecipientId(recipientId);
@@ -72,9 +75,9 @@ public class NotificationService {
     // 알림 생성 및 저장
     public void sendNotification(String senderId, String recipientId, Long targetId, Long commentId, Long groupId, String url, FcmType fcmType) {
         User sender = userRepository.findById(UserId.of(senderId))
-                .orElseThrow(() -> new IllegalArgumentException("발신자를 찾을 수 없습니다."));
+                .orElseThrow(() -> SenderNotFoundException.EXCEPTION);
         User recipient = userRepository.findById(UserId.of(recipientId))
-                .orElseThrow(() -> new IllegalArgumentException("수신자를 찾을 수 없습니다."));
+                .orElseThrow(() -> RecipientNotFoundException.EXCEPTION);
 
 
         Long notificationId = notificationIdGenerator.getAndIncrement();
@@ -103,7 +106,7 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    // FcmType에 따른 알림 본문 생성
+    // FcmType 에 따른 알림 본문 생성
     private String createNotificationBody(FcmType fcmType, String sender) {
         return switch (fcmType) {
             case FOLLOW -> fcmService.makeFollowBody(sender, fcmType.getType());
@@ -122,7 +125,14 @@ public class NotificationService {
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
         String value = request.fcmToken();
         Duration twoMonths = Duration.ofDays(60); // 2달
+
+        // Redis 저장 시도
+        log.info("Redis에 FCM 토큰 저장 시도!! userId={}, fcmToken={}", userId, value);
+
         fcmRedis.saveFcmToken(String.valueOf(user.getId()), value, twoMonths);
+
+        // Redis 저장 완료
+        log.info("Redis에 FCM 토큰 저장 완료!! userId={}, fcmToken={}", userId, value);
     }
 
     // FCM 토큰 삭제 로직
@@ -130,8 +140,18 @@ public class NotificationService {
 
         // Redis에서 토큰 삭제
         fcmRedis.deleteFcmToken(String.valueOf(userId));
-        System.out.println("FCM 토큰 삭제 완료: ");
+        log.info("FCM 토큰 삭제 완료 > userId={}", userId);
+
+        // Redis에서 해당 토큰이 존재하는지 확인 (삭제확인 테스트용)`
+        String token = fcmRedis.getFcmToken(String.valueOf(userId));
+        if (token == null) {
+            log.info("FCM 토큰 삭제 확인 완료 > userId={}", userId);
+        } else {
+            log.warn("FCM 토큰 삭제 실패 > userId={}, token={}", userId, token);
+        }
     }
+
+
 
 
 }

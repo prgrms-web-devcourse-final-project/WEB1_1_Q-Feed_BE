@@ -6,6 +6,9 @@ import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.group.dto.GroupCommentServiceResponse;
 import com.wsws.moduleapplication.group.event.GroupCommentCreatedEvent;
 import com.wsws.moduleapplication.group.event.GroupCommentLikedEvent;
+import com.wsws.moduleapplication.group.exception.GroupCommentNotFoundException;
+import com.wsws.moduleapplication.group.exception.GroupPostNotFoundException;
+import com.wsws.moduleapplication.group.exception.NotOwnerException;
 import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
 import com.wsws.moduledomain.group.GroupComment;
@@ -159,18 +162,18 @@ public class GroupCommentService {
 
     private GroupPost getGroupPost(Long groupPostId) {
         return groupPostRepository.findById(groupPostId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+                .orElseThrow(() -> GroupPostNotFoundException.EXCEPTION);
     }
 
     private GroupComment getGroupComment(Long groupCommentId) {
         return groupCommentRepository.findById(groupCommentId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
+                .orElseThrow(() -> GroupCommentNotFoundException.EXCEPTION);
     }
 
     // 본인 여부 확인
     private void validateUser(GroupComment groupComment, String userId) {
         if (!groupComment.getUserId().equals(UserId.of(userId))) {
-            throw new IllegalStateException("권한이 있는 사용자가 아닙니다. 본인의 댓글만 삭제 가능합니다.");
+            throw NotOwnerException.EXCEPTION;
         }
     }
 }

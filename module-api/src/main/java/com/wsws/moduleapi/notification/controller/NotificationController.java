@@ -7,6 +7,7 @@ import com.wsws.moduleapplication.notification.service.NotificationService;
 import com.wsws.modulesecurity.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("/notifications")
 @RequiredArgsConstructor
@@ -60,7 +62,24 @@ public class NotificationController {
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ){
         String userId = userPrincipal.getId();
+
+        // 요청
+        log.info("FCM 토큰 저장 요청! userId={}, fcmToken={}", userId, request.fcmToken());
+
         notificationService.saveFcmToken(request, userId);
+
+        // 저장 성공
+        log.info("FCM 토큰 저장 성공! userId={}, fcmToken={}", userId, request.fcmToken());
+
         return ResponseEntity.ok("FCM 토큰 저장 OK");
+    }
+
+    @Operation(summary = "FCM 토큰 삭제", description = "로그인한 사용자의 FCM 토큰을 삭제합니다.")
+    @DeleteMapping("/fcmToken")
+    public ResponseEntity<String> deleteFcmToken(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        String userId = userPrincipal.getId();
+        notificationService.deleteFcmToken(userId);
+
+        return ResponseEntity.ok("FCM 토큰이 성공적으로 삭제되었습니다.");
     }
 }
