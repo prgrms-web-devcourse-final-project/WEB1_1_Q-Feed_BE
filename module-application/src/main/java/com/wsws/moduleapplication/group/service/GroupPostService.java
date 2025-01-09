@@ -5,6 +5,8 @@ import com.wsws.moduleapplication.group.dto.GroupPostDetailServiceResponse;
 import com.wsws.moduleapplication.group.dto.GroupPostServiceResponse;
 import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.group.event.GroupPostLikeEvent;
+import com.wsws.moduleapplication.group.exception.GroupPostNotFoundException;
+import com.wsws.moduleapplication.group.exception.NotOwnerException;
 import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.ProfileImageProcessingException;
@@ -35,7 +37,7 @@ public class GroupPostService {
     private final FileStorageService fileStorageService;
     private final LikeRepository likeRepository;
     private final GroupCommentRepository groupCommentRepository;
-    private final ApplicationEventPublisher eventPublisher; // 이벤트 발행 도구
+    private final ApplicationEventPublisher eventPublisher;
 
     // 게시물 생성
     @Transactional
@@ -59,7 +61,7 @@ public class GroupPostService {
     public GroupPostDetailServiceResponse getGroupPostDetail(Long groupPostId, String userId) {
 
         GroupPostDetailDto groupPostDetailDto = groupPostRepository.findByGroupPostId(groupPostId)
-                .orElseThrow(() -> new IllegalArgumentException("그룹 게시물을 찾을 수 없습니다."));
+                .orElseThrow(() -> GroupPostNotFoundException.EXCEPTION);
 
 
         List<GroupCommentDto> comments = groupCommentRepository.findByGroupPostId(groupPostId);
@@ -72,7 +74,7 @@ public class GroupPostService {
     @Transactional
     public void deleteGroupPost(Long groupPostId, String userId) {
         GroupPost groupPost = groupPostRepository.findById(groupPostId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+                .orElseThrow(() -> GroupPostNotFoundException.EXCEPTION);
 
         validateUser(groupPost, userId); // 본인 여부 확인
 
@@ -85,7 +87,7 @@ public class GroupPostService {
 
         // 게시글 작성자 ID 가져오기
         GroupPost post = groupPostRepository.findById(request.targetId())
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+                .orElseThrow(() -> GroupPostNotFoundException.EXCEPTION);
 
         // 좋아요 이벤트 발행
         eventPublisher.publishEvent(new GroupPostLikeEvent(
@@ -104,7 +106,7 @@ public class GroupPostService {
     // 좋아요 추가/취소 처리 통합 메서드
     private void handleLikeAction(LikeServiceRequest request, boolean isAddLike) {
         GroupPost post = groupPostRepository.findById(request.targetId())
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+                .orElseThrow(() -> GroupPostNotFoundException.EXCEPTION);
 
         if (isAddLike) {
             createLikeIfNotExists(request); // 좋아요 추가
@@ -164,7 +166,7 @@ public class GroupPostService {
     // 본인 여부 확인
     private void validateUser(GroupPost groupPost, String userId) {
         if (!groupPost.getUserId().equals(UserId.of(userId))) {
-            throw new IllegalStateException("권한이 있는 사용자가 아닙니다. 본인 게시글만 삭제 가능합니다.");
+            throw NotOwnerException.EXCEPTION;
         }
     }
 }

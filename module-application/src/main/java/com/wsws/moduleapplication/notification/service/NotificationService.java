@@ -2,6 +2,7 @@ package com.wsws.moduleapplication.notification.service;
 
 import com.wsws.moduleapplication.notification.dto.SaveFcmTokenRequest;
 import com.wsws.moduleapplication.notification.dto.NotificationServiceResponse;
+import com.wsws.moduleapplication.notification.exception.*;
 import com.wsws.moduleapplication.usercontext.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.notification.Notification;
 import com.wsws.moduledomain.notification.dto.NotificationDto;
@@ -46,10 +47,10 @@ public class NotificationService {
     @Transactional
     public void markAsRead(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 알림이 존재하지 않습니다."));
+                .orElseThrow(() -> NotificationNotFoundException.EXCEPTION);
 
         if (notification.isRead()) {
-            throw new IllegalStateException("이미 읽음 처리된 알림입니다.");
+            throw NotificationAlreadyReadException.EXCEPTION;
         }
 
         notification.markAsRead();
@@ -63,7 +64,7 @@ public class NotificationService {
         List<NotificationDto> unreadNotifications = notificationRepository.findByRecipientIdAndIsReadFalse(recipientId);
 
         if (unreadNotifications.isEmpty()) {
-            throw new IllegalStateException("읽지 않은 알림이 없거나 알림이 존재하지 않습니다.");
+            throw NoUnreadNotificationsException.EXCEPTION;
         }
 
         notificationRepository.markAllAsReadByRecipientId(recipientId);
@@ -72,9 +73,9 @@ public class NotificationService {
     // 알림 생성 및 저장
     public void sendNotification(String senderId, String recipientId, Long targetId, Long commentId, Long groupId, String url, FcmType fcmType) {
         User sender = userRepository.findById(UserId.of(senderId))
-                .orElseThrow(() -> new IllegalArgumentException("발신자를 찾을 수 없습니다."));
+                .orElseThrow(() -> SenderNotFoundException.EXCEPTION);
         User recipient = userRepository.findById(UserId.of(recipientId))
-                .orElseThrow(() -> new IllegalArgumentException("수신자를 찾을 수 없습니다."));
+                .orElseThrow(() -> RecipientNotFoundException.EXCEPTION);
 
 
         Long notificationId = notificationIdGenerator.getAndIncrement();
@@ -103,7 +104,7 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    // FcmType에 따른 알림 본문 생성
+    // FcmType 에 따른 알림 본문 생성
     private String createNotificationBody(FcmType fcmType, String sender) {
         return switch (fcmType) {
             case FOLLOW -> fcmService.makeFollowBody(sender, fcmType.getType());
