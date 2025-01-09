@@ -1,5 +1,6 @@
 package com.wsws.moduledomain.admincontext.report.aggregate;
 
+import com.wsws.moduledomain.admincontext.report.exception.InvalidReportTargetException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,16 @@ public class Report {
     private LocalDateTime reportedAt; // 신고 시간
 
     public static Report create(String reportedUserId, String reporterUserId, String reason) {
+        if(reportedUserId == null || reportedUserId.isEmpty()){
+            throw InvalidReportTargetException.EXCEPTION;
+        }
+
+        if(reason == null || reason.isEmpty()){
+            throw InvalidReportTargetException.EXCEPTION;
+        }
+
         Report report = new Report();
+
         report.reportedUserId = reportedUserId;
         report.reporterUserId = reporterUserId;
         report.reason = reason;
