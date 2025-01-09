@@ -32,7 +32,7 @@ public class AuthController {
     @Operation(summary = "로그아웃", description = "사용자가 리프레시 토큰을 이용해 로그아웃합니다.")
     @PostMapping("/logout")
     public ResponseEntity<AuthResponse> logout(@RequestBody LogoutRequest request) {
-        authService.logout(request.refreshToken(),request.userId());
+        authService.logout(request.refreshToken());
         return ResponseEntity.ok(new AuthResponse("로그아웃이 완료되었습니다"));
     }
 
