@@ -105,9 +105,6 @@ public class AuthService {
     public AuthServiceResponse logout(String refreshToken) {
         authRepository.deleteByToken(refreshToken);
 
-//        // 로그아웃 이벤트 발행
-//        eventPublisher.publishEvent(new LogoutEvent(userId));
-
         return new AuthServiceResponse("로그아웃이 완료되었습니다");
     }
 
