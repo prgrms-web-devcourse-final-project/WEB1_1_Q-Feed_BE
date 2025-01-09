@@ -140,14 +140,14 @@ public class NotificationService {
 
         // Redis에서 토큰 삭제
         fcmRedis.deleteFcmToken(String.valueOf(userId));
-        System.out.println("FCM 토큰 삭제 완료: ");
+        log.info("FCM 토큰 삭제 완료 > userId={}", userId);
 
         // Redis에서 해당 토큰이 존재하는지 확인 (삭제확인 테스트용)`
         String token = fcmRedis.getFcmToken(String.valueOf(userId));
         if (token == null) {
-            System.out.println("FCM 토큰 삭제 확인 완료 userId: " + userId);
+            log.info("FCM 토큰 삭제 확인 완료 > userId={}", userId);
         } else {
-            System.out.println("FCM 토큰 삭제 실패 userId: " + userId + ", token: " + token);
+            log.warn("FCM 토큰 삭제 실패 > userId={}, token={}", userId, token);
         }
     }
 
