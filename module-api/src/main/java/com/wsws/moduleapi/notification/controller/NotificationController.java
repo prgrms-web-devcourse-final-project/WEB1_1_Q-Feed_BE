@@ -63,4 +63,13 @@ public class NotificationController {
         notificationService.saveFcmToken(request, userId);
         return ResponseEntity.ok("FCM 토큰 저장 OK");
     }
+
+    @Operation(summary = "FCM 토큰 삭제", description = "로그인한 사용자의 FCM 토큰을 삭제합니다.")
+    @DeleteMapping("/fcmToken")
+    public ResponseEntity<String> deleteFcmToken(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        String userId = userPrincipal.getId();
+        notificationService.deleteFcmToken(userId);
+
+        return ResponseEntity.ok("FCM 토큰이 성공적으로 삭제되었습니다.");
+    }
 }
