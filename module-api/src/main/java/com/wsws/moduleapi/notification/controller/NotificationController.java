@@ -58,7 +58,7 @@ public class NotificationController {
     @Operation(summary = "FCM 토큰 저장", description = "사용자의 FCM 토큰을 저장합니다.")
     @PostMapping("/fcmTokenSaves")
     public ResponseEntity<String> saveFcmToken(
-            SaveFcmTokenRequest request,
+            @RequestBody SaveFcmTokenRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ){
         String userId = userPrincipal.getId();
