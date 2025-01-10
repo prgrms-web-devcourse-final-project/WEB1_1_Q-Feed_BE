@@ -11,6 +11,12 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(
+        name = "chat_message_entity", // 매핑할 테이블 이름
+        indexes = {
+                @Index(name = "idx_is_read", columnList = "is_read") // 'is_read' 컬럼에 인덱스 추가
+        }
+)
 public class ChatMessageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
