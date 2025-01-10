@@ -15,11 +15,12 @@ public interface JpaGroupMemberRepository extends JpaRepository<GroupMemberEntit
 
     boolean existsByUserIdAndGroup_GroupId(String userId, Long groupId);
 
-    @Query(
-            "SELECT new com.wsws.moduledomain.group.dto.GroupMemberDetailDto(" +
-            "gm.groupMemberId,u.id,u.nickname,u.profileImage,u.description) " +
-            "FROM GroupMemberEntity gm " +
-            "JOIN UserEntity u ON gm.userId = u.id " +
-            "WHERE gm.group.groupId = :groupId")
+    @Query("""
+            SELECT new com.wsws.moduledomain.group.dto.GroupMemberDetailDto(
+                    gm.groupMemberId, u.id, u.nickname, u.profileImage, u.description)
+            FROM GroupMemberEntity gm
+            JOIN UserEntity u ON gm.userId = u.id
+            WHERE gm.group.groupId = :groupId
+            """)
     List<GroupMemberDetailDto> findMembersByGroupId(@Param("groupId") Long groupId);
 }
