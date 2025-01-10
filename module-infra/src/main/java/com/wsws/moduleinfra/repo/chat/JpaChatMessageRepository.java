@@ -17,13 +17,15 @@ import java.util.Optional;
 
 public interface JpaChatMessageRepository extends JpaRepository<ChatMessageEntity, Long> {
 
-    @Query("SELECT new com.wsws.moduledomain.chat.dto.ChatMessageDTO(" +
-            "m.id, m.content, m.type, m.url, m.isRead, m.createdAt, u.id, u.nickname, u.profileImage) " +
-            "FROM ChatMessageEntity m " +
-            "JOIN UserEntity u ON m.userId = u.id " +
-            "WHERE m.chatRoom.id = :chatRoomId " +
-            "AND m.createdAt < :cursorCreatedAt " +
-            "ORDER BY m.createdAt desc ")
+    @Query("""
+            SELECT new com.wsws.moduledomain.chat.dto.ChatMessageDTO(
+                    m.id, m.content, m.type, m.url, m.isRead, m.createdAt,u.id, u.nickname, u.profileImage)
+            FROM ChatMessageEntity m
+            JOIN UserEntity u ON m.userId = u.id
+            WHERE m.chatRoom.id = :chatRoomId
+            AND m.createdAt < :cursorCreatedAt
+            ORDER BY m.createdAt DESC
+           """)
     List<ChatMessageDTO> findMessagesWithUserDetails(@Param("chatRoomId") Long chatRoomId, @Param("cursorCreatedAt") LocalDateTime cursor, Pageable pageable);
 
     @Modifying
