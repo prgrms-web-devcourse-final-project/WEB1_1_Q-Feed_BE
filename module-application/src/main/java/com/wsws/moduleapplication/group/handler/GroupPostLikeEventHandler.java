@@ -17,8 +17,8 @@ public class GroupPostLikeEventHandler {
     @EventListener
     public void handleGroupPostLikeEvent(GroupPostLikeEvent event) {
         notificationService.sendNotification(
-                event.likerId(),
-                event.userId(),
+                event.senderId(),
+                event.recipientId(),
                 event.postId(),
                 null,
                 null,

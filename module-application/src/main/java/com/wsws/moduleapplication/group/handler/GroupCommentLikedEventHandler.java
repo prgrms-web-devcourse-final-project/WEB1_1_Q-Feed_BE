@@ -19,8 +19,8 @@ public class GroupCommentLikedEventHandler {
         String url = "/groups/posts/" + event.postId() + "#comment-" + event.commentId();
 
         notificationService.sendNotification(
-                event.likerId(),
-                event.userId(),
+                event.senderId(),
+                event.recipientId(),
                 null,
                 event.commentId(),
                 null,

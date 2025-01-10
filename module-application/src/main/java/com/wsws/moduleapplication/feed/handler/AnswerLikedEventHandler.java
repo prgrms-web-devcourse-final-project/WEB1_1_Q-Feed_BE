@@ -18,8 +18,8 @@ public class AnswerLikedEventHandler {
         String url = "/feed/answers/" + event.answerId();
 
         notificationService.sendNotification(
-                event.likerId(),
-                event.userId(),
+                event.senderId(),
+                event.recipientId(),
                 event.answerId(),
                 null,
                 null,

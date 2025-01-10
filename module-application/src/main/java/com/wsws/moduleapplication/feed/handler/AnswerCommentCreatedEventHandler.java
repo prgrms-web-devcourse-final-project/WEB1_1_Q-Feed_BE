@@ -19,8 +19,8 @@ public class AnswerCommentCreatedEventHandler {
         String url = "/feed/answers/" + event.answerId() + "#comment-" + event.commentId();
 
         notificationService.sendNotification(
-                event.commenterId(),
-                event.userId(),
+                event.senderId(),
+                event.recipientId(),
                 event.answerId(),
                 event.commentId(),
                 null,

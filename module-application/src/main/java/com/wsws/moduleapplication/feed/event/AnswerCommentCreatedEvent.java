@@ -3,8 +3,8 @@ package com.wsws.moduleapplication.feed.event;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
 
 public record AnswerCommentCreatedEvent(
-        String commenterId,
-        String userId,
+        String senderId,
+        String recipientId,
         Long answerId,
         Long commentId,
         FcmType fcmType
