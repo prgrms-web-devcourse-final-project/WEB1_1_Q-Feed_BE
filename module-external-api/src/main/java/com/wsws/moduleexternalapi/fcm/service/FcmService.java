@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class FcmService {
 
-      private final FcmRedis fcmRedis;
+    private final FcmRedis fcmRedis;
 
     @Async("taskExecutor")
     public void fcmSend(String recipient, fcmRequestDto fcmRequestDto) {

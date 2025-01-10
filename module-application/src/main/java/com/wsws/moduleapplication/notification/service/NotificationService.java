@@ -95,8 +95,8 @@ public class NotificationService {
         Notification notification = Notification.create(
                 notificationId,
                 fcmType.getType(),
-                recipient.getId().getValue(),
                 sender.getId().getValue(),
+                recipient.getId().getValue(),
                 fcmDTO.body(), // FCM 전송 body
                 targetId,
                 commentId,
