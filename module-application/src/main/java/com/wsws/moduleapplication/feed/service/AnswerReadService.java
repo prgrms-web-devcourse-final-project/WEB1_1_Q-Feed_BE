@@ -235,11 +235,9 @@ public class AnswerReadService {
      * 팔로우 여부 정보를 세팅
      */
     private boolean buildIsFollowing(String currentUserId, String authorId) {
-        // 조회 요청한 사용자가 팔로우한 사용자 정보 다 가져오기
-        List<Follow> followers = followRepository.findByFollowerId(currentUserId);
         // 해당 사용자가 특정 작성자(작성자 ID)를 팔로우 했는지 확인
-        return followers.stream()
-                .anyMatch(follow -> follow.getId().getFollowerId().equals(authorId));
+        return followRepository.findByFollowerIdAndFolloweeId(currentUserId, authorId)
+                .isPresent();
     }
 
     /**
