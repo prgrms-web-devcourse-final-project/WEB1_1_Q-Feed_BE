@@ -1,7 +1,10 @@
 package com.wsws.moduledomain.notification.dto;
 
+import java.time.LocalDateTime;
+
 public record NotificationDto(
         Long notificationId,
+        LocalDateTime createdAt,
         String type,
         String content,
         String sender,

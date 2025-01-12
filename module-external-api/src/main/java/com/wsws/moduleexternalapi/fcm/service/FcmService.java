@@ -1,108 +1,125 @@
 package com.wsws.moduleexternalapi.fcm.service;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
 import com.wsws.moduleexternalapi.fcm.dto.fcmRequestDto;
+import com.wsws.moduleexternalapi.fcm.util.AccessTokenUtil;
+import com.wsws.moduleexternalapi.fcm.util.FcmType;
 import com.wsws.moduleinfra.FcmRedis;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class FcmService {
 
+    private final RestTemplate restTemplate;
     private final FcmRedis fcmRedis;
 
     @Async("taskExecutor")
-    public void fcmSend(String recipient, fcmRequestDto fcmRequestDto) {
-
-        String fcmRedisKey = getFcmRedisKey(recipient); // Redis 키 생성.
-        String fcmToken = fcmRedis.getFcmToken(fcmRedisKey); // Redis에서 FCM 토큰 조회.
-
-        if (fcmToken != null && !fcmToken.isEmpty()) { // 토큰이 존재하면 메시지 생성 후 전송.
-            Message message = makeMessage(fcmRequestDto, fcmToken);
-            sendMessage(message);
-        }
-    }
-
-    // 메시지 생성
-    public Message makeMessage(fcmRequestDto fcmRequestDto, String token){
-        Notification.Builder notificationBuilder =
-                Notification.builder()
-                        .setTitle(fcmRequestDto.title())
-                        .setBody(fcmRequestDto.body());
-
-        return Message.builder()
-                .setNotification(notificationBuilder.build())
-                .setToken(token)
-                .build();
-    }
-
-    // 메시지 보내기
-    public void sendMessage(Message message) {
+    public void fcmSend(String recipient, FcmType type, String sender) {
         try {
-            FirebaseMessaging.getInstance().send(message);
-        } catch (FirebaseMessagingException e) {
-            log.error("fcm 전송 오류");
+            // Redis 키 생성
+            String fcmRedisKey = getFcmRedisKey(recipient);
+            log.info("FCM Redis Key 생성: {}", fcmRedisKey);
+
+            // Redis에서 FCM 토큰 조회
+            String fcmToken = fcmRedis.getFcmToken(fcmRedisKey);
+            log.info("FCM Token 조회 결과: {}", fcmToken);
+
+            if (fcmToken != null && !fcmToken.isEmpty()) {
+                // 제목과 본문 생성
+                String title = makeFcmTitle(type);
+                String body = makeFcmBody(type, sender);
+
+                fcmRequestDto requestDto = new fcmRequestDto(title, body);
+
+                // 메시지 생성
+                String message = makeMessage(fcmToken, requestDto);
+
+                // 메시지 전송
+                sendMessage(message);
+            } else {
+                log.warn("FCM 토큰이 없습니다. recipient={}, fcmRedisKey={}", recipient, fcmRedisKey);
+            }
+        } catch (Exception e) {
+            log.error("FCM 전송 중 오류 발생: recipient={}, type={}, sender={}", recipient, type, sender, e);
         }
     }
 
-    public fcmRequestDto makeFcmDTO(String title, String body) {
-        return new fcmRequestDto(title, body);
+    private String makeMessage(String targetToken, fcmRequestDto fcmRequestDto) {
+        return """
+                    {
+                      "message": {
+                        "token": "%s",
+                        "notification": {
+                          "title": "%s",
+                          "body": "%s"
+                        }
+                      }
+                    }
+                """.formatted(targetToken, fcmRequestDto.title(), fcmRequestDto.body());
+    }
+
+    public void sendMessage(String message) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            String accessToken = AccessTokenUtil.getAccessToken();
+            headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+
+            HttpEntity<String> httpEntity = new HttpEntity<>(message, headers);
+            String projectId = "q-feed";
+            String fcmRequestUrl = "https://fcm.googleapis.com/v1/projects/%s/messages:send";
+            String url = String.format(fcmRequestUrl, projectId);
+
+            ResponseEntity<String> responseEntity = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    httpEntity,
+                    String.class
+            );
+
+            if (responseEntity.getStatusCode().isError()) {
+                log.error("FCM 전송 실패 : {} - {}",
+                        responseEntity.getStatusCode(),
+                        responseEntity.getBody());
+            } else {
+                log.info("FCM 전송 성공 : {}", responseEntity.getBody());
+            }
+        } catch (Exception e) {
+            log.error("FCM 메시지 전송 중 오류 발생: {}", e.getMessage(), e);
+        }
     }
 
     private String getFcmRedisKey(String userId) {
-        return "FCM_TOKEN_" + userId; // Redis 키 형식 정의
+        return "FCM_TOKEN_" + userId;
     }
 
-    //알림 제목 생성
-    public String makeFcmTitle(String type) {
-        return type + "알림"; // 예시) "좋아요 알림".
+    private String makeFcmBody(FcmType type, String sender) {
+        return switch (type) {
+            case FOLLOW -> sender + " 님이 회원님을 팔로우했습니다.";
+            case ANSWER_COMMENT -> sender + " 님이 회원님의의 글에 댓글을 남겼습니다.";
+            case ANSWER_LIKE -> sender + " 님이 회원님의 글을 좋아합니다.";
+            case COMMENT_LIKE -> sender + " 님이 회원님의 댓글을 좋아합니다.";
+            case Q_SPACE_POST_COMMENT -> "Qspace 멤버 " + sender + " 님이 회원님의 게시물에 댓글을 남겼습니다.";
+            case Q_SPACE_POST_LIKE -> "Qspace 멤버 " + sender + " 님이 회원님의 게시물을 좋아합니다.";
+            case Q_SPACE_COMMENT_LIKE -> "Qspace 멤버 " + sender + " 님이 회원님의 댓글을 좋아합니다.";
+        };
     }
 
-    // 팔로우 알림 본문 생성
-    public String makeFollowBody(String sender, String type) {
-        return sender
-                + " 님이 회원님을" + type + " 했습니다." ;
+    private String makeFcmTitle(FcmType type) {
+        return switch (type) {
+            case FOLLOW -> "🔔팔로우 알림";
+            case ANSWER_COMMENT -> "🔔Qfeed 댓글 알림";
+            case ANSWER_LIKE -> "🔔Qfeed 좋아요 알림";
+            case COMMENT_LIKE -> "🔔Qfeed 댓글 좋아요 알림";
+            case Q_SPACE_POST_COMMENT -> "🔔Qspace 게시물 댓글 알림";
+            case Q_SPACE_POST_LIKE -> "🔔Qspace 게시물 좋아요 알림";
+            case Q_SPACE_COMMENT_LIKE -> "🔔Qspace 댓글 좋아요 알림";
+        };
     }
-
-    // 피드 답변 좋아요 알림 본문 생성
-    public String makeAnswerLikeBody(String sender, String type) {
-        return sender + " 님이 회원님의 글에" + type +"를 눌렀습니다." ;
-    }
-
-    // 피드 댓글 좋아요 알림 본문 생성
-    public String makeCommentLikeBody(String sender, String type) {
-        return sender + " 님이 회원님의 댓글에" + type +"를 눌렀습니다." ;
-    }
-
-    // 채팅 알림 본문 생성
-    public String makeChatBody(String sender, String type) {
-        return sender + "님이"+ type +"을 보냈습니다.";
-    }
-    // 댓글 알림 본문 생성
-    public String makeCommentBody(String sender, String type) {
-        return sender + " 님이 회원님의 글에 "+ type +"을 남겼습니다.";
-    }
-    // Q-SPACE 내 좋아요 알림 본문 생성 (그룹 : post/comment)
-    public String makeQPostLikeBody(String sender, String type) {
-        return "Q_SPACE 멤버 "+ sender + " 님이 회원님의 글에" + type +"를 눌렀습니다.";
-    }
-
-    public String makeQCommentLikeBody(String sender, String type) {
-        return "Q_SPACE 멤버 "+ sender + " 님이 회원님의 댓글에" + type +"를 눌렀습니다.";
-    }
-
-    // Q-SPACE 댓글 알림 본문 생성
-    public String makeQCommentBody(String sender, String type) {
-        return "Q_SPACE 멤버 "+ sender + " 님이 회원님의 글에 "+ type +"을 남겼습니다.";
-    }
-
-
 }

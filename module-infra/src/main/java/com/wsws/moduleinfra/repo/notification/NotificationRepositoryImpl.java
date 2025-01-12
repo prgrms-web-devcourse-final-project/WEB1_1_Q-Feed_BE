@@ -29,6 +29,7 @@ public class NotificationRepositoryImpl implements NotificationRepository {
                 .stream()
                 .map(entity -> new NotificationDto(
                         entity.getId(),
+                        entity.getCreatedAt(),
                         entity.getType(),
                         entity.getContent(),
                         entity.getSender(),
@@ -80,6 +81,7 @@ public class NotificationRepositoryImpl implements NotificationRepository {
                 .stream()
                 .map(entity -> new NotificationDto(
                         entity.getId(),
+                        entity.getCreatedAt(),
                         entity.getType(),
                         entity.getContent(),
                         entity.getSender(),
