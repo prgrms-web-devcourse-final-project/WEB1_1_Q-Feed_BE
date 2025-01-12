@@ -16,12 +16,8 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class FcmService {
 
-    private final AccessTokenUtil accessTokenUtil;
     private final RestTemplate restTemplate;
     private final FcmRedis fcmRedis;
-
-    private final String projectId = "q-feed";
-    private final String fcmRequestUrl = "https://fcm.googleapis.com/v1/projects/%s/messages:send";
 
     @Async("taskExecutor")
     public void fcmSend(String recipient, FcmType type, String sender) {
@@ -72,10 +68,12 @@ public class FcmService {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            String accessToken = accessTokenUtil.getAccessToken();
+            String accessToken = AccessTokenUtil.getAccessToken();
             headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
 
             HttpEntity<String> httpEntity = new HttpEntity<>(message, headers);
+            String projectId = "q-feed";
+            String fcmRequestUrl = "https://fcm.googleapis.com/v1/projects/%s/messages:send";
             String url = String.format(fcmRequestUrl, projectId);
 
             ResponseEntity<String> responseEntity = restTemplate.exchange(
