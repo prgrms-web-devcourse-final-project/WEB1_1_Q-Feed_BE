@@ -67,6 +67,12 @@ public class NotificationService {
     }
 
     public void sendNotification(String senderId, String recipientId, Long targetId, Long commentId, Long groupId, String url, FcmType fcmType) {
+
+        if (senderId.equals(recipientId)) {
+            log.info("발신자 수신자가 동일 => 알림 보내지 않음 : senderId={}, recipientId={}", senderId, recipientId);
+            return; // 알림x
+        }
+
         User sender = userRepository.findById(UserId.of(senderId))
                 .orElseThrow(() -> SenderNotFoundException.EXCEPTION);
         User recipient = userRepository.findById(UserId.of(recipientId))

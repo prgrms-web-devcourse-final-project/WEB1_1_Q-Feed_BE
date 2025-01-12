@@ -105,9 +105,9 @@ public class FcmService {
             case ANSWER_COMMENT -> sender + " 님이 회원님의의 글에 댓글을 남겼습니다.";
             case ANSWER_LIKE -> sender + " 님이 회원님의 글을 좋아합니다.";
             case COMMENT_LIKE -> sender + " 님이 회원님의 댓글을 좋아합니다.";
-            case Q_SPACE_POST_COMMENT -> "Q_SPACE 멤버 " + sender + " 님이 회원님의 게시물에 댓글을 남겼습니다.";
-            case Q_SPACE_POST_LIKE -> "Q_SPACE 멤버 " + sender + " 님이 회원님의 게시물을 좋아합니다.";
-            case Q_SPACE_COMMENT_LIKE -> "Q_SPACE 멤버 " + sender + " 님이 회원님의 댓글을 좋아합니다.";
+            case Q_SPACE_POST_COMMENT -> "Qspace 멤버 " + sender + " 님이 회원님의 게시물에 댓글을 남겼습니다.";
+            case Q_SPACE_POST_LIKE -> "Qspace 멤버 " + sender + " 님이 회원님의 게시물을 좋아합니다.";
+            case Q_SPACE_COMMENT_LIKE -> "Qspace 멤버 " + sender + " 님이 회원님의 댓글을 좋아합니다.";
         };
     }
 
