@@ -79,6 +79,7 @@ public class NotificationService {
                 .orElseThrow(() -> RecipientNotFoundException.EXCEPTION);
 
         Long notificationId = notificationIdGenerator.getAndIncrement();
+        String content = fcmService.makeFcmBody(fcmType, sender.getNickname().getValue());
 
         // FCM 전송
         fcmService.fcmSend(
@@ -93,7 +94,7 @@ public class NotificationService {
                 fcmType.name(),
                 sender.getId().getValue(),
                 recipient.getId().getValue(),
-                fcmType.name(),
+                content,
                 targetId,
                 commentId,
                 groupId,
