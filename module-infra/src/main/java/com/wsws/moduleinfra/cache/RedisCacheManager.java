@@ -1,5 +1,8 @@
 package com.wsws.moduleinfra.cache;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wsws.moduledomain.cache.CacheManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,6 +22,8 @@ public class RedisCacheManager implements CacheManager {
 
     @Qualifier("customRedisTemplateObject")
     private final RedisTemplate<String, Object> redisTemplate;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public <T> T get(String key, Class<T> type) {
@@ -64,6 +69,28 @@ public class RedisCacheManager implements CacheManager {
         }
 
         if (!keysToDelete.isEmpty()) redisTemplate.delete(keysToDelete);
+    }
+
+    public void setJson(String key, Object value, long ttlInMinutes) {
+        try {
+            String jsonValue = objectMapper.writeValueAsString(value);
+            redisTemplate.opsForValue().set(key, jsonValue, ttlInMinutes, TimeUnit.MINUTES);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Redis 직렬화 실패", e);
+        }
+    }
+
+    public <T> T getJson(String key, TypeReference<T> typeRef) {
+        Object cachedValue = redisTemplate.opsForValue().get(key);
+        if (cachedValue == null) {
+            return null;
+        }
+        String jsonValue = cachedValue.toString();
+        try {
+            return objectMapper.readValue(jsonValue, typeRef);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Redis 역직렬화 실패", e);
+        }
     }
 
 }

@@ -65,7 +65,8 @@ public class UserInterestRepositoryImpl implements UserInterestRepository {
                 .leftJoin(followEntity).on(followEntity.id.followerId.eq(userId)
                         .and(followEntity.id.followeeId.eq(userInterestEntity.userId)))
                 .where(userInterestEntity.categoryId.in(categoryIds)
-                        .and(followEntity.id.followeeId.isNull()))
+                        .and(followEntity.id.followeeId.isNull())
+                        .and(userInterestEntity.userId.ne(userId)))
                 .distinct()
                 .fetch();
     }

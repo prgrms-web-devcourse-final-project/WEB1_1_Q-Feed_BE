@@ -3,6 +3,8 @@ package com.wsws.moduleapplication.socialnetwork.follow;
 import com.wsws.moduleapplication.socialnetwork.follow.dto.FollowServiceRequestDto;
 import com.wsws.moduleapplication.socialnetwork.exception.AlreadyFollowedException;
 import com.wsws.moduleapplication.socialnetwork.exception.FollowNotFoundException;
+import com.wsws.moduleapplication.socialnetwork.follow.event.FollowCreatedEvent;
+import com.wsws.moduleapplication.socialnetwork.follow.event.FollowDeletedEvent;
 import com.wsws.moduleapplication.socialnetwork.follow.event.FollowEvent;
 import com.wsws.moduledomain.socialnetwork.follow.aggregate.Follow;
 import com.wsws.moduledomain.socialnetwork.follow.repo.FollowRepository;
@@ -37,7 +39,7 @@ public class FollowService {
         followRepository.save(follow);
 
         // 캐시 무효화
-        evictFollowerFollowingCache(followerId, followeeId);
+        eventPublisher.publishEvent(new FollowCreatedEvent(followerId, followeeId));
 
         // 이벤트 발행
         eventPublisher.publishEvent(new FollowEvent(
@@ -57,16 +59,10 @@ public class FollowService {
         followRepository.delete(follow);
 
         // 팔로워/팔로잉 수 감소
-        evictFollowerFollowingCache(followerId, followeeId);
+        eventPublisher.publishEvent(new FollowDeletedEvent(followerId, followeeId));
     }
 
     public boolean isFollowing(String followerId, String followeeId) {
         return followRepository.findByFollowerIdAndFolloweeId(followerId, followeeId).isPresent();
-    }
-
-    //캐시 삭제 -> 업데이트 되면 이전의 캐시는 의미가 없어짐
-    private void evictFollowerFollowingCache(String followerId, String followeeId) {
-        cacheManager.evict("user:" + followerId + ":followingCount");
-        cacheManager.evict("user:" + followeeId + ":followerCount");
     }
 }

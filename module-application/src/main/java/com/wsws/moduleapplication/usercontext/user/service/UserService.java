@@ -4,6 +4,8 @@ import com.wsws.moduleapplication.socialnetwork.interest.service.UserInterestSer
 import com.wsws.moduleapplication.usercontext.user.dto.PasswordChangeServiceDto;
 import com.wsws.moduleapplication.usercontext.user.dto.RegisterUserRequest;
 import com.wsws.moduleapplication.usercontext.user.dto.UpdateProfileServiceDto;
+import com.wsws.moduleapplication.usercontext.user.event.UserDeletedEvent;
+import com.wsws.moduleapplication.usercontext.user.event.UserUpdatedEvent;
 import com.wsws.moduleapplication.usercontext.user.exception.DuplicateNicknameException;
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
@@ -18,6 +20,7 @@ import com.wsws.moduledomain.usercontext.user.vo.Nickname;
 import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import com.wsws.moduledomain.cache.CacheManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +37,7 @@ public class UserService {
     private final FileStorageService fileStorageService;
     private final CacheManager cacheManager;
     private final UserInterestService userInterestService;
+    private final ApplicationEventPublisher eventpublisher;
 
 
     // 회원가입
@@ -80,7 +84,8 @@ public class UserService {
 
         userRepository.save(user);
 
-        evictProfileCache(userId);
+        eventpublisher.publishEvent(new UserUpdatedEvent(userId));
+
     }
 
     // 비밀번호 변경
@@ -96,7 +101,7 @@ public class UserService {
         User user = findUserByIdOrThrow(userId);
         userRepository.delete(user);
 
-        evictProfileCache(userId);
+        eventpublisher.publishEvent(new UserDeletedEvent(userId));
     }
 
 
@@ -137,10 +142,5 @@ public class UserService {
         return null; // 이미지가 없는 경우
     }
 
-
-    private void evictProfileCache(String userId) {
-        String profileCacheKey = "user:" + userId + ":profile";
-        cacheManager.evict(profileCacheKey);
-    }
 
 }
