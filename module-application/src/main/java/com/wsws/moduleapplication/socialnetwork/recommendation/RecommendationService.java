@@ -1,5 +1,6 @@
 package com.wsws.moduleapplication.socialnetwork.recommendation;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.wsws.moduleapplication.socialnetwork.recommendation.mapper.UserRecommendationMapper;
 import com.wsws.moduleapplication.socialnetwork.recommendation.dto.UserRecommendationResponse;
 import com.wsws.moduledomain.cache.CacheManager;
@@ -26,7 +27,8 @@ public class RecommendationService {
     public List<UserRecommendationResponse> getRecommendations(String userId, int limit) {
         String cacheKey = "recommendation:" + userId;
 
-        List<UserRecommendationResponse> cachedRecommendations = cacheManager.get(cacheKey, List.class);
+        TypeReference<List<UserRecommendationResponse>> typeReference = new TypeReference<List<UserRecommendationResponse>>() {};
+        List<UserRecommendationResponse> cachedRecommendations = cacheManager.getJson(cacheKey, typeReference);
 
         // 캐싱되어 있을 경우에는 해당 캐싱 데이터 반환
         if (cachedRecommendations != null) {
@@ -35,7 +37,7 @@ public class RecommendationService {
         //없을 경우
         List<UserRecommendationResponse> recommendations = generateRecommendations(userId, limit);
 
-        cacheManager.set(cacheKey, recommendations, 10);
+        cacheManager.setJson(cacheKey, recommendations, 10);
 
         return recommendations;
 
@@ -77,7 +79,7 @@ public class RecommendationService {
         }
 
         // limit개만큼만 추출
-        List<Recommendation> recommendations = new ArrayList<>(pq);
+        List<Recommendation> recommendations = new ArrayList<>();
         for (int i = 0; i < limit && !pq.isEmpty(); i++) {
             recommendations.add(pq.poll()); // 내림차순 정렬된 순서로 추출
         }
