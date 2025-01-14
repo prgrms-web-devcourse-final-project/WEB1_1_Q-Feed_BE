@@ -17,7 +17,8 @@ public class AccessTokenUtil {
         try {
             GoogleCredentials googleCredentials = GoogleCredentials
                     .fromStream(new ClassPathResource(FIREBASE_KEY_PATH).getInputStream())
-                    .createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
+                    .createScoped(List.of("https://www.googleapis.com/auth/firebase.messaging"));
+
 
             googleCredentials.refreshIfExpired();
             return googleCredentials.getAccessToken().getTokenValue();
