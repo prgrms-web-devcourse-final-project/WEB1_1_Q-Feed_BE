@@ -1,7 +1,9 @@
 package com.wsws.moduleinfra.repo.notification;
 
-
 import com.wsws.moduledomain.notification.dto.NotificationDto;
+import com.wsws.moduledomain.usercontext.user.aggregate.User;
+import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
+import com.wsws.moduledomain.usercontext.user.vo.UserId;
 import com.wsws.moduleinfra.entity.notification.NotificationEntity;
 import com.wsws.moduledomain.notification.Notification;
 import com.wsws.moduledomain.notification.repo.NotificationRepository;
@@ -22,24 +24,13 @@ public class NotificationRepositoryImpl implements NotificationRepository {
     private final JpaNotificationRepository jpaRepository;
     private final NotificationEntityMapper mapper;
     private final JpaNotificationRepository jpaNotificationRepository;
+    private final UserRepository userRepository;
 
     @Override
     public List<NotificationDto> findByRecipientIdAndIsReadFalse(String recipientId) {
         return jpaRepository.findByRecipientAndIsReadFalse(recipientId)
                 .stream()
-                .map(entity -> new NotificationDto(
-                        entity.getId(),
-                        entity.getCreatedAt(),
-                        entity.getType(),
-                        entity.getContent(),
-                        entity.getSender(),
-                        entity.getRecipient(),
-                        entity.isRead(),
-                        entity.getUrl(),
-                        null, // targetId, commentId, groupId  엔티티에 저장x
-                        null,
-                        null
-                ))
+                .map(this::mapToNotificationDto)
                 .collect(Collectors.toList());
     }
 
@@ -79,19 +70,7 @@ public class NotificationRepositoryImpl implements NotificationRepository {
     public List<NotificationDto> findByRecipientId(String recipientId) {
         return jpaRepository.findByRecipient(recipientId)
                 .stream()
-                .map(entity -> new NotificationDto(
-                        entity.getId(),
-                        entity.getCreatedAt(),
-                        entity.getType(),
-                        entity.getContent(),
-                        entity.getSender(),
-                        entity.getRecipient(),
-                        entity.isRead(),
-                        entity.getUrl(),
-                        null, // targetId, commentId, groupId 엔티티에 저장x
-                        null,
-                        null
-                ))
+                .map(this::mapToNotificationDto)
                 .collect(Collectors.toList());
     }
 
@@ -99,5 +78,32 @@ public class NotificationRepositoryImpl implements NotificationRepository {
     public int deleteNotificationsOlderThan(int days) {
         LocalDateTime thresholdDate = LocalDateTime.now().minusDays(days);
         return jpaNotificationRepository.deleteNotificationsOlderThan(thresholdDate);
+    }
+
+    private String getSenderProfileUrl(String senderId) {
+        return Optional.ofNullable(senderId)
+                .map(id -> userRepository.findById(UserId.of(id)))
+                .flatMap(user -> user)
+                .map(User::getProfileImage)
+                .orElse("default-profile-url");
+    }
+
+    private NotificationDto mapToNotificationDto(NotificationEntity entity) {
+        String senderProfile = getSenderProfileUrl(entity.getSender());
+
+        return new NotificationDto(
+                entity.getId(),
+                entity.getCreatedAt(),
+                entity.getType(),
+                entity.getContent(),
+                entity.getSender(),
+                entity.getRecipient(),
+                entity.isRead(),
+                entity.getUrl(),
+                null, // targetId
+                null, // commentId
+                null, // groupId
+                senderProfile
+        );
     }
 }

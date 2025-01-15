@@ -12,7 +12,8 @@ public record NotificationServiceResponse(
         String sender,
         String recipient,
         boolean isRead,
-        String url
+        String url,
+        String profileImage
 ) {
 
     public NotificationServiceResponse(NotificationDto dto) {
@@ -24,7 +25,8 @@ public record NotificationServiceResponse(
                 dto.sender(),
                 dto.recipient(),
                 dto.isRead(),
-                dto.url()
-        );
+                dto.url(),
+                dto.profileImage()
+                );
     }
 }

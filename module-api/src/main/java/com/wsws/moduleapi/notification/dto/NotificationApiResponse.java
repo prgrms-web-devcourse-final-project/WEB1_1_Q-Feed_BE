@@ -12,8 +12,9 @@ public record NotificationApiResponse(
       String sender,
       String recipient,
       boolean isRead,
-      String url
-) {
+      String url,
+      String profileImage
+      ) {
     public NotificationApiResponse(NotificationServiceResponse serviceResponse) {
         this(
                 serviceResponse.notificationId(),
@@ -23,7 +24,8 @@ public record NotificationApiResponse(
                 serviceResponse.sender(),
                 serviceResponse.recipient(),
                 serviceResponse.isRead(),
-                serviceResponse.url()
+                serviceResponse.url(),
+                serviceResponse.profileImage()
         );
 
     }
