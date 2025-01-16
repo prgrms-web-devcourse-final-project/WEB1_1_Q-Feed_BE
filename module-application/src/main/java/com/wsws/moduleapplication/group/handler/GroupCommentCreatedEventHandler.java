@@ -16,7 +16,7 @@ public class GroupCommentCreatedEventHandler {
     public void handleGroupCommentCreatedEvent(GroupCommentCreatedEvent event) {
 
         //URL 생성
-        String url = "/groups/posts/" + event.postId() + "#comment-" + event.commentId();
+        String url = "/qspace/details/" + event.postId() + "#comment-" + event.commentId();
 
         notificationService.sendNotification(
                 event.senderId(),
