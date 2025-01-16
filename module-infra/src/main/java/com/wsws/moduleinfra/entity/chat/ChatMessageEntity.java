@@ -32,11 +32,14 @@ public class ChatMessageEntity {
     @Column(name = "user_id")
     private String userId;
 
+    @Column(name = "receiver_id")
+    private String receiverId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatRoom_id", nullable = false)
     private ChatRoomEntity chatRoom;
 
-    public static ChatMessageEntity create( String content, MessageType type, String url, Boolean isRead, LocalDateTime createdAt, String userId, ChatRoomEntity chatRoomEntity ){
+    public static ChatMessageEntity create( String content, MessageType type, String url, Boolean isRead, LocalDateTime createdAt, String userId, String receiverId ,ChatRoomEntity chatRoomEntity ){
 
         ChatMessageEntity chatMessageEntity = new ChatMessageEntity();
         chatMessageEntity.content = content;
@@ -45,6 +48,7 @@ public class ChatMessageEntity {
         chatMessageEntity.isRead = isRead;
         chatMessageEntity.createdAt = createdAt;
         chatMessageEntity.userId = userId;
+        chatMessageEntity.receiverId = receiverId;
         chatMessageEntity.chatRoom = chatRoomEntity;
         return chatMessageEntity;
     }

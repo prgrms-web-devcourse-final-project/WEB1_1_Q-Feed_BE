@@ -18,6 +18,7 @@ public class WebSocketChatController {
         chatMessageService.sendMessage(
                 webSocketChatRequest.roomId(),
                 webSocketChatRequest.senderId(),
+                webSocketChatRequest.receiverId(),
                 webSocketChatRequest.toChatMessageRequest()
         );
     }

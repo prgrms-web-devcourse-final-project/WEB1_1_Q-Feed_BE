@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 public record ChatRoomApiResponse(
         Long chatRoomId,
+        String otherUserId,
         String otherUserNickname,
         String otherUserProfile,
         String lastMessageContent,
@@ -16,6 +17,7 @@ public record ChatRoomApiResponse(
     public ChatRoomApiResponse(ChatRoomServiceResponse serviceResponse) {
         this(
                 serviceResponse.chatRoomId(),
+                serviceResponse.otherUserId(),
                 serviceResponse.otherUserNickname(),
                 serviceResponse.otherUserProfile(),
                 serviceResponse.lastMessageContent(),

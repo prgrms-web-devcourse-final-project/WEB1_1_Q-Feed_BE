@@ -34,6 +34,6 @@ public interface JpaChatMessageRepository extends JpaRepository<ChatMessageEntit
     // 특정 채팅방에서 마지막 메시지를 가져오기 (최신 메시지 하나만)
     Optional<ChatMessageEntity> findTopByChatRoomIdOrderByCreatedAtDesc(Long chatRoomId);
 
-    @Query("SELECT COUNT(cm) FROM ChatMessageEntity cm WHERE cm.chatRoom.id = :chatRoomId AND cm.isRead = false AND cm.userId = :userId")
+    @Query("SELECT COUNT(cm) FROM ChatMessageEntity cm WHERE cm.chatRoom.id = :chatRoomId AND cm.isRead = false AND cm.receiverId = :userId")
     long countUnreadMessages(@Param("chatRoomId") Long chatRoomId, @Param("userId") String userId);
 }
