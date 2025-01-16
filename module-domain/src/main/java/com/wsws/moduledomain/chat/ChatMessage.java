@@ -19,11 +19,12 @@ public class ChatMessage {
     private Boolean isRead;
     private LocalDateTime createdAt;
     private UserId userId;
+    private UserId receiverId;
     private Long chatRoomId;
 
 
 
-    public static ChatMessage create(Long id, String content, MessageType type, String url, Boolean isRead, LocalDateTime createdAt, String userId, Long chatRoomId){
+    public static ChatMessage create(Long id, String content, MessageType type, String url, Boolean isRead, LocalDateTime createdAt, String userId, String receiverId, Long chatRoomId){
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.id = id;
         chatMessage.content = Content.from(content);
@@ -32,6 +33,7 @@ public class ChatMessage {
         chatMessage.isRead = isRead;
         chatMessage.createdAt = createdAt;
         chatMessage.userId = UserId.of(userId);
+        chatMessage.receiverId = UserId.of(receiverId);
         chatMessage.chatRoomId = chatRoomId;
         return chatMessage;
     }

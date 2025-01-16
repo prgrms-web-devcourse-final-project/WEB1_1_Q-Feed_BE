@@ -31,17 +31,17 @@ public class ChatMessageController {
     private final ChatMessageService chatMessageService;
     private final JpaChatMessageRepository jpaChatMessageRepository;
 
-    @PostMapping("/{chatRoomId}/send")
-    @Operation(summary = "메세지 전송", description = "특정 채팅방에 메세지를 전송합니다.")
-    public ResponseEntity<ChatResponse> sendMessage(
-            @Parameter(description = "메세지를 전송할 채팅방 ID") @PathVariable Long chatRoomId,
-            @RequestBody ChatMessageRequest request,
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-
-        String userId = userPrincipal.getId();
-        chatMessageService.sendMessage(chatRoomId,userId,request);
-        return ResponseEntity.status(201).body(new ChatResponse("메세지가 전송되었습니다."));
-    }
+//    @PostMapping("/{chatRoomId}/send")
+//    @Operation(summary = "메세지 전송", description = "특정 채팅방에 메세지를 전송합니다.")
+//    public ResponseEntity<ChatResponse> sendMessage(
+//            @Parameter(description = "메세지를 전송할 채팅방 ID") @PathVariable Long chatRoomId,
+//            @RequestBody ChatMessageRequest request,
+//            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+//
+//        String userId = userPrincipal.getId();
+//        chatMessageService.sendMessage(chatRoomId,userId,request);
+//        return ResponseEntity.status(201).body(new ChatResponse("메세지가 전송되었습니다."));
+//    }
 
     // 채팅방의 메세지 조회 API
     @GetMapping("/{chatRoomId}/messages")
