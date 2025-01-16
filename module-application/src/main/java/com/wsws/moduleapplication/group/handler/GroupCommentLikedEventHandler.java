@@ -16,7 +16,7 @@ public class GroupCommentLikedEventHandler {
     @EventListener
     public void handleGroupCommentLikedEvent(GroupCommentLikedEvent event) {
 
-        String url = "/groups/posts/" + event.postId() + "#comment-" + event.commentId();
+        String url = "/qspace/details/" + event.postId() + "#comment-" + event.commentId();
 
         notificationService.sendNotification(
                 event.senderId(),

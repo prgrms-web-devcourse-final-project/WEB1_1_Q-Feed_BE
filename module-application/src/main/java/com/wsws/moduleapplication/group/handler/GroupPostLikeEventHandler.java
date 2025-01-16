@@ -22,7 +22,7 @@ public class GroupPostLikeEventHandler {
                 event.postId(),
                 null,
                 null,
-                "/groups/posts/" + event.postId(),
+                "/qspace/details/" + event.postId(),
                 event.fcmType()
         );
     }

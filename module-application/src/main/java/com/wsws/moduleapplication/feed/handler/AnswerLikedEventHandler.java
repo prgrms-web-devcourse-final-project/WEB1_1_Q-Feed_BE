@@ -15,7 +15,7 @@ public class AnswerLikedEventHandler {
     @EventListener
     public void handleAnswerLikedEvent(AnswerLikedEvent event) {
 
-        String url = "/feed/answers/" + event.answerId();
+        String url = "/post/" + event.answerId();
 
         notificationService.sendNotification(
                 event.senderId(),

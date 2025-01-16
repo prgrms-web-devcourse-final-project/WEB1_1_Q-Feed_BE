@@ -16,7 +16,7 @@ public class AnswerCommentCreatedEventHandler {
     @EventListener
     public void handleAnswerCommentCreatedEvent(AnswerCommentCreatedEvent event) {
 
-        String url = "/feed/answers/" + event.answerId() + "#comment-" + event.commentId();
+        String url = "/post/" + event.answerId() + "#comment-" + event.commentId();
 
         notificationService.sendNotification(
                 event.senderId(),
