@@ -108,6 +108,7 @@ public class FcmService {
             case Q_SPACE_POST_COMMENT -> "Qspace 멤버 " + sender + "님이 회원님의 게시물에 댓글을 남겼습니다.";
             case Q_SPACE_POST_LIKE -> "Qspace 멤버 " + sender + "님이 회원님의 게시물을 좋아합니다.";
             case Q_SPACE_COMMENT_LIKE -> "Qspace 멤버 " + sender + "님이 회원님의 댓글을 좋아합니다.";
+            case CHAT -> sender + "님이 회원님에게 새로운 메시지를 보냈습니다.";
         };
     }
 
@@ -120,6 +121,7 @@ public class FcmService {
             case Q_SPACE_POST_COMMENT -> "🔔Qspace 게시물 댓글 알림";
             case Q_SPACE_POST_LIKE -> "🔔Qspace 게시물 좋아요 알림";
             case Q_SPACE_COMMENT_LIKE -> "🔔Qspace 댓글 좋아요 알림";
+            case CHAT -> "🔔채팅 알림";
         };
     }
 }

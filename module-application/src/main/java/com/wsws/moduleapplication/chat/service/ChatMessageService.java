@@ -2,6 +2,7 @@ package com.wsws.moduleapplication.chat.service;
 
 import com.wsws.moduleapplication.chat.dto.ChatMessageRequest;
 import com.wsws.moduleapplication.chat.dto.ChatMessageServiceResponse;
+import com.wsws.moduleapplication.chat.event.SendMessageEvent;
 import com.wsws.moduleapplication.chat.exception.ChatReceiverNotFoundException;
 import com.wsws.moduleapplication.chat.exception.ChatRoomNotFoundException;
 import com.wsws.moduleapplication.usercontext.user.exception.UserNotFoundException;
@@ -15,8 +16,11 @@ import com.wsws.moduledomain.chat.dto.ChatMessageDTO;
 import com.wsws.moduledomain.usercontext.user.aggregate.User;
 import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
 import com.wsws.moduledomain.usercontext.user.vo.UserId;
+import com.wsws.moduleexternalapi.fcm.util.FcmType;
+import com.wsws.moduleinfra.repo.chat.mapper.ChatMessageMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +40,7 @@ public class ChatMessageService {
     private final FileStorageService fileStorageService;
     private final ChatWebSocketService chatWebSocketService;
     private final ChatPersistenceService chatPersistenceService;
+    private final ApplicationEventPublisher eventPublisher;
     private final RedisService redisService;
 
     @Transactional
@@ -60,6 +65,13 @@ public class ChatMessageService {
         if(!receiverInChatRoom) {
             //알림보내기
             log.info("상대방이 접속해있지 않습니다. 알림을 보냅니다.");
+
+            // 채팅 이벤트 발행
+            eventPublisher.publishEvent(new SendMessageEvent(
+                    senderId,
+                    receiverId,
+                    FcmType.CHAT
+            ));
         }
     }
 

@@ -68,9 +68,8 @@ public class NotificationService {
 
     public void sendNotification(String senderId, String recipientId, Long targetId, Long commentId, Long groupId, String url, FcmType fcmType) {
 
-        if (senderId.equals(recipientId)) {
-            log.info("발신자 수신자가 동일 => 알림 보내지 않음 : senderId={}, recipientId={}", senderId, recipientId);
-            return; // 알림x
+        if (isSenderAndRecipientSame(senderId, recipientId)) {
+            return; // 발신자 = 수신자 동일 -> 알림 전송 x
         }
 
         User sender = userRepository.findById(UserId.of(senderId))
@@ -87,6 +86,10 @@ public class NotificationService {
                 fcmType,
                 sender.getNickname().getValue()
         );
+
+        if (shouldSkipNotificationStorage(fcmType)) {
+            return; // CHAT는 알림 저장 x
+        }
 
         // 알림 저장
         Notification notification = Notification.create(
@@ -125,4 +128,24 @@ public class NotificationService {
             log.warn("FCM 토큰 삭제 실패: userId={}, token={}", userId, token);
         }
     }
+
+    //발신자와 수신자가 동일한지 확인
+    private boolean isSenderAndRecipientSame(String senderId, String recipientId) {
+        if (senderId.equals(recipientId)) {
+            log.info("발신자와 수신자가 동일하여 알림x : senderId={}, recipientId={}", senderId, recipientId);
+            return true;
+        }
+        return false;
+    }
+
+    // CHAT 타입은 알림 저장 x
+    private boolean shouldSkipNotificationStorage(FcmType fcmType) {
+        if (fcmType == FcmType.CHAT) {
+            log.info("CHAT 타입 알림은 저장하지 않습니다");
+            return true;
+        }
+        return false;
+    }
+
+
 }
