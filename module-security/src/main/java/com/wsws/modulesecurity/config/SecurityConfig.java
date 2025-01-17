@@ -52,6 +52,7 @@ public class SecurityConfig {
 //                        .requestMatchers("/feed/**").permitAll() // 테스트용 임시 추가
                         .requestMatchers("/chats/**").permitAll()
                         .requestMatchers("/test.html").permitAll()
+                        .requestMatchers("/test1.html").permitAll()
                         .requestMatchers("/test2.html").permitAll()
                         .requestMatchers("/groups/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()

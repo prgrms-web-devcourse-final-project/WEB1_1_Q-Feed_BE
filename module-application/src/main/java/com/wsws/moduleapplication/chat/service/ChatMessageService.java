@@ -2,9 +2,11 @@ package com.wsws.moduleapplication.chat.service;
 
 import com.wsws.moduleapplication.chat.dto.ChatMessageRequest;
 import com.wsws.moduleapplication.chat.dto.ChatMessageServiceResponse;
+import com.wsws.moduleapplication.chat.exception.ChatReceiverNotFoundException;
 import com.wsws.moduleapplication.chat.exception.ChatRoomNotFoundException;
 import com.wsws.moduleapplication.usercontext.user.exception.UserNotFoundException;
 import com.wsws.modulecommon.service.FileStorageService;
+import com.wsws.modulecommon.service.RedisService;
 import com.wsws.moduledomain.chat.ChatMessage;
 import com.wsws.moduledomain.chat.ChatRoom;
 import com.wsws.moduledomain.chat.repo.ChatMessageRepository;
@@ -34,6 +36,7 @@ public class ChatMessageService {
     private final FileStorageService fileStorageService;
     private final ChatWebSocketService chatWebSocketService;
     private final ChatPersistenceService chatPersistenceService;
+    private final RedisService redisService;
 
     @Transactional
     public void sendMessage(Long chatRoomId, String senderId, String receiverId, ChatMessageRequest request ) {
@@ -43,14 +46,21 @@ public class ChatMessageService {
 
         //String fileProcess = processChatImage(request.file());
 
+        //boolean receiverInChatRoom = isReceiverInChatRoom(chatRoomId, receiverId);
+
         // 메시지 생성
-        ChatMessage chatMessage = createChatMessage(chatRoomId, senderId, receiverId, request);
+        ChatMessage chatMessage = createChatMessage(chatRoomId, senderId, receiverId,true, request);
 
         //db에 메세지 저장(비동기)
         chatPersistenceService.saveMessageInRedisAsync(chatRoomId,chatMessage);
 
         //구독 및 redis 발행
         chatWebSocketService.notifyWebSocketSubscribers(chatRoomId, chatMessage, user);
+
+//        if(!receiverInChatRoom) {
+//            //알림보내기
+//            log.info("상대방이 접속해있지 않습니다. 알림을 보냅니다.");
+//        }
     }
 
     //채팅방의 메세지 조회
@@ -70,14 +80,28 @@ public class ChatMessageService {
         chatMessageRepository.markAllMessagesAsRead(chatRoomId);
     }
 
+    private boolean isReceiverInChatRoom(Long chatRoomId, String receiverId) {
+        try{
+            String userCurrentRoom = redisService.getUserCurrentRoom(receiverId);
+            log.info("수신자 {}가 현재 채팅방 {}에 존재합니다.",receiverId,chatRoomId);
+            log.info("userCurrentRoom: {}", userCurrentRoom);
+
+            boolean isInRoom = userCurrentRoom != null && userCurrentRoom.equals(chatRoomId.toString());
+            log.info("userCurrentRoom.equals(chatRoomId.toString()): {}", isInRoom);
+            return isInRoom;
+        } catch (Exception e) {
+            throw ChatReceiverNotFoundException.EXCEPTION;
+        }
+    }
+
     //메세지 생성
-    private ChatMessage createChatMessage(Long chatRoomId, String senderId, String receiverId, ChatMessageRequest request) {
+    private ChatMessage createChatMessage(Long chatRoomId, String senderId, String receiverId,boolean isReceiverIn,ChatMessageRequest request) {
         return ChatMessage.create(
                 null,
                 request.content(),
                 request.type(),
                 request.file(),
-                false,
+                isReceiverIn,
                 LocalDateTime.now(),
                 senderId,
                 receiverId,
