@@ -46,10 +46,10 @@ public class ChatMessageService {
 
         //String fileProcess = processChatImage(request.file());
 
-        //boolean receiverInChatRoom = isReceiverInChatRoom(chatRoomId, receiverId);
+        boolean receiverInChatRoom = isReceiverInChatRoom(chatRoomId, receiverId);
 
         // 메시지 생성
-        ChatMessage chatMessage = createChatMessage(chatRoomId, senderId, receiverId,true, request);
+        ChatMessage chatMessage = createChatMessage(chatRoomId, senderId, receiverId,receiverInChatRoom, request);
 
         //db에 메세지 저장(비동기)
         chatPersistenceService.saveMessageInRedisAsync(chatRoomId,chatMessage);
@@ -57,10 +57,10 @@ public class ChatMessageService {
         //구독 및 redis 발행
         chatWebSocketService.notifyWebSocketSubscribers(chatRoomId, chatMessage, user);
 
-//        if(!receiverInChatRoom) {
-//            //알림보내기
-//            log.info("상대방이 접속해있지 않습니다. 알림을 보냅니다.");
-//        }
+        if(!receiverInChatRoom) {
+            //알림보내기
+            log.info("상대방이 접속해있지 않습니다. 알림을 보냅니다.");
+        }
     }
 
     //채팅방의 메세지 조회
@@ -84,7 +84,6 @@ public class ChatMessageService {
         try{
             String userCurrentRoom = redisService.getUserCurrentRoom(receiverId);
             log.info("수신자 {}가 현재 채팅방 {}에 존재합니다.",receiverId,chatRoomId);
-            log.info("userCurrentRoom: {}", userCurrentRoom);
 
             boolean isInRoom = userCurrentRoom != null && userCurrentRoom.equals(chatRoomId.toString());
             log.info("userCurrentRoom.equals(chatRoomId.toString()): {}", isInRoom);
@@ -142,24 +141,4 @@ public class ChatMessageService {
 //        return null;
 //    }
 
-
-//    private String processFile(MultipartFile file, MessageType type) {
-//        if (file != null && !file.isEmpty()) {
-//            try {
-//                switch (type) {
-//                    case IMAGE -> {
-//                        FileValidator.validate(file,"image");
-//                        return fileStorageService.saveFile(file);
-//                    }
-//                    case AUDIO -> {
-//                        FileValidator.validate(file,"audio");
-//                        return fileStorageService.saveFile(file);
-//                    }
-//                }
-//            } catch (Exception e) {
-//                throw FileProcessingException.EXCEPTION;
-//            }
-//        }
-//        return null;
-//    }
 }
