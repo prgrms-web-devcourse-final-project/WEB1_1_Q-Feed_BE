@@ -1,9 +1,14 @@
 package com.wsws.moduleinfra.repo.feed;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
+import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
+import com.wsws.moduleinfra.entity.feed.QAnswerEntity;
+import com.wsws.moduleinfra.entity.feed.QQuestionEntity;
 import com.wsws.moduleinfra.entity.feed.QuestionEntity;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerEntityMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +21,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.wsws.moduledomain.feed.question.vo.QuestionStatus.ACTIVATED;
+import static com.wsws.moduleinfra.entity.feed.QAnswerEntity.answerEntity;
+import static com.wsws.moduleinfra.entity.feed.QQuestionEntity.questionEntity;
+
 @Repository
 @RequiredArgsConstructor
 public class AnswerRepositoryImpl implements AnswerRepository {
 
     private final JpaAnswerRepository jpaAnswerRepository;
     private final JpaQuestionRepository jpaQuestionRepository;
+    private final JPAQueryFactory queryFactory;
 
     /**
      * 답변을 Id를 기준으로 찾기
@@ -39,19 +49,35 @@ public class AnswerRepositoryImpl implements AnswerRepository {
                 .map(AnswerEntityMapper::toDomain);
     }
 
+    // TODO: 동적 쿼리 Querydsl로 수정
     @Override
     public List<Answer> findAllByCategoryIdWithCursor(LocalDateTime cursor, int size, Long categoryId) {
-        Pageable pageable = PageRequest.of(0, size); // 가져올 데이터 갯수 설정
-        return categoryId == null
-                ?
-                jpaAnswerRepository.findAllWithCursor(cursor, pageable).stream() // categoryId가 없다면 전체 조회
-                .map(AnswerEntityMapper::toDomain)
-                .toList()
-                :jpaAnswerRepository.findAllByCategoryIdWithCursor(cursor, pageable, categoryId).stream() // categoryId가 있다면 해당 카테고리로 조회
+        List<AnswerEntity> answerEntities = queryFactory
+                .select(answerEntity)
+                .from(answerEntity)
+                .join(answerEntity.questionEntity, questionEntity)
+                .where(
+                        categoryIdEq(categoryId),
+                        questionEntity.questionStatus.eq(ACTIVATED),
+                        answerEntity.createdAt.lt(cursor)
+                ).offset(0)
+                .limit(size)
+                .fetch();
+
+        return answerEntities.stream()
                 .map(AnswerEntityMapper::toDomain)
                 .toList();
     }
 
+    private BooleanBuilder categoryIdEq(Long categoryId) {
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        if (categoryId != null) {
+            booleanBuilder.and(questionEntity.categoryId.eq(categoryId));
+        }
+        return booleanBuilder;
+    }
+
+    // TODO: 동적 쿼리 Querydsl로 수정
     @Override
     public List<AnswerQuestionDTO> findAllByUserIdWithCursor(
             String userId, LocalDateTime cursor, int size, boolean isMine) {
@@ -78,6 +104,7 @@ public class AnswerRepositoryImpl implements AnswerRepository {
                 .map(AnswerEntityMapper::toDomain);
     }
 
+    // TODO: 동적 쿼리 Querydsl로 수정
     @Override
     public List<Answer> findAnswersByLikeCountAndCategoryIdWithCursor(Long categoryId, int limit) {
         Pageable pageable = PageRequest.of(0, limit); // 가져올 데이터 갯수 설정
