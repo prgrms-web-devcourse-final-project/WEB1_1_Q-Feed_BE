@@ -62,16 +62,16 @@ public class ChatMessageService {
         //구독 및 redis 발행
         chatWebSocketService.notifyWebSocketSubscribers(chatRoomId, chatMessage, user);
 
-        //채팅 이벤트 발행
-        eventPublisher.publishEvent(new SendMessageEvent(
-                senderId,
-                receiverId, //수신자
-                FcmType.CHAT
-        ));
-
         if(!receiverInChatRoom) {
             //알림보내기
             log.info("상대방이 접속해있지 않습니다. 알림을 보냅니다.");
+
+            // 채팅 이벤트 발행
+            eventPublisher.publishEvent(new SendMessageEvent(
+                    senderId,
+                    receiverId,
+                    FcmType.CHAT
+            ));
         }
     }
 
