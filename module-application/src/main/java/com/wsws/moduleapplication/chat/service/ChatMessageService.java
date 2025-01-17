@@ -53,9 +53,8 @@ public class ChatMessageService {
 
         //boolean receiverInChatRoom = isReceiverInChatRoom(chatRoomId, receiverId);
 
-        Boolean isin = true;
         // 메시지 생성
-        ChatMessage chatMessage = createChatMessage(chatRoomId, senderId, receiverId,isin, request);
+        ChatMessage chatMessage = createChatMessage(chatRoomId, senderId, receiverId, request);
 
         //db에 메세지 저장(비동기)
         chatPersistenceService.saveMessageInRedisAsync(chatRoomId,chatMessage);
@@ -107,13 +106,13 @@ public class ChatMessageService {
 //    }
 
     //메세지 생성
-    private ChatMessage createChatMessage(Long chatRoomId, String senderId, String receiverId,Boolean isIn,ChatMessageRequest request) {
+    private ChatMessage createChatMessage(Long chatRoomId, String senderId, String receiverId,ChatMessageRequest request) {
         return ChatMessage.create(
                 null,
                 request.content(),
                 request.type(),
                 request.file(),
-                isIn,
+                false,
                 LocalDateTime.now(),
                 senderId,
                 receiverId,
