@@ -4,7 +4,6 @@ import com.wsws.moduleapplication.chat.dto.WebSocketChatRequest;
 import com.wsws.moduleapplication.chat.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 
 @RequiredArgsConstructor
