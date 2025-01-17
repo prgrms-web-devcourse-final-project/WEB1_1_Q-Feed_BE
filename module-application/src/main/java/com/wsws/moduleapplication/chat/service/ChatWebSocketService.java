@@ -31,6 +31,7 @@ public class ChatWebSocketService {
             log.info("채팅 메시지 응답 생성: {}", response);
             String channel = "/sub/chat/" + chatRoomId;
             redisTemplate.convertAndSend(channel, response);
+            log.info("채팅 메시지가 채널 {}에 전송되었습니다: {}", channel, response);
         } catch (Exception e) {
             log.error("채팅방 {}의 구독자에게 메세지를 보내는 데 실패했습니다.", chatRoomId, e);
         }
