@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public record WebSocketChatRequest(
         Long roomId,
         String senderId,
+        String receiverId,
         String message,
         MessageType type,
         //byte[] file

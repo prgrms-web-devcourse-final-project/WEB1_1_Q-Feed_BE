@@ -15,6 +15,7 @@ public class ChatMessageMapper {
                 entity.getIsRead(),
                 entity.getCreatedAt(),
                 entity.getUserId(),
+                entity.getReceiverId(),
                 entity.getChatRoom().getId()
         );
     }
@@ -29,6 +30,7 @@ public class ChatMessageMapper {
                 chatMessage.isRead(),
                 chatMessage.getCreatedAt(),
                 chatMessage.getUserId().getValue(),
+                chatMessage.getReceiverId().getValue(),
                 null
         );
     }

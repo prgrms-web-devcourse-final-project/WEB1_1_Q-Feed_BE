@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 public record ChatRoomServiceResponse(
         Long chatRoomId,
+        String otherUserId,
         String otherUserNickname,
         String otherUserProfile,
         String lastMessageContent,
@@ -17,6 +18,7 @@ public record ChatRoomServiceResponse(
     public ChatRoomServiceResponse(ChatRoom chatRoom, User otherUser, ChatMessage lastMessage, Long unreadMessageCount) {
         this(
                 chatRoom.getId(),
+                otherUser.getId().getValue(),
                 otherUser.getNickname().getValue(),
                 otherUser.getProfileImage(),
                 lastMessage != null && lastMessage.getContent() != null ? lastMessage.getContent().getValue() : null,
