@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatRoomRepository {
-    void save(ChatRoom chatRoom);
+    ChatRoom save(ChatRoom chatRoom);
 
     void deleteById(Long chatRoomId);
 
