@@ -169,18 +169,21 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     }
 
     private BooleanBuilder categoryIdEq(Long categoryId) {
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-        if (categoryId != null) {
-            booleanBuilder.and(questionEntity.categoryId.eq(categoryId));
-        }
-        return booleanBuilder;
+        return nullSafeBuilder(() -> questionEntity.categoryId.eq(categoryId), categoryId);
     }
 
     private BooleanBuilder visibilityEqTrue(boolean isMine) {
-        BooleanBuilder builder = new BooleanBuilder();
-        if (!isMine) {
-            builder.and(answerEntity.visibility.eq(true));
+        return nullSafeBuilder(() -> answerEntity.visibility.eq(true), null);
+    }
+
+    private <T> BooleanBuilder nullSafeBuilder(Supplier<BooleanExpression> f, T value) {
+        if(value instanceof String && !hasText((String) value)) {
+            return new BooleanBuilder();
         }
-        return builder;
+        try {
+            return new BooleanBuilder(f.get());
+        } catch (Exception e) {
+            return new BooleanBuilder();
+        }
     }
 }
