@@ -35,26 +35,6 @@ public interface JpaAnswerRepository extends JpaRepository<AnswerEntity, Long> {
             """)
     Optional<AnswerEntity> findAnswerByUserIdAndQuestionId(String userId, Long questionId);
 
-
-    @Query("""
-            SELECT a
-            FROM AnswerEntity a join fetch a.questionEntity q
-            WHERE a.userId = :userId
-            AND a.createdAt < :answerCursor
-            ORDER BY a.createdAt DESC
-            """)
-    List<AnswerEntity> findAllByUserIdWithCursor(String userId, LocalDateTime answerCursor, Pageable pageable);
-
-    @Query("""
-            SELECT a
-            FROM AnswerEntity a join fetch a.questionEntity q
-            WHERE a.userId = :userId
-            AND a.createdAt < :answerCursor
-            AND a.visibility = true
-            ORDER BY a.createdAt DESC
-            """)
-    List<AnswerEntity> findAllByUserIdAndVisibilityTrueWithCursor(String userId, LocalDateTime answerCursor, Pageable pageable);
-
     @Query("SELECT COUNT(a) > 0 FROM AnswerEntity a WHERE a.userId = :userId AND a.questionEntity.id = :questionId")
     boolean existsByUserIdAndQuestionId(String userId, Long questionId);
 
