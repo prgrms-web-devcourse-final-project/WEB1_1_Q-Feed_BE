@@ -26,7 +26,7 @@
             // Subscribe to a topic
             stompClient.subscribe('/sub/chat/13', (message) => {
                 console.log('Received: ' + message.body);
-            }, { senderId: 'b32e9109-b912-4531-930c-a02b066671a6'});
+            }, { senderId: '29ae601c-9930-4145-8174-18a466aec50a'});
         }, (error) => {
             console.error('Error during STOMP connection:', error);
         });
@@ -37,7 +37,7 @@
             // Send a message to the destination endpoint
             const payload = JSON.stringify({
                 roomId: 13,
-                senderId: 'b32e9109-b912-4531-930c-a02b066671a6',
+                senderId: '29ae601c-9930-4145-8174-18a466aec50a',
                 receiverId:'abac57c8-4039-4c17-91fe-e9114c6c59ff',
                 message: '로컬 반대!',
                 type:'IMAGE',
