@@ -51,12 +51,10 @@ public class ChatMessageService {
 
         //String fileProcess = processChatImage(request.file());
 
-        //boolean receiverInChatRoom = isReceiverInChatRoom(chatRoomId, receiverId);
-
-        Boolean isin = true;
+        boolean receiverInChatRoom = isReceiverInChatRoom(chatRoomId, receiverId);
 
         // 메시지 생성
-        ChatMessage chatMessage = createChatMessage(chatRoomId, senderId, receiverId, isin ,request);
+        ChatMessage chatMessage = createChatMessage(chatRoomId, senderId, receiverId, receiverInChatRoom ,request);
 
         //db에 메세지 저장(비동기)
         chatPersistenceService.saveMessageInRedisAsync(chatRoomId,chatMessage);
@@ -64,17 +62,16 @@ public class ChatMessageService {
         //구독 및 redis 발행
         chatWebSocketService.notifyWebSocketSubscribers(chatRoomId, chatMessage, user);
 
-//        if(!receiverInChatRoom) {
-//            //알림보내기
-//            log.info("상대방이 접속해있지 않습니다. 알림을 보냅니다.");
-//
-//            // 채팅 이벤트 발행
-//            eventPublisher.publishEvent(new SendMessageEvent(
-//                    senderId,
-//                    receiverId,
-//                    FcmType.CHAT
-//            ));
-//        }
+        if(!receiverInChatRoom) {
+            log.info("상대방이 접속해있지 않습니다. 알림을 보냅니다.");
+
+            // 채팅 이벤트 발행
+            eventPublisher.publishEvent(new SendMessageEvent(
+                    senderId,
+                    receiverId,
+                    FcmType.CHAT
+            ));
+        }
     }
 
     //채팅방의 메세지 조회
@@ -94,27 +91,26 @@ public class ChatMessageService {
         chatMessageRepository.markAllMessagesAsRead(chatRoomId);
     }
 
-//    private boolean isReceiverInChatRoom(Long chatRoomId, String receiverId) {
-//        try{
-//            String userCurrentRoom = redisService.getUserCurrentRoom(receiverId);
-//            log.info("수신자 {}가 현재 채팅방 {}에 존재합니다.",receiverId,chatRoomId);
-//
-//            boolean isInRoom = userCurrentRoom != null && userCurrentRoom.equals(chatRoomId.toString());
-//            log.info("userCurrentRoom.equals(chatRoomId.toString()): {}", isInRoom);
-//            return isInRoom;
-//        } catch (Exception e) {
-//            throw ChatReceiverNotFoundException.EXCEPTION;
-//        }
-//    }
+    private boolean isReceiverInChatRoom(Long chatRoomId, String receiverId) {
+        try{
+            String userCurrentRoom = redisService.getUserCurrentRoom(receiverId);
+
+            boolean isInRoom = userCurrentRoom != null && userCurrentRoom.equals(chatRoomId.toString());
+            log.info("수신자 {}의 채팅방 {}에 존재 여부 : {}",receiverId,chatRoomId,isInRoom);
+            return isInRoom;
+        } catch (Exception e) {
+            throw ChatReceiverNotFoundException.EXCEPTION;
+        }
+    }
 
     //메세지 생성
-    private ChatMessage createChatMessage(Long chatRoomId, String senderId, String receiverId,Boolean isin,ChatMessageRequest request) {
+    private ChatMessage createChatMessage(Long chatRoomId, String senderId, String receiverId,boolean isReceiverIn,ChatMessageRequest request) {
         return ChatMessage.create(
                 null,
                 request.content(),
                 request.type(),
                 request.file(),
-                isin,
+                isReceiverIn,
                 LocalDateTime.now(),
                 senderId,
                 receiverId,
