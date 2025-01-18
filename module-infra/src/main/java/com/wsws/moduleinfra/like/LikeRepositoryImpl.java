@@ -41,10 +41,17 @@ public class LikeRepositoryImpl implements LikeRepository {
 
     @Override
     public List<Like> findByUserId(String userId) {
-        return jpaLikeUserRepository.findByUserId(userId).stream()
+        return jpaLikeUserRepository.findByUserEntityId(userId).stream()
                 .map(LikeEntityMapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public boolean existsByUserEntityIdAndTargetIdAndTargetType(String userId, Long targetId, TargetType targetType) {
+        return jpaLikeUserRepository
+                .existsByUserEntityIdAndTargetIdAndTargetType(userId, targetId, targetType);
+    }
+
 
     @Override
     public void flush() {

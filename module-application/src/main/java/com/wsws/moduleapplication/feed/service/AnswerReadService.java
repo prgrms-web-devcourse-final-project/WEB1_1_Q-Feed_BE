@@ -10,7 +10,7 @@ import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.comment.repo.AnswerCommentRepository;
 import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
-import com.wsws.moduledomain.socialnetwork.follow.aggregate.Follow;
+import com.wsws.moduledomain.feed.like.TargetType;
 import com.wsws.moduledomain.socialnetwork.follow.repo.FollowRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.usercontext.user.aggregate.User;
@@ -23,6 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.wsws.moduledomain.feed.like.TargetType.ANSWER;
+import static com.wsws.moduledomain.feed.like.TargetType.ANSWER_COMMENT;
 
 @Service
 @Transactional(readOnly = true)
@@ -160,7 +163,7 @@ public class AnswerReadService {
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
         // 해당 사용자가 해당 답변에 좋아요를 눌렀는지
-        boolean isLike = buildIsLike(reqUserId, answer.getAnswerId().getValue());
+        boolean isLike = buildIsLike(reqUserId, answer.getAnswerId().getValue(), ANSWER);
 
         // 해당 사용자가 특정 작성자(작성자 ID)를 팔로우 했는지 확인
         boolean isFollowing = buildIsFollowing(reqUserId, answerAuthor.getId().getValue());
@@ -222,13 +225,10 @@ public class AnswerReadService {
     /**
      * 좋아요 여부 정보를 세팅
      */
-    private boolean buildIsLike(String currentUserId, Long targetId) {
-        // 조회 요청한 사용자가 좋아요 누른 답변 및 답변 댓글 정보 다 가져오기
-        List<Like> likes = likeRepository.findByUserId(currentUserId);
-
-        // 해당 사용자가 해당 답변에 좋아요를 눌렀는지
-        return likes.stream()
-                .anyMatch(like -> like.getTargetId().getValue().equals(targetId));
+    private boolean buildIsLike(String currentUserId, Long targetId, TargetType targetType) {
+        // 특정 사용자가 특정 글에 좋아요를 눌렀는지
+        return likeRepository
+                .existsByUserEntityIdAndTargetIdAndTargetType(currentUserId, targetId, targetType);
     }
 
     /**
@@ -249,7 +249,7 @@ public class AnswerReadService {
         User commentAuthor = userRepository.findById(UserId.of(parent.getUserId().getValue()))
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
-        boolean isLike = buildIsLike(reqUserId, parent.getParentAnswerCommentId().getValue());
+        boolean isLike = buildIsLike(reqUserId, parent.getParentAnswerCommentId().getValue(), ANSWER_COMMENT);
 
         boolean isFollowing = buildIsFollowing(reqUserId, commentAuthor.getId().getValue());
 
