@@ -1,6 +1,7 @@
 package com.wsws.moduleinfra.repo.feed;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
@@ -14,14 +15,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static com.wsws.moduledomain.feed.question.vo.QuestionStatus.ACTIVATED;
 import static com.wsws.moduleinfra.entity.feed.QAnswerEntity.answerEntity;
 import static com.wsws.moduleinfra.entity.feed.QQuestionEntity.questionEntity;
+import static org.springframework.util.StringUtils.hasText;
 
 @Repository
 @RequiredArgsConstructor
@@ -132,8 +136,8 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     public Answer save(Answer answer) {
         AnswerEntity answerEntity = AnswerEntityMapper.toEntity(answer);
 
-        QuestionEntity questionEntity = jpaQuestionRepository.findById(answer.getQuestionId().getValue()).orElse(null);
-        answerEntity.setQuestionEntity(questionEntity); // Quesiton 연관관계 설정
+        jpaQuestionRepository.findById(answer.getQuestionId().getValue())
+                        .ifPresent(answerEntity::setQuestionEntity); // Quesiton 연관관계 설정
 
         AnswerEntity savedEntity = jpaAnswerRepository.save(answerEntity);// Answer를 엔티티로 변환하여 저장
         return AnswerEntityMapper.toDomain(savedEntity);
