@@ -32,7 +32,7 @@ public class ChatRoomService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void createChatRoom(ChatRoomServiceRequest req) {
+    public Long createChatRoom(ChatRoomServiceRequest req) {
         // 기존 채팅방이 존재하는지 확인
         if (chatRoomRepository.findChatRoomBetweenUsers(req.userId(), req.userId2()).isPresent()) {
             throw AlreadyChatRoomException.EXCEPTION;
@@ -41,7 +41,9 @@ public class ChatRoomService {
         getUserById(req.userId());
         getUserById(req.userId2());
         ChatRoom chatRoom = ChatRoom.create(null,req.userId(), req.userId2(), LocalDateTime.now());
-        chatRoomRepository.save(chatRoom);
+        chatRoom = chatRoomRepository.save(chatRoom);
+
+        return chatRoom.getId();
     }
 
     @Transactional

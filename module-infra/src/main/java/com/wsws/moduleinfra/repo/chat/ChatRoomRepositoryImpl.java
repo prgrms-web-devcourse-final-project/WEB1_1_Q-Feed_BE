@@ -18,9 +18,12 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
     private final JpaChatRoomRepository jpaChatRoomRepository;
 
     @Override
-    public void save(ChatRoom chatRoom) {
+    public ChatRoom save(ChatRoom chatRoom) {
         ChatRoomEntity entity = ChatRoomMapper.toEntity(chatRoom);
-        jpaChatRoomRepository.save(entity);
+
+        ChatRoomEntity savedEntity = jpaChatRoomRepository.save(entity);
+
+        return ChatRoomMapper.toDomain(savedEntity);
     }
 
     @Override
