@@ -107,8 +107,13 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     // TODO: 동적 쿼리 Querydsl로 수정
     @Override
     public Long countByUserId(String userId, boolean isMine) {
-        return isMine ? jpaAnswerRepository.countByUserId(userId) // 요청한 사용자의 질문이면 모든 Answer
-                : jpaAnswerRepository.countByUserIdAndVisibilityTrue(userId); // 요청한 사용자의 질문이 아니면 visibility가 true인 Answer만
+        return queryFactory
+                .select(answerEntity.count())
+                .from(answerEntity)
+                .where(
+                        visibilityEqTrue(isMine),
+                        answerEntity.userId.eq(userId)
+                ).fetchFirst();
     }
 
     @Override
