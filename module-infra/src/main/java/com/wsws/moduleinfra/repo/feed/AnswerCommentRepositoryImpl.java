@@ -54,14 +54,13 @@ public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
     public AnswerComment save(AnswerComment answerComment) {
         AnswerCommentEntity answerCommentEntity = AnswerCommentEntityMapper.toEntity(answerComment);
 
-        AnswerEntity answerEntity = jpaAnswerRepository.findById(answerComment.getAnswerId().getValue()).orElse(null);
-        answerCommentEntity.setAnswerEntity(answerEntity); // AnswerEntity 연관관계 설정
+        jpaAnswerRepository.findById(answerComment.getAnswerId().getValue())
+                .ifPresent(answerCommentEntity::setAnswerEntity);
 
+        // 부모 댓글이 있는 경우
         if (answerComment.getParentAnswerCommentId().getValue() != null) { // NPE 방지
-            AnswerCommentEntity parentCommentEntity =
-                    jpaAnswerCommentRepository.findById(answerComment.getParentAnswerCommentId().getValue())
-                            .orElse(null);
-            answerCommentEntity.setParentCommentEntity(parentCommentEntity);
+            jpaAnswerCommentRepository.findById(answerComment.getParentAnswerCommentId().getValue())
+                    .ifPresent(answerCommentEntity::setParentCommentEntity);
         }
 
         return AnswerCommentEntityMapper.toDomain(jpaAnswerCommentRepository.save(answerCommentEntity));

@@ -1,8 +1,12 @@
 package com.wsws.moduleinfra.repo.feed;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
+import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import com.wsws.moduleinfra.entity.feed.QuestionEntity;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerEntityMapper;
@@ -11,10 +15,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
+
+import static com.wsws.moduledomain.feed.question.vo.QuestionStatus.ACTIVATED;
+import static com.wsws.moduleinfra.entity.feed.QAnswerEntity.answerEntity;
+import static com.wsws.moduleinfra.entity.feed.QQuestionEntity.questionEntity;
+import static org.springframework.util.StringUtils.hasText;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,6 +33,7 @@ public class AnswerRepositoryImpl implements AnswerRepository {
 
     private final JpaAnswerRepository jpaAnswerRepository;
     private final JpaQuestionRepository jpaQuestionRepository;
+    private final JPAQueryFactory queryFactory;
 
     /**
      * 답변을 Id를 기준으로 찾기
@@ -41,13 +53,20 @@ public class AnswerRepositoryImpl implements AnswerRepository {
 
     @Override
     public List<Answer> findAllByCategoryIdWithCursor(LocalDateTime cursor, int size, Long categoryId) {
-        Pageable pageable = PageRequest.of(0, size); // 가져올 데이터 갯수 설정
-        return categoryId == null
-                ?
-                jpaAnswerRepository.findAllWithCursor(cursor, pageable).stream() // categoryId가 없다면 전체 조회
-                .map(AnswerEntityMapper::toDomain)
-                .toList()
-                :jpaAnswerRepository.findAllByCategoryIdWithCursor(cursor, pageable, categoryId).stream() // categoryId가 있다면 해당 카테고리로 조회
+        List<AnswerEntity> answerEntities = queryFactory
+                .select(answerEntity)
+                .from(answerEntity)
+                .join(answerEntity.questionEntity, questionEntity)
+                .where(
+                        categoryIdEq(categoryId),
+                        questionEntity.questionStatus.eq(ACTIVATED),
+                        answerEntity.createdAt.lt(cursor)
+                ).orderBy(answerEntity.createdAt.desc())
+                .offset(0)
+                .limit(size)
+                .fetch();
+
+        return answerEntities.stream()
                 .map(AnswerEntityMapper::toDomain)
                 .toList();
     }
@@ -55,21 +74,33 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     @Override
     public List<AnswerQuestionDTO> findAllByUserIdWithCursor(
             String userId, LocalDateTime cursor, int size, boolean isMine) {
-        Pageable pageable = PageRequest.of(0, size); // 가져올 데이터 갯수 설정
-        List<AnswerEntity> answerEntities = isMine
-                ? jpaAnswerRepository.findAllByUserIdWithCursor(userId, cursor, pageable)
-                : jpaAnswerRepository.findAllByUserIdAndVisibilityTrueWithCursor(userId, cursor, pageable);
+
+        List<AnswerEntity> answerEntities = queryFactory
+                .selectFrom(answerEntity)
+                .join(answerEntity.questionEntity, questionEntity).fetchJoin()
+                .where(
+                        visibilityEqTrue(isMine),
+                        answerEntity.userId.eq(userId),
+                        answerEntity.createdAt.lt(cursor)
+                ).orderBy(answerEntity.createdAt.desc())
+                .offset(0)
+                .limit(size)
+                .fetch();
 
         return answerEntities.stream()
                 .map(AnswerEntityMapper::toJoinDto)
                 .toList();
     }
 
-
     @Override
     public Long countByUserId(String userId, boolean isMine) {
-        return isMine ? jpaAnswerRepository.countByUserId(userId) // 요청한 사용자의 질문이면 모든 Answer
-                : jpaAnswerRepository.countByUserIdAndVisibilityTrue(userId); // 요청한 사용자의 질문이 아니면 visibility가 true인 Answer만
+        return queryFactory
+                .select(answerEntity.count())
+                .from(answerEntity)
+                .where(
+                        visibilityEqTrue(isMine),
+                        answerEntity.userId.eq(userId)
+                ).fetchFirst();
     }
 
     @Override
@@ -78,18 +109,25 @@ public class AnswerRepositoryImpl implements AnswerRepository {
                 .map(AnswerEntityMapper::toDomain);
     }
 
+    // TODO: 동적 쿼리 Querydsl로 수정
     @Override
     public List<Answer> findAnswersByLikeCountAndCategoryIdWithCursor(Long categoryId, int limit) {
-        Pageable pageable = PageRequest.of(0, limit); // 가져올 데이터 갯수 설정
-        return categoryId == null
-                ? jpaAnswerRepository.findAllOrderByLikeCountDescWithCursor(pageable).stream() // categoryId가 없다면 전체 조회
-                .map(AnswerEntityMapper::toDomain)
-                .toList()
-                : jpaAnswerRepository.findAllByCategoryIdOrderByLikeCountDescWithCursor(categoryId, pageable).stream() // categoryId가 있다면 해당 categoryId로 조회
+
+        List<AnswerEntity> answerEntities = queryFactory
+                .selectFrom(answerEntity)
+                .join(answerEntity.questionEntity, questionEntity)
+                .where(
+                        categoryIdEq(categoryId),
+                        questionEntity.questionStatus.eq(ACTIVATED)
+                ).orderBy(answerEntity.likeCount.desc())
+                .offset(0)
+                .limit(limit)
+                .fetch();
+
+        return answerEntities.stream()
                 .map(AnswerEntityMapper::toDomain)
                 .toList();
     }
-
     /**
      * 답변 저장
      */
@@ -98,8 +136,8 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     public Answer save(Answer answer) {
         AnswerEntity answerEntity = AnswerEntityMapper.toEntity(answer);
 
-        QuestionEntity questionEntity = jpaQuestionRepository.findById(answer.getQuestionId().getValue()).orElse(null);
-        answerEntity.setQuestionEntity(questionEntity); // Quesiton 연관관계 설정
+        jpaQuestionRepository.findById(answer.getQuestionId().getValue())
+                        .ifPresent(answerEntity::setQuestionEntity); // Quesiton 연관관계 설정
 
         AnswerEntity savedEntity = jpaAnswerRepository.save(answerEntity);// Answer를 엔티티로 변환하여 저장
         return AnswerEntityMapper.toDomain(savedEntity);
@@ -128,5 +166,24 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     @Override
     public void deleteById(Long id) {
         jpaAnswerRepository.deleteById(id);
+    }
+
+    private BooleanBuilder categoryIdEq(Long categoryId) {
+        return nullSafeBuilder(() -> questionEntity.categoryId.eq(categoryId), categoryId);
+    }
+
+    private BooleanBuilder visibilityEqTrue(boolean isMine) {
+        return nullSafeBuilder(() -> answerEntity.visibility.eq(true), null);
+    }
+
+    private <T> BooleanBuilder nullSafeBuilder(Supplier<BooleanExpression> f, T value) {
+        if(value instanceof String && !hasText((String) value)) {
+            return new BooleanBuilder();
+        }
+        try {
+            return new BooleanBuilder(f.get());
+        } catch (Exception e) {
+            return new BooleanBuilder();
+        }
     }
 }

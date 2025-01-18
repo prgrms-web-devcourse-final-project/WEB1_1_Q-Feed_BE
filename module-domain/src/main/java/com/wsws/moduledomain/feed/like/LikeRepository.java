@@ -24,6 +24,10 @@ public interface LikeRepository {
     List<Like> findByUserId(String userId);
 
     /**
+     * 특정 사용자가 특정 글에 좋아요를 눌렀는지
+     */
+    boolean existsByUserEntityIdAndTargetIdAndTargetType(String userId, Long targetId, TargetType targetType);
+    /**
      * 데이터베이스 즉시 반영하기
      */
     void flush();
