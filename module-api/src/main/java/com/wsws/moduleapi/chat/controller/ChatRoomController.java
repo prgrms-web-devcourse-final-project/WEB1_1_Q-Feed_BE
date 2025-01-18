@@ -2,6 +2,7 @@ package com.wsws.moduleapi.chat.controller;
 
 import com.wsws.moduleapi.chat.dto.ChatResponse;
 import com.wsws.moduleapi.chat.dto.ChatRoomApiResponse;
+import com.wsws.moduleapi.chat.dto.ChatRoomResponse;
 import com.wsws.moduleapplication.chat.dto.ChatRoomServiceRequest;
 import com.wsws.moduleapplication.chat.dto.ChatRoomServiceResponse;
 import com.wsws.moduleapplication.chat.service.ChatRoomService;
@@ -27,9 +28,9 @@ public class ChatRoomController {
     //채팅방 생성
     @PostMapping
     @Operation(summary = "채팅방 생성", description = "특정 사용자와의 채팅방을 생성합니다.")
-    public ResponseEntity<ChatResponse> createChatRoom(@RequestBody ChatRoomServiceRequest req) {
-        chatRoomService.createChatRoom(req);
-        return ResponseEntity.status(201).body(new ChatResponse("채팅방 생성이 완료되었습니다."));
+    public ResponseEntity<ChatRoomResponse> createChatRoom(@RequestBody ChatRoomServiceRequest req) {
+        Long chatRoomId = chatRoomService.createChatRoom(req);
+        return ResponseEntity.status(201).body(new ChatRoomResponse(chatRoomId,"채팅방 생성이 완료되었습니다."));
     }
 
     //채팅방 삭제
