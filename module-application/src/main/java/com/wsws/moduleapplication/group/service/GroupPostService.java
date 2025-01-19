@@ -6,6 +6,7 @@ import com.wsws.moduleapplication.group.dto.GroupPostServiceResponse;
 import com.wsws.moduleapplication.feed.dto.LikeServiceRequest;
 import com.wsws.moduleapplication.group.event.GroupPostLikeEvent;
 import com.wsws.moduleapplication.group.exception.GroupPostNotFoundException;
+import com.wsws.moduleapplication.group.exception.MemberNotInGroupException;
 import com.wsws.moduleapplication.group.exception.NotOwnerException;
 import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
@@ -16,6 +17,7 @@ import com.wsws.moduledomain.group.GroupPost;
 import com.wsws.moduledomain.group.dto.GroupCommentDto;
 import com.wsws.moduledomain.group.dto.GroupPostDetailDto;
 import com.wsws.moduledomain.group.repo.GroupCommentRepository;
+import com.wsws.moduledomain.group.repo.GroupMemberRepository;
 import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.feed.like.LikeRepository;
@@ -38,10 +40,15 @@ public class GroupPostService {
     private final LikeRepository likeRepository;
     private final GroupCommentRepository groupCommentRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final GroupMemberRepository groupMemberRepository;
+
 
     // 게시물 생성
     @Transactional
     public void createGroupPost(CreateGroupPostRequest request, Long groupId, String userId) {
+
+        validateGroupMembership(userId, groupId);
+
         GroupPost post = GroupPost.create(
                 null, groupId, request.content(),
                 processGroupPostImage(request.url()), userId, 0L, 0L
@@ -148,6 +155,14 @@ public class GroupPostService {
     // 좋아요 중복 확인
     private boolean isAlreadyLiked(Long targetId, String userId, TargetType targetType) {
         return likeRepository.existsByTargetIdAndUserIdAndTargetType(targetId, userId, targetType);
+    }
+
+
+    // 그룹 멤버 여부 확인
+    private void validateGroupMembership(String userId, Long groupId) {
+        boolean isMember = groupMemberRepository.existsByUserIdAndGroupId(userId, groupId);
+        if (!isMember) {
+            throw MemberNotInGroupException.EXCEPTION;        }
     }
 
     // 게시글 이미지

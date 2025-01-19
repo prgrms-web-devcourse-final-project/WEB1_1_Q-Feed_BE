@@ -8,12 +8,14 @@ import com.wsws.moduleapplication.group.event.GroupCommentCreatedEvent;
 import com.wsws.moduleapplication.group.event.GroupCommentLikedEvent;
 import com.wsws.moduleapplication.group.exception.GroupCommentNotFoundException;
 import com.wsws.moduleapplication.group.exception.GroupPostNotFoundException;
+import com.wsws.moduleapplication.group.exception.MemberNotInGroupException;
 import com.wsws.moduleapplication.group.exception.NotOwnerException;
 import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
 import com.wsws.moduledomain.group.GroupComment;
 import com.wsws.moduledomain.group.GroupPost;
 import com.wsws.moduledomain.group.repo.GroupCommentRepository;
+import com.wsws.moduledomain.group.repo.GroupMemberRepository;
 import com.wsws.moduledomain.group.repo.GroupPostRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.feed.like.LikeRepository;
@@ -37,6 +39,7 @@ public class GroupCommentService {
     private final LikeRepository likeRepository;
     private final GroupPostRepository groupPostRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final GroupMemberRepository groupMemberRepository;
 
 
 
@@ -44,6 +47,8 @@ public class GroupCommentService {
     @Transactional
     public void createGroupComment(CreateGroupCommentRequest request, Long groupPostId, String userId) {
         GroupPost groupPost = getGroupPost(groupPostId);
+
+        validateGroupMembership(userId, groupPost.getGroupId().getValue());
 
         GroupComment groupComment = GroupComment.create(
                 null,
@@ -165,10 +170,18 @@ public class GroupCommentService {
                 .orElseThrow(() -> GroupPostNotFoundException.EXCEPTION);
     }
 
+
     private GroupComment getGroupComment(Long groupCommentId) {
         return groupCommentRepository.findById(groupCommentId)
                 .orElseThrow(() -> GroupCommentNotFoundException.EXCEPTION);
     }
+
+    // 그룹 멤버 여부 확인
+    private void validateGroupMembership(String userId, Long groupId) {
+        boolean isMember = groupMemberRepository.existsByUserIdAndGroupId(userId, groupId);
+        if (!isMember) {
+            throw MemberNotInGroupException.EXCEPTION;        }
+        }
 
     // 본인 여부 확인
     private void validateUser(GroupComment groupComment, String userId) {
@@ -177,7 +190,6 @@ public class GroupCommentService {
         }
     }
 }
-
 
 
 
