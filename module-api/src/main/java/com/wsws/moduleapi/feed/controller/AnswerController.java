@@ -153,7 +153,7 @@ public class AnswerController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "답변 상세를 조회할 답변 ID") @PathVariable("answer-id") Long answerId,
             @Parameter(description = "커서로 사용할 마지막 댓글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String commentCursor,
-            @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "2") int size
+            @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size
     ) {
         String userId = userPrincipal.getId();
 //        String userId = "user_id1";
