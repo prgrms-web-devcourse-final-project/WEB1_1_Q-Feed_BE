@@ -19,9 +19,13 @@ public interface LikeRepository {
     void deleteByTargetIdAndUserId(Long targetId, String userId);
 
     /**
-     * 특정 사용자가 좋아요 누른 글 목록 가져오기
+     * 특정 사용자가 누른 좋아요 목록 가져오기
      */
     List<Like> findByUserId(String userId);
+    /**
+     *  특정 답변들에 남겨진 좋아요 목록 가져오기
+     */
+    List<Like> findByTargetIdInAndTargetType(List<Long> answerIds, TargetType targetType);
 
     /**
      * 특정 사용자가 특정 글에 좋아요를 눌렀는지
