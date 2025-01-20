@@ -24,6 +24,13 @@ public class FollowRepositoryImpl implements FollowRepository {
     }
 
     @Override
+    public List<Follow> findByFollowerId(String followerId) {
+        return jpaFollowRepository.findById_FollowerId(followerId).stream()
+                .map(FollowEntityMapper::toFollow)
+                .toList();
+    }
+
+    @Override
     public Follow save(Follow follow) {
         FollowEntity entity = FollowEntityMapper.fromFollow(follow); // 도메인 객체를 엔티티로 변환
         FollowEntity savedEntity = jpaFollowRepository.save(entity); // 저장 후 엔티티 반환
