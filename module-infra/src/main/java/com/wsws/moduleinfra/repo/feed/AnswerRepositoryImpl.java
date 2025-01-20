@@ -6,16 +6,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
-import com.wsws.moduledomain.feed.question.vo.QuestionStatus;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
-import com.wsws.moduleinfra.entity.feed.QuestionEntity;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerEntityMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,12 +37,6 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     public Optional<Answer> findById(Long id) {
 
         return jpaAnswerRepository.findById(id)
-                .map(AnswerEntityMapper::toDomain);
-    }
-
-    @Override
-    public Optional<Answer> findByIdWithLock(Long id) {
-        return jpaAnswerRepository.findByIdWithLock(id)
                 .map(AnswerEntityMapper::toDomain);
     }
 
