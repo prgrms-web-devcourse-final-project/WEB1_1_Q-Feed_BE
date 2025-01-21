@@ -17,6 +17,7 @@ public record AnswerCommentFindServiceResponse(
         Boolean isLike,
         Boolean isFollowing,
         int childCommentCount,
+        Long parentCommentId,
         List<AnswerCommentFindServiceResponse> children
 ) {
 
