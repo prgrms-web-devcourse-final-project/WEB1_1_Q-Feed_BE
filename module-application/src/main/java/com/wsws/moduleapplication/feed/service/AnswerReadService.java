@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.wsws.moduledomain.feed.like.TargetType.ANSWER;
 import static com.wsws.moduledomain.feed.like.TargetType.ANSWER_COMMENT;
@@ -52,7 +53,6 @@ public class AnswerReadService {
         return new AnswerListFindServiceResponse(responses);
     }
 
-
     /**
      * 답변 상세 조회 (댓글도 함께 받아오며, 댓글은 페이징 처리)
      */
@@ -61,38 +61,7 @@ public class AnswerReadService {
 
         buildSingleAnswer(request, builder); // 답변 응답 정보 세팅
 
-        buildAnswerComment(request, builder); // 답변 댓글 정보 세팅
-
-        return builder.build();
-    }
-
-    /**
-     * 답변 상세 조회 ver2 (댓글도 함께 받아오며, 댓글은 페이징 처리)
-     */
-    public AnswerFindServiceResponse findOneAnswerWithCursorVer2(AnswerFindServiceRequest request) {
-        AnswerFindServiceResponseBuilder builder = AnswerFindServiceResponse.builder();
-
-        buildSingleAnswer(request, builder); // 답변 응답 정보 세팅
-
-
-        // 해당 답변에 속한 댓글들 페이징으로 조회
-        List<AnswerComment> answerComments = answerCommentRepository.findByAnswerIdWithCursor(request.answerId(), request.cursor(), request.size());
-
-
-        // 댓글 ID 뽑아내기
-        List<Long> commentIds = getAnswerCommentIds(answerComments);
-
-        // 댓글 작성자 ID 뽑아내기
-        List<String> commentAuthorIds = answerComments.stream()
-                .map(answerComment -> answerComment.getUserId().getValue())
-                .toList();
-
-        List<User> commentAuthors = userRepository.findUsersByIds(commentAuthorIds); // 댓글 작성자 조회
-        List<Like> likes = likeRepository.findByTargetIdsInAndTargetTypeAndUserId(commentIds, ANSWER_COMMENT, request.userId()); // 좋아요 정보 조회
-        List<Follow> follows = followRepository.findByFollowerIdAndFolloweeIds(request.userId(), commentAuthorIds); // 팔로우 정보 조회
-        List<AnswerCommentCountDTO> answerCommentCounts = answerCommentRepository.countCommentsByAnswerCommentIds(commentIds); // 대댓글 갯수 조회
-
-
+        buildAnswerComment(request, builder);
         return builder.build();
     }
 
@@ -157,148 +126,7 @@ public class AnswerReadService {
     }
 
 
-
-
-
-
     /* Private Method */
-
-    /**
-     * Answer Comment 정보를 세팅
-     */
-    private void buildAnswerComment(AnswerFindServiceRequest request, AnswerFindServiceResponseBuilder answerResponseBuilder) {
-
-        // 페이징으로 최상위 부모 댓글 가져오기
-        List<AnswerComment> parentComments = answerCommentRepository.findParentCommentsByAnswerIdWithCursor(request.answerId(), request.cursor(), request.size());
-        // 최상위 부모댓글과 얽힌 모든 댓글들 DTO 리스트에 추가
-        List<AnswerCommentFindServiceResponse> answerCommentDTOs = new ArrayList<>();
-        buildAnswerCommentDTOList(parentComments, request.userId(), answerCommentDTOs);
-
-
-        // 부모댓글이 있는 댓글을 찾아 부모 댓글의 children 리스트에 해당 댓글 추가
-        answerCommentDTOs.stream()
-                .filter(child -> child.parentCommentId() != null) // 부모 ID가 있는 경우만 처리
-                .forEach(child -> answerCommentDTOs.stream()
-                        .filter(parent -> parent.commentId().equals(child.parentCommentId())) // 부모와 매칭
-                        .findFirst() // 부모가 존재하는 경우
-                        .ifPresent(parent -> parent.children().add(child)) // 자식 추가
-                );
-
-        // 부모 댓글에 종속된 중복된 댓글 제거
-        List<AnswerCommentFindServiceResponse> result = answerCommentDTOs.stream()
-                .filter(answerCommentDTO -> answerCommentDTO.parentCommentId() == null)
-                .toList();
-
-        answerResponseBuilder
-                .commentCount(result.size())
-                .comments(result);
-    }
-
-    /**
-     * 모든 댓글들을 DTO 형식으로 세팅
-     */
-    private void buildAnswerCommentDTOList(List<AnswerComment> parentComments, String reqUserId, List<AnswerCommentFindServiceResponse> commentDTOs) {
-
-        // 부모 댓글 세팅
-        for (AnswerComment parentComment : parentComments) {
-            commentDTOs.add(buildAnswerCommentDto(reqUserId, parentComment));
-        }
-
-        // 부모 Comment ID 추출
-        List<Long> parentIds = getAnswerCommentIds(parentComments);
-
-        // 부모 Comment에 대한 하위 댓글 조회
-        List<AnswerComment> childComments = answerCommentRepository.findChildCommentsByParentsId(parentIds);
-
-        if (childComments.isEmpty()) return;
-
-        // 재귀적으로 호출
-        buildAnswerCommentDTOList(childComments, reqUserId, commentDTOs);
-    }
-
-    /**
-     * 댓글을 DTO 형식으로 세팅
-     */
-    private AnswerCommentFindServiceResponse buildAnswerCommentDto(String reqUserId, AnswerComment parentComment) {
-        AnswerCommentFindServiceResponseBuilder builder = AnswerCommentFindServiceResponse.builder();
-
-        builder
-                .commentId(parentComment.getAnswerCommentId().getValue())
-                .content(parentComment.getContent())
-                .likeCount(parentComment.getLikeCount())
-                .createdAt(parentComment.getCreatedAt())
-                .parentCommentId(parentComment.getParentAnswerCommentId().getValue())
-                .children(new ArrayList<>());
-
-        User author = userRepository.findById(parentComment.getUserId())
-                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
-        builder
-                .userId(author.getId().getValue())
-                .authorNickname(author.getNickname().getValue())
-                .profileImage(author.getProfileImage());
-
-        builder
-                .isFollowing(buildIsFollowing(reqUserId, author.getId().getValue()));
-
-        builder
-                .isLike(buildIsLike(reqUserId, parentComment.getAnswerCommentId().getValue(), ANSWER_COMMENT));
-        return builder.build();
-    }
-
-
-    /**
-     * 좋아요 여부 정보를 세팅
-     */
-    private boolean buildIsLike(String currentUserId, Long targetId, TargetType targetType) {
-        // 특정 사용자가 특정 글에 좋아요를 눌렀는지
-        return likeRepository
-                .existsByUserEntityIdAndTargetIdAndTargetType(currentUserId, targetId, targetType);
-    }
-
-    /**
-     * 팔로우 여부 정보를 세팅
-     */
-    private boolean buildIsFollowing(String reqUserId, String authorId) {
-        // 해당 사용자가 특정 작성자(작성자 ID)를 팔로우 했는지 확인
-        return followRepository.findByFollowerIdAndFolloweeId(reqUserId, authorId)
-                .isPresent();
-    }
-
-    /**
-     * 특정 답변의 (최상위)부모 댓글 갯수 정보 세팅
-     */
-    private void buildCommentCount(Answer answer, AnswerFindServiceResponseBuilder responseBuilder) {
-        int commentCount = answerCommentRepository.countParentCommentByAnswerId(answer.getAnswerId().getValue());
-        responseBuilder.commentCount(commentCount);
-    }
-
-    /**
-     * 답변 작성자의 ID 리스트
-     */
-    private List<String> getAnswerAuthorIds(List<Answer> answers) {
-        return answers.stream()
-                .map(answer -> answer.getUserId().getValue())
-                .toList();
-    }
-
-    /**
-     * 답변의 ID 리스트
-     */
-    private List<Long> getAnswerIds(List<Answer> answers) {
-        return answers.stream()
-                .map(answer -> answer.getAnswerId().getValue())
-                .toList();
-    }
-
-    /**
-     * 댓글의 ID 리스트
-     */
-    private List<Long> getAnswerCommentIds(List<AnswerComment> answerComments) {
-        return answerComments.stream()
-                .map(answerComment -> answerComment.getAnswerCommentId().getValue())
-                .toList();
-    }
-
     /**
      * 단일 답변 응답 세팅
      */
@@ -313,15 +141,15 @@ public class AnswerReadService {
         User author = userRepository.findById(answer.getUserId())
                 .orElseThrow(() -> AnswerNotFoundException.EXCEPTION);
         // 답변 작성자 정보 세팅
-        buildAuthorInfo(author, builder);
+        buildAnswerAuthorInfo(author, builder);
 
         // 좋아요 정보 조회 및 좋아요 여부 세팅
         if (likeRepository.existsByTargetIdAndUserIdAndTargetType(answer.getAnswerId().getValue(), request.userId(), ANSWER))
-            buildLikeInfo(builder);
+            builder.isLike(true);
 
         // 팔로우 정보 조회 및 팔로우 여부 세팅
         if (followRepository.findByFollowerIdAndFolloweeId(request.userId(), answer.getUserId().getValue()).isPresent())
-            buildFollowInfo(builder);
+            builder.isFollowing(true);
     }
 
     /**
@@ -355,34 +183,229 @@ public class AnswerReadService {
 
                     for (User author : answerAuthors) {
                         if (userId.equals(author.getId())) {
-                            buildAuthorInfo(author, builder); // 답변 작성자 정보 세팅
+                            buildAnswerAuthorInfo(author, builder); // 답변 작성자 정보 세팅
                             break;
                         }
                     }
 
                     for (Like like : likes) {
                         if (answerId.getValue().equals(like.getTargetId().getValue())) {
-                            buildLikeInfo(builder); // 좋아요 관련 정보 세팅
+                            // 좋아요 관련 정보 세팅
+                            builder.isLike(true);
                             break;
                         }
                     }
 
                     for (Follow follow : follows) {
                         if (userId.getValue().equals(follow.getId().getFolloweeId())) {
-                            buildFollowInfo(builder); // 팔로우 관련 정보 세팅
+                            // 팔로우 관련 정보 세팅
+                            builder.isFollowing(true);
                             break;
                         }
                     }
 
                     for (AnswerCommentCountDTO answerCommentCount : answerCommentCounts) {
                         if (answerId.getValue().equals(answerCommentCount.targetId())) {
-                            buildCommentCountInfo(answerCommentCount, builder); // 댓글 수 관련 정보 세팅
+                            // 댓글 수 관련 정보 세팅
+                            builder.commentCount(answerCommentCount.answerCommentCount());
                             break;
                         }
                     }
 
                     responses.add(builder.build());
                 });
+    }
+
+    /**
+     * Answer Comment 정보를 세팅 ver2
+     */
+    private void buildAnswerComment(AnswerFindServiceRequest request, AnswerFindServiceResponseBuilder answerResponseBuilder) {
+
+        // 페이징으로 최상위 부모 댓글 가져오기
+        List<AnswerComment> parentComments = answerCommentRepository.findParentCommentsByAnswerIdWithCursor(request.answerId(), request.cursor(), request.size());
+        // 최상위 부모댓글과 얽힌 모든 댓글들 DTO 리스트에 추가
+        List<AnswerCommentFindServiceResponse> rawAnswerCommentDTOs = new ArrayList<>();
+        buildAnswerCommentDTOList(parentComments, request.userId(), rawAnswerCommentDTOs);
+
+        List<Long> commentIds = getCommentIdsFromDTOs(rawAnswerCommentDTOs);
+        List<String> commentAuthorIds = getCommentAuthorIdsFromDTOs(rawAnswerCommentDTOs);
+
+        // 모든 댓글 작성자 조회
+        List<User> commentAuthors = userRepository.findUsersByIds(commentAuthorIds);
+        // 모든 좋아요 정보 조회
+        List<Like> likes = likeRepository.findByTargetIdsInAndTargetTypeAndUserId(commentIds, ANSWER_COMMENT, request.userId());
+        // 모든 팔로우 정보 조회
+        List<Follow> follows = followRepository.findByFollowerIdAndFolloweeIds(request.userId(), commentAuthorIds);
+
+        List<AnswerCommentFindServiceResponse> answerCommentDTOs = new ArrayList<>();
+
+        rawAnswerCommentDTOs.forEach(
+                answerCommentDTO -> {
+                    AnswerCommentFindServiceResponseBuilder builder = AnswerCommentFindServiceResponse.builder();
+                    buildCommentInfo(answerCommentDTO, builder);
+
+                    String userId = answerCommentDTO.userId();
+                    Long commentId = answerCommentDTO.commentId();
+
+                    for (User author : commentAuthors) {
+                        if (userId.equals(author.getId().getValue())) {
+                            // 댓글 작성자 정보 세팅
+                            buildCommentAuthorInfo(author, builder);
+                            break;
+                        }
+                    }
+
+                    for (Like like : likes) {
+                        if (commentId.equals(like.getTargetId().getValue())) {
+                            // 좋아요 관련 정보 세팅
+                            builder.isLike(true);
+                            break;
+                        }
+                    }
+
+                    for (Follow follow : follows) {
+                        if (userId.equals(follow.getId().getFolloweeId())) {
+                            // 팔로우 관련 정보 세팅
+                            builder.isFollowing(true);
+                            break;
+                        }
+                    }
+
+                    answerCommentDTOs.add(builder.build());
+                }
+        );
+
+        // 부모댓글이 있는 댓글을 찾아 부모 댓글의 children 리스트에 해당 댓글 추가
+        answerCommentDTOs.stream()
+                .filter(child -> child.parentCommentId() != null) // 부모 ID가 있는 경우만 처리
+                .forEach(child -> answerCommentDTOs.stream()
+                        .filter(parent -> parent.commentId().equals(child.parentCommentId())) // 부모와 매칭
+                        .findFirst() // 부모가 존재하는 경우
+                        .ifPresent(parent -> parent.children().add(child)) // 자식 추가
+                );
+
+        // 부모 댓글에 종속된 중복된 댓글 제거
+        List<AnswerCommentFindServiceResponse> results = answerCommentDTOs.stream()
+                .filter(answerCommentDTO -> answerCommentDTO.parentCommentId() == null)
+                .toList();
+
+        // 대댓글 수 세팅
+        buildChildCommentCount(results);
+
+        // 댓글 셋팅
+        answerResponseBuilder
+                .comments(results);
+
+    }
+
+
+    /**
+     * 모든 댓글들을 DTO 형식으로 세팅
+     */
+    private void buildAnswerCommentDTOList(List<AnswerComment> parentComments, String reqUserId, List<AnswerCommentFindServiceResponse> commentDTOs) {
+
+        // 부모 댓글 세팅
+        for (AnswerComment parentComment : parentComments) {
+            commentDTOs.add(buildAnswerCommentDto(reqUserId, parentComment));
+        }
+
+        // 부모 Comment ID 추출
+        List<Long> parentIds = getCommentIds(parentComments);
+
+        // 부모 Comment에 대한 하위 댓글 조회
+        List<AnswerComment> childComments = answerCommentRepository.findChildCommentsByParentsId(parentIds);
+
+        if (childComments.isEmpty()) return;
+
+        // 재귀적으로 호출
+        buildAnswerCommentDTOList(childComments, reqUserId, commentDTOs);
+    }
+
+
+    /**
+     * 댓글을 DTO 형식으로 세팅
+     */
+    private AnswerCommentFindServiceResponse buildAnswerCommentDto(String reqUserId, AnswerComment parentComment) {
+        AnswerCommentFindServiceResponseBuilder builder = AnswerCommentFindServiceResponse.builder();
+
+        // 댓글 정보 세팅
+        builder
+                .commentId(parentComment.getAnswerCommentId().getValue())
+                .userId(parentComment.getUserId().getValue())
+                .content(parentComment.getContent())
+                .likeCount(parentComment.getLikeCount())
+                .createdAt(parentComment.getCreatedAt())
+                .parentCommentId(parentComment.getParentAnswerCommentId().getValue())
+                .childCommentCount(new AtomicInteger(0))
+                .children(new ArrayList<>());
+
+        return builder.build();
+    }
+
+    /**
+     *  대댓글 수 세팅
+     */
+    private void buildChildCommentCount(List<AnswerCommentFindServiceResponse> commentDTOs) {
+        for (AnswerCommentFindServiceResponse commentDTO : commentDTOs) {
+            calculateAndSetChildCommentCount(commentDTO);
+        }
+    }
+    private int calculateAndSetChildCommentCount(AnswerCommentFindServiceResponse parent) {
+        int childCount = 0;
+
+        for (AnswerCommentFindServiceResponse child : parent.children()) {
+            childCount += 1; // 직접적인 자식 개수
+            childCount += calculateAndSetChildCommentCount(child); // 자식의 자식 개수를 재귀적으로 더함
+        }
+
+        parent.changeChildCommentCount(childCount); // 총 자식 개수 설정
+        return childCount; // 부모에게 반환
+    }
+    /**
+     * 답변 작성자의 ID 리스트
+     */
+    private List<String> getAnswerAuthorIds(List<Answer> answers) {
+        return answers.stream()
+                .map(answer -> answer.getUserId().getValue())
+                .toList();
+    }
+
+    /**
+     * 답변의 ID 리스트
+     */
+    private List<Long> getAnswerIds(List<Answer> answers) {
+        return answers.stream()
+                .map(answer -> answer.getAnswerId().getValue())
+                .toList();
+    }
+
+    /**
+     * 댓글의 ID 리스트
+     */
+    private List<Long> getCommentIds(List<AnswerComment> answerComments) {
+        return answerComments.stream()
+                .map(answerComment -> answerComment.getAnswerCommentId().getValue())
+                .toList();
+    }
+
+    /**
+     * 댓글의 ID 리스트
+     * DTO에서 받아옴
+     */
+    private List<Long> getCommentIdsFromDTOs(List<AnswerCommentFindServiceResponse> answerCommentDTOs) {
+        return answerCommentDTOs.stream()
+                .map(AnswerCommentFindServiceResponse::commentId)
+                .toList();
+    }
+
+    /**
+     * 댓글 작성자의 ID 리스트
+     * DTO에서 받아옴
+     */
+    private List<String> getCommentAuthorIdsFromDTOs(List<AnswerCommentFindServiceResponse> answerCommentDTOs) {
+        return answerCommentDTOs.stream()
+                .map(AnswerCommentFindServiceResponse::userId)
+                .toList();
     }
 
     /**
@@ -396,33 +419,36 @@ public class AnswerReadService {
     }
 
     /**
-     * 작성자 정보 세팅
+     * 답변 작성자 정보 세팅
      */
-    private void buildAuthorInfo(User author, AnswerFindServiceResponseBuilder builder) {
+    private void buildAnswerAuthorInfo(User author, AnswerFindServiceResponseBuilder builder) {
         builder.authorUserId(author.getId().getValue())
                 .authorNickname(author.getNickname().getValue())
                 .profileImage(author.getProfileImage());
     }
 
     /**
-     * 좋아요 정보 세팅
+     * 댓글 정보 세팅
      */
-    private void buildLikeInfo(AnswerFindServiceResponseBuilder builder) {
-        builder.isLike(true);
+    private void buildCommentInfo(AnswerCommentFindServiceResponse answerCommentDTO, AnswerCommentFindServiceResponseBuilder builder) {
+        builder
+                .commentId(answerCommentDTO.commentId())
+                .userId(answerCommentDTO.userId())
+                .content(answerCommentDTO.content())
+                .likeCount(answerCommentDTO.likeCount())
+                .createdAt(answerCommentDTO.createdAt())
+                .parentCommentId(answerCommentDTO.parentCommentId())
+                .childCommentCount(answerCommentDTO.childCommentCount())
+                .children(answerCommentDTO.children());
     }
 
     /**
-     * 팔로우 정보 세팅
+     * 댓글 작성자 정보 세팅
      */
-    private void buildFollowInfo(AnswerFindServiceResponseBuilder builder) {
-        builder.isFollowing(true);
-    }
-
-    /**
-     * 댓글 갯수 정보 세팅
-     */
-    private void buildCommentCountInfo(AnswerCommentCountDTO answerCommentCount, AnswerFindServiceResponseBuilder builder) {
-        builder.commentCount(answerCommentCount.answerCommentCount());
+    private void buildCommentAuthorInfo(User author, AnswerCommentFindServiceResponseBuilder builder) {
+        builder
+                .authorNickname(author.getNickname().getValue())
+                .profileImage(author.getProfileImage());
     }
 
     /**
