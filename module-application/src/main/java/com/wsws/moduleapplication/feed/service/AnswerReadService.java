@@ -7,10 +7,13 @@ import com.wsws.moduleapplication.feed.exception.AnswerNotFoundException;
 import com.wsws.moduleapplication.usercontext.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
+import com.wsws.moduledomain.feed.answer.vo.AnswerId;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.comment.repo.AnswerCommentRepository;
+import com.wsws.moduledomain.feed.dto.AnswerCommentCountDTO;
 import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
 import com.wsws.moduledomain.feed.like.TargetType;
+import com.wsws.moduledomain.socialnetwork.follow.aggregate.Follow;
 import com.wsws.moduledomain.socialnetwork.follow.repo.FollowRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.usercontext.user.aggregate.User;
@@ -46,17 +49,66 @@ public class AnswerReadService {
         // 답변 리스트 페이징해서 불러오기
         List<Answer> answers = answerRepository.findAllByCategoryIdWithCursor(request.cursor(), request.size(), request.categoryId());
 
-        List<AnswerFindServiceResponse> responses = new ArrayList<>();
+        // Id만 리스트로 뽑아내기
+        List<Long> answerIds = answers.stream()
+                .map(answer -> answer.getAnswerId().getValue())
+                .toList();
 
-        for (Answer answer : answers) {
-            AnswerFindServiceResponseBuilder responseBuilder = AnswerFindServiceResponse.builder();
+        // 답변 작성자 ID만 리스트로 뽑아내기
+        List<String> answerAuthorIds = answers.stream()
+                .map(answer -> answer.getUserId().getValue())
+                .toList();
 
-            buildAnswer(answer, request.userId(), responseBuilder); // 답변 정보 세팅
 
-            buildCommentCount(answer, responseBuilder); // 해당 답변의 (최상위)부모 댓글 갯수 추가
+        // 쿼리 실행
+        List<User> answerAuthors = userRepository.findUsersByIds(answerAuthorIds); // 작성자 정보 조회
+        List<Like> likes = likeRepository.findByTargetIdsInAndTargetTypeAndUserId(answerIds, ANSWER, request.userId()); // 좋아요 정보 조회
+        List<Follow> follows = followRepository.findByFollowerIdAndFolloweeIds(request.userId(), answerAuthorIds); // 팔로우 정보 조회
+        List<AnswerCommentCountDTO> answerCommentCounts = answerCommentRepository.countCommentsByAnswerIds(answerIds); // 댓글 갯수 조회
 
-            responses.add(responseBuilder.build()); // 리스트에 추가
-        }
+        // 쿼리로 받아온 데이터 처리
+        List<AnswerFindServiceResponse> responses = answers.stream()
+                .map(answer -> {
+                    AnswerFindServiceResponseBuilder builder = AnswerFindServiceResponse.builder();
+                    builder.answerId(answer.getAnswerId().getValue())
+                            .content(answer.getContent())
+                            .createdAt(answer.getCreatedAt())
+                            .likeCount(answer.getLikeCount());
+                    UserId userId = answer.getUserId();
+                    AnswerId answerId = answer.getAnswerId();
+
+                    for (User answerAuthor : answerAuthors) {
+                        if (userId.equals(answerAuthor.getId())) {
+                            builder.authorUserId(answerAuthor.getId().getValue())
+                                    .authorNickname(answerAuthor.getNickname().getValue())
+                                    .profileImage(answerAuthor.getProfileImage());
+                            break;
+                        }
+                    }
+
+                    for (Like like : likes) {
+                        if (answerId.getValue().equals(like.getTargetId().getValue())) {
+                            builder.isLike(true);
+                            break;
+                        }
+                    }
+
+
+                    for (Follow follow : follows) {
+                        if (userId.getValue().equals(follow.getId().getFolloweeId())) {
+                            builder.isFollowing(true);
+                            break;
+                        }
+                    }
+
+                    for (AnswerCommentCountDTO answerCommentCount : answerCommentCounts) {
+                        if (answerId.getValue().equals(answerCommentCount.answerId())) {
+                            builder.commentCount(answerCommentCount.answerCommentCount());
+                            break;
+                        }
+                    }
+                    return builder.build();
+                }).toList();
 
         return new AnswerListFindServiceResponse(responses);
     }

@@ -50,7 +50,7 @@ public class AnswerController {
     })
     public ResponseEntity<AnswerListGetApiResponse> getAnswerList(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @Parameter(description = "답변을 조회할 카테고리 ID. 없을 시 전체 카테고리 조회로 처리") @RequestParam(value = "category-id", required = false)Long categoryId,
+            @Parameter(description = "답변을 조회할 카테고리 ID. 없을 시 전체 카테고리 조회로 처리") @RequestParam(value = "category-id", required = false) Long categoryId,
             @Parameter(description = "커서로 사용할 마지막 글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String answerCursor,
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size
     ) {

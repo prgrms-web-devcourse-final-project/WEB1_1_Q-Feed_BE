@@ -17,9 +17,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import static com.wsws.moduledomain.feed.like.TargetType.ANSWER;
 import static com.wsws.moduledomain.feed.question.vo.QuestionStatus.ACTIVATED;
+import static com.wsws.moduleinfra.entity.feed.QAnswerCommentEntity.answerCommentEntity;
 import static com.wsws.moduleinfra.entity.feed.QAnswerEntity.answerEntity;
+import static com.wsws.moduleinfra.entity.feed.QLikeEntity.likeEntity;
 import static com.wsws.moduleinfra.entity.feed.QQuestionEntity.questionEntity;
+import static com.wsws.moduleinfra.socialnetworkcontext.follow.entity.QFollowEntity.followEntity;
+import static com.wsws.moduleinfra.usercontext.user.entity.QUserEntity.userEntity;
 import static org.springframework.util.StringUtils.hasText;
 
 @Repository
@@ -43,8 +48,7 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     @Override
     public List<Answer> findAllByCategoryIdWithCursor(LocalDateTime cursor, int size, Long categoryId) {
         List<AnswerEntity> answerEntities = queryFactory
-                .select(answerEntity)
-                .from(answerEntity)
+                .selectFrom(answerEntity)
                 .join(answerEntity.questionEntity, questionEntity)
                 .where(
                         categoryIdEq(categoryId),
@@ -98,7 +102,6 @@ public class AnswerRepositoryImpl implements AnswerRepository {
                 .map(AnswerEntityMapper::toDomain);
     }
 
-    // TODO: 동적 쿼리 Querydsl로 수정
     @Override
     public List<Answer> findAnswersByLikeCountAndCategoryIdWithCursor(Long categoryId, int limit) {
 
@@ -117,6 +120,7 @@ public class AnswerRepositoryImpl implements AnswerRepository {
                 .map(AnswerEntityMapper::toDomain)
                 .toList();
     }
+
     /**
      * 답변 저장
      */
@@ -126,7 +130,7 @@ public class AnswerRepositoryImpl implements AnswerRepository {
         AnswerEntity answerEntity = AnswerEntityMapper.toEntity(answer);
 
         jpaQuestionRepository.findById(answer.getQuestionId().getValue())
-                        .ifPresent(answerEntity::setQuestionEntity); // Quesiton 연관관계 설정
+                .ifPresent(answerEntity::setQuestionEntity); // Quesiton 연관관계 설정
 
         AnswerEntity savedEntity = jpaAnswerRepository.save(answerEntity);// Answer를 엔티티로 변환하여 저장
         return AnswerEntityMapper.toDomain(savedEntity);
@@ -166,7 +170,7 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     }
 
     private <T> BooleanBuilder nullSafeBuilder(Supplier<BooleanExpression> f, T value) {
-        if(value instanceof String && !hasText((String) value)) {
+        if (value instanceof String && !hasText((String) value)) {
             return new BooleanBuilder();
         }
         try {
