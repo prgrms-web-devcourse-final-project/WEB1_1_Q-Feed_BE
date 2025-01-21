@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface FollowRepository {
     Optional<Follow> findByFollowerIdAndFolloweeId(String followerId, String followeeId);
     List<Follow> findByFollowerId(String followerId);
+    List<Follow> findByFollowerIdAndFolloweeIds(String followerId, List<String> followeeIds);
     Follow save(Follow follow);
     void delete(Follow follow);
 }
