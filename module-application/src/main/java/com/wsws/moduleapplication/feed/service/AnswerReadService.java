@@ -12,7 +12,6 @@ import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.comment.repo.AnswerCommentRepository;
 import com.wsws.moduledomain.feed.dto.AnswerCommentCountDTO;
 import com.wsws.moduledomain.feed.dto.AnswerQuestionDTO;
-import com.wsws.moduledomain.feed.like.TargetType;
 import com.wsws.moduledomain.socialnetwork.follow.aggregate.Follow;
 import com.wsws.moduledomain.socialnetwork.follow.repo.FollowRepository;
 import com.wsws.moduledomain.feed.like.Like;
@@ -45,12 +44,7 @@ public class AnswerReadService {
      * 답변 목록 조회 (무한 스크롤 페이징 적용)
      */
     public AnswerListFindServiceResponse findAnswerListWithCursor(AnswerFindServiceRequest request) {
-
-        // 답변 리스트 정보 세팅
-        List<AnswerFindServiceResponse> responses = new ArrayList<>();
-        buildAnswerList(request, responses);
-
-        return new AnswerListFindServiceResponse(responses);
+        return new AnswerListFindServiceResponse(buildAnswerList(request));
     }
 
     /**
@@ -60,8 +54,7 @@ public class AnswerReadService {
         AnswerFindServiceResponseBuilder builder = AnswerFindServiceResponse.builder();
 
         buildSingleAnswer(request, builder); // 답변 응답 정보 세팅
-
-        buildAnswerComment(request, builder);
+        buildAnswerComment(request, builder); // 답변 댓글 응답 정보 세팅
         return builder.build();
     }
 
@@ -155,7 +148,9 @@ public class AnswerReadService {
     /**
      * 답변 목록 응답 세팅
      */
-    private void buildAnswerList(AnswerFindServiceRequest request, List<AnswerFindServiceResponse> responses) {
+    private List<AnswerFindServiceResponse> buildAnswerList(AnswerFindServiceRequest request) {
+
+        List<AnswerFindServiceResponse> responses = new ArrayList<>();
 
         // 답변 리스트 페이징해서 불러오기
         List<Answer> answers = answerRepository.findAllByCategoryIdWithCursor(request.cursor(), request.size(), request.categoryId());
@@ -214,10 +209,11 @@ public class AnswerReadService {
 
                     responses.add(builder.build());
                 });
+        return responses;
     }
 
     /**
-     * Answer Comment 정보를 세팅 ver2
+     * Answer Comment 정보를 세팅
      */
     private void buildAnswerComment(AnswerFindServiceRequest request, AnswerFindServiceResponseBuilder answerResponseBuilder) {
 
@@ -227,18 +223,19 @@ public class AnswerReadService {
         List<AnswerCommentFindServiceResponse> rawAnswerCommentDTOs = new ArrayList<>();
         buildAnswerCommentDTOList(parentComments, request.userId(), rawAnswerCommentDTOs);
 
-        List<Long> commentIds = getCommentIdsFromDTOs(rawAnswerCommentDTOs);
-        List<String> commentAuthorIds = getCommentAuthorIdsFromDTOs(rawAnswerCommentDTOs);
+        List<Long> commentIds = getCommentIdsFromDTOs(rawAnswerCommentDTOs); // 댓글 ID만 뽑아내기
+        List<String> commentAuthorIds = getCommentAuthorIdsFromDTOs(rawAnswerCommentDTOs); // 댓글 작성자 ID만 뽑아내기
 
-        // 모든 댓글 작성자 조회
-        List<User> commentAuthors = userRepository.findUsersByIds(commentAuthorIds);
-        // 모든 좋아요 정보 조회
-        List<Like> likes = likeRepository.findByTargetIdsInAndTargetTypeAndUserId(commentIds, ANSWER_COMMENT, request.userId());
-        // 모든 팔로우 정보 조회
-        List<Follow> follows = followRepository.findByFollowerIdAndFolloweeIds(request.userId(), commentAuthorIds);
+        // 쿼리 한번에 실행
+        List<User> commentAuthors = userRepository.findUsersByIds(commentAuthorIds); // 모든 댓글 작성자 조회
+
+        List<Like> likes = likeRepository.findByTargetIdsInAndTargetTypeAndUserId(commentIds, ANSWER_COMMENT, request.userId()); // 모든 좋아요 정보 조회
+
+        List<Follow> follows = followRepository.findByFollowerIdAndFolloweeIds(request.userId(), commentAuthorIds); // 모든 팔로우 정보 조회
 
         List<AnswerCommentFindServiceResponse> answerCommentDTOs = new ArrayList<>();
 
+        // 데이터 일괄 세팅
         rawAnswerCommentDTOs.forEach(
                 answerCommentDTO -> {
                     AnswerCommentFindServiceResponseBuilder builder = AnswerCommentFindServiceResponse.builder();
@@ -343,72 +340,6 @@ public class AnswerReadService {
     }
 
     /**
-     *  대댓글 수 세팅
-     */
-    private void buildChildCommentCount(List<AnswerCommentFindServiceResponse> commentDTOs) {
-        for (AnswerCommentFindServiceResponse commentDTO : commentDTOs) {
-            calculateAndSetChildCommentCount(commentDTO);
-        }
-    }
-    private int calculateAndSetChildCommentCount(AnswerCommentFindServiceResponse parent) {
-        int childCount = 0;
-
-        for (AnswerCommentFindServiceResponse child : parent.children()) {
-            childCount += 1; // 직접적인 자식 개수
-            childCount += calculateAndSetChildCommentCount(child); // 자식의 자식 개수를 재귀적으로 더함
-        }
-
-        parent.changeChildCommentCount(childCount); // 총 자식 개수 설정
-        return childCount; // 부모에게 반환
-    }
-    /**
-     * 답변 작성자의 ID 리스트
-     */
-    private List<String> getAnswerAuthorIds(List<Answer> answers) {
-        return answers.stream()
-                .map(answer -> answer.getUserId().getValue())
-                .toList();
-    }
-
-    /**
-     * 답변의 ID 리스트
-     */
-    private List<Long> getAnswerIds(List<Answer> answers) {
-        return answers.stream()
-                .map(answer -> answer.getAnswerId().getValue())
-                .toList();
-    }
-
-    /**
-     * 댓글의 ID 리스트
-     */
-    private List<Long> getCommentIds(List<AnswerComment> answerComments) {
-        return answerComments.stream()
-                .map(answerComment -> answerComment.getAnswerCommentId().getValue())
-                .toList();
-    }
-
-    /**
-     * 댓글의 ID 리스트
-     * DTO에서 받아옴
-     */
-    private List<Long> getCommentIdsFromDTOs(List<AnswerCommentFindServiceResponse> answerCommentDTOs) {
-        return answerCommentDTOs.stream()
-                .map(AnswerCommentFindServiceResponse::commentId)
-                .toList();
-    }
-
-    /**
-     * 댓글 작성자의 ID 리스트
-     * DTO에서 받아옴
-     */
-    private List<String> getCommentAuthorIdsFromDTOs(List<AnswerCommentFindServiceResponse> answerCommentDTOs) {
-        return answerCommentDTOs.stream()
-                .map(AnswerCommentFindServiceResponse::userId)
-                .toList();
-    }
-
-    /**
      * 답변 정보 세팅
      */
     private void buildAnswerInfo(Answer answer, AnswerFindServiceResponseBuilder builder) {
@@ -449,6 +380,69 @@ public class AnswerReadService {
         builder
                 .authorNickname(author.getNickname().getValue())
                 .profileImage(author.getProfileImage());
+    }
+    /**
+     *  대댓글 수 세팅
+     */
+    private void buildChildCommentCount(List<AnswerCommentFindServiceResponse> commentDTOs) {
+        for (AnswerCommentFindServiceResponse commentDTO : commentDTOs) {
+            calculateAndSetChildCommentCount(commentDTO);
+        }
+    }
+
+    private int calculateAndSetChildCommentCount(AnswerCommentFindServiceResponse parent) {
+        int childCount = 0;
+
+        for (AnswerCommentFindServiceResponse child : parent.children()) {
+            childCount += 1; // 직접적인 자식 개수
+            childCount += calculateAndSetChildCommentCount(child); // 자식의 자식 개수를 재귀적으로 더함
+        }
+
+        parent.changeChildCommentCount(childCount); // 총 자식 개수 설정
+        return childCount; // 부모에게 반환
+    }
+    /**
+     * 답변 작성자의 ID 리스트
+     */
+    private List<String> getAnswerAuthorIds(List<Answer> answers) {
+        return answers.stream()
+                .map(answer -> answer.getUserId().getValue())
+                .toList();
+    }
+    /**
+     * 답변의 ID 리스트
+     */
+    private List<Long> getAnswerIds(List<Answer> answers) {
+        return answers.stream()
+                .map(answer -> answer.getAnswerId().getValue())
+                .toList();
+    }
+    /**
+     * 댓글의 ID 리스트
+     */
+    private List<Long> getCommentIds(List<AnswerComment> answerComments) {
+        return answerComments.stream()
+                .map(answerComment -> answerComment.getAnswerCommentId().getValue())
+                .toList();
+    }
+    /**
+     * 댓글의 ID 리스트
+     * DTO에서 받아옴
+     */
+    private List<Long> getCommentIdsFromDTOs(List<AnswerCommentFindServiceResponse> answerCommentDTOs) {
+        return answerCommentDTOs.stream()
+                .map(AnswerCommentFindServiceResponse::commentId)
+                .toList();
+    }
+
+    /**
+     * 댓글 작성자의 ID 리스트
+     * DTO에서 받아옴
+     */
+    private List<String> getCommentAuthorIdsFromDTOs(List<AnswerCommentFindServiceResponse> answerCommentDTOs) {
+        return answerCommentDTOs.stream()
+                .map(AnswerCommentFindServiceResponse::userId)
+                .toList();
     }
 
     /**
