@@ -1,7 +1,7 @@
 package com.wsws.moduledomain.feed.dto;
 
 public record AnswerCommentCountDTO(
-        Long answerId,
+        Long targetId,
         Long answerCommentCount
 ) {
 }
