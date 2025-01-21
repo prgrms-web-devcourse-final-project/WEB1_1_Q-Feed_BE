@@ -12,6 +12,7 @@ import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.ProfileImageProcessingException;
 import com.wsws.moduleapplication.util.ProfileImageValidator;
 import com.wsws.modulecommon.service.FileStorageService;
+import com.wsws.moduledomain.feed.like.LikeTargetId;
 import com.wsws.moduledomain.group.GroupPost;
 import com.wsws.moduledomain.group.dto.GroupCommentDto;
 import com.wsws.moduledomain.group.dto.GroupPostDetailDto;
@@ -129,7 +130,7 @@ public class GroupPostService {
         Like like = Like.create(
                 null,
                 TargetType.valueOf(request.targetType()),
-                request.targetId(),
+                LikeTargetId.of(request.targetId()),
                 request.userId()
         );
 

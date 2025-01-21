@@ -1,6 +1,7 @@
 package com.wsws.moduleinfra.entity.feed;
 
 import com.wsws.moduledomain.feed.like.Like;
+import com.wsws.moduledomain.feed.like.LikeTargetId;
 
 public class LikeEntityMapper {
 
@@ -14,7 +15,7 @@ public class LikeEntityMapper {
         return Like.create(
                 likeEntity.getId(),
                 likeEntity.getTargetType(),
-                likeEntity.getTargetId(),
+                LikeTargetId.of(likeEntity.getTargetId()),
                 userId
         );
     }

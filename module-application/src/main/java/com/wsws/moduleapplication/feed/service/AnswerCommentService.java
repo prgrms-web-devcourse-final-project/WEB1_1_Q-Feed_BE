@@ -18,6 +18,7 @@ import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.comment.repo.AnswerCommentRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.feed.like.LikeRepository;
+import com.wsws.moduledomain.feed.like.LikeTargetId;
 import com.wsws.moduledomain.feed.like.TargetType;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
 import lombok.RequiredArgsConstructor;
@@ -163,7 +164,7 @@ public class AnswerCommentService {
         Like like = Like.create(
                 null,
                 TargetType.valueOf(request.targetType()),
-                request.targetId(),
+                LikeTargetId.of(request.targetId()),
                 request.userId()
         );
         likeRepository.save(like);

@@ -11,6 +11,7 @@ import com.wsws.moduleapplication.group.exception.GroupPostNotFoundException;
 import com.wsws.moduleapplication.group.exception.NotOwnerException;
 import com.wsws.moduleapplication.usercontext.user.exception.AlreadyLikedException;
 import com.wsws.moduleapplication.usercontext.user.exception.NotLikedException;
+import com.wsws.moduledomain.feed.like.LikeTargetId;
 import com.wsws.moduledomain.group.GroupComment;
 import com.wsws.moduledomain.group.GroupPost;
 import com.wsws.moduledomain.group.repo.GroupCommentRepository;
@@ -142,7 +143,7 @@ public class GroupCommentService {
             Like like = Like.create(
                     null,
                     TargetType.valueOf(request.targetType()),
-                    request.targetId(),
+                    LikeTargetId.of(request.targetId()),
                     request.userId()
             );
             likeRepository.save(like);
