@@ -1,10 +1,15 @@
 package com.wsws.moduleinfra.repo.feed;
 
+import com.querydsl.core.annotations.QueryProjection;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.comment.repo.AnswerCommentRepository;
+import com.wsws.moduledomain.feed.dto.AnswerCommentCountDTO;
 import com.wsws.moduleinfra.entity.feed.AnswerCommentEntity;
 import com.wsws.moduleinfra.entity.feed.AnswerEntity;
+import com.wsws.moduleinfra.entity.feed.QAnswerCommentEntity;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerCommentEntityMapper;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerEntityMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +21,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.wsws.moduleinfra.entity.feed.QAnswerCommentEntity.answerCommentEntity;
+
 @Repository
 @RequiredArgsConstructor
 public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
 
     private final JpaAnswerCommentRepository jpaAnswerCommentRepository;
     private final JpaAnswerRepository jpaAnswerRepository;
+    private final JPAQueryFactory queryFactory;
 
     @Override
     public Optional<AnswerComment> findById(Long id) {
@@ -48,6 +56,21 @@ public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
     @Override
     public int countParentCommentByAnswerId(Long answerId) {
         return jpaAnswerCommentRepository.countParentCommentByAnswerId(answerId);
+    }
+
+    @Override
+    public List<AnswerCommentCountDTO> countCommentsByAnswerIds(List<Long> answerIds) {
+
+        return queryFactory
+                .select(Projections.constructor(
+                        AnswerCommentCountDTO.class,
+                        answerCommentEntity.answerEntity.id,
+                        answerCommentEntity.count()
+                ))
+                .from(answerCommentEntity)
+                .groupBy(answerCommentEntity.answerEntity.id)
+                .having(answerCommentEntity.answerEntity.id.in(answerIds))
+                .fetch();
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.wsws.moduledomain.feed.comment.repo;
 
 import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
+import com.wsws.moduledomain.feed.dto.AnswerCommentCountDTO;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -29,6 +30,11 @@ public interface AnswerCommentRepository {
      * 특정 답변의 최상위 부모 댓글 갯수
      */
     int countParentCommentByAnswerId(Long answerId);
+
+    /**
+     * 특정 답변들의 각 댓글 갯수
+     */
+    List<AnswerCommentCountDTO> countCommentsByAnswerIds(List<Long> answerIds);
 
     /**
      * 답변 댓글 저장
