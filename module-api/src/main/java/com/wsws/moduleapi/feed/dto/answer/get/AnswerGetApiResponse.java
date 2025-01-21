@@ -16,9 +16,9 @@ public record AnswerGetApiResponse(
         String content,
         LocalDateTime createdAt,
         int likeCount,
-        Boolean isLike,
-        Boolean isFollowing,
-        int commentCount,
+        boolean isLike,
+        boolean isFollowing,
+        long commentCount,
         List<AnswerCommentFindServiceResponse> comments
 ) {
     public static AnswerGetApiResponse toApiResponse(AnswerFindServiceResponse serviceResponse) {
