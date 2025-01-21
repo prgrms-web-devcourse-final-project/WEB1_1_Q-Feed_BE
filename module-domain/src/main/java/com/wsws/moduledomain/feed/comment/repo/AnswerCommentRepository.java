@@ -1,6 +1,5 @@
 package com.wsws.moduledomain.feed.comment.repo;
 
-import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.dto.AnswerCommentCountDTO;
 import org.springframework.stereotype.Repository;
@@ -22,6 +21,11 @@ public interface AnswerCommentRepository {
     List<AnswerComment> findParentCommentsByAnswerIdWithCursor(Long answerId, LocalDateTime commentCursor, int size);
 
     /**
+     * 특정 답변의 댓글 조회(페이징)
+     */
+    List<AnswerComment> findByAnswerIdWithCursor(Long answerId, LocalDateTime commentCursor, int size);
+
+    /**
      * 특정 부모 댓글들의 하위 댓글 조회
      */
     List<AnswerComment> findChildCommentsByParentsId(List<Long> parentIds);
@@ -35,6 +39,11 @@ public interface AnswerCommentRepository {
      * 특정 답변들의 각 댓글 갯수
      */
     List<AnswerCommentCountDTO> countCommentsByAnswerIds(List<Long> answerIds);
+
+    /**
+     * 특정 댓글들의 각 댓글 갯수
+     */
+    List<AnswerCommentCountDTO> countCommentsByAnswerCommentIds(List<Long> answerCommentIds);
 
     /**
      * 답변 댓글 저장
