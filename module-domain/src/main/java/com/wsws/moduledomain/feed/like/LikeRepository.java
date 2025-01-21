@@ -23,9 +23,9 @@ public interface LikeRepository {
      */
     List<Like> findByUserId(String userId);
     /**
-     *  특정 답변들에 남겨진 좋아요 목록 가져오기
+     *  특정 유저가 특정 답변들에 남겨진 좋아요 목록 가져오기
      */
-    List<Like> findByTargetIdInAndTargetType(List<Long> answerIds, TargetType targetType);
+    List<Like> findByTargetIdsInAndTargetTypeAndUserId(List<Long> answerIds, TargetType targetType, String userId);
 
     /**
      * 특정 사용자가 특정 글에 좋아요를 눌렀는지

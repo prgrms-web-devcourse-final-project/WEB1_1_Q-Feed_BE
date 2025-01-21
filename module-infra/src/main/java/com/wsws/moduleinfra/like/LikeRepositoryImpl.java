@@ -47,8 +47,8 @@ public class LikeRepositoryImpl implements LikeRepository {
     }
 
     @Override
-    public List<Like> findByTargetIdInAndTargetType(List<Long> answerIds, TargetType targetType) {
-        return jpaLikeUserRepository.findByTargetIdInAndTargetType(answerIds, targetType).stream()
+    public List<Like> findByTargetIdsInAndTargetTypeAndUserId(List<Long> answerIds, TargetType targetType, String userId) {
+        return jpaLikeUserRepository.findByTargetIdInAndTargetTypeAndUserEntity_Id(answerIds, targetType, userId).stream()
                 .map(LikeEntityMapper::toDomain)
                 .toList();
     }
