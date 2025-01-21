@@ -45,7 +45,7 @@ public class AnswerReadService {
      */
     public AnswerListFindServiceResponse findAnswerListWithCursor(AnswerFindServiceRequest request) {
 
-        // 쿼리로 받아온 데이터 처리
+        // 답변 리스트 정보 세팅
         List<AnswerFindServiceResponse> responses = new ArrayList<>();
         buildAnswerList(request, responses);
 
