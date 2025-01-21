@@ -9,7 +9,7 @@ import lombok.Getter;
 @Table(
         name = "Likes",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"targetId", "user_id"})
+                @UniqueConstraint(columnNames = {"targetId", "targetType", "user_id"})
         }
 )
 @Getter
