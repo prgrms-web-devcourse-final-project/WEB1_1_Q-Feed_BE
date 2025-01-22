@@ -1,12 +1,12 @@
 package com.wsws.moduleinfra.repo.feed;
 
-import com.wsws.moduledomain.feed.answer.Answer;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wsws.moduledomain.feed.comment.AnswerComment;
 import com.wsws.moduledomain.feed.comment.repo.AnswerCommentRepository;
+import com.wsws.moduledomain.feed.dto.AnswerCommentCountDTO;
 import com.wsws.moduleinfra.entity.feed.AnswerCommentEntity;
-import com.wsws.moduleinfra.entity.feed.AnswerEntity;
 import com.wsws.moduleinfra.entity.feed.mapper.AnswerCommentEntityMapper;
-import com.wsws.moduleinfra.entity.feed.mapper.AnswerEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,12 +16,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.wsws.moduleinfra.entity.feed.QAnswerCommentEntity.answerCommentEntity;
+
 @Repository
 @RequiredArgsConstructor
 public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
 
     private final JpaAnswerCommentRepository jpaAnswerCommentRepository;
     private final JpaAnswerRepository jpaAnswerRepository;
+    private final JPAQueryFactory queryFactory;
 
     @Override
     public Optional<AnswerComment> findById(Long id) {
@@ -31,11 +34,35 @@ public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
 
     @Override
     public List<AnswerComment> findParentCommentsByAnswerIdWithCursor(Long answerId, LocalDateTime commentCursor, int size) {
-        Pageable pageable = PageRequest.of(0, size);
-        return jpaAnswerCommentRepository.findParentCommentsByAnswerIdWithCursor(answerId, commentCursor, pageable).stream()
+
+        return queryFactory
+                .selectFrom(answerCommentEntity)
+                .where(
+                        answerCommentEntity.answerEntity.id.eq(answerId),
+                        answerCommentEntity.parentCommentEntity.id.isNull(),
+                        answerCommentEntity.createdAt.lt(commentCursor)
+                ).orderBy(answerCommentEntity.createdAt.desc())
+                .offset(0)
+                .limit(size)
+                .fetch().stream()
                 .map(AnswerCommentEntityMapper::toDomain)
                 .toList();
+    }
 
+    @Override
+    public List<AnswerComment> findByAnswerIdWithCursor(Long answerId, LocalDateTime commentCursor, int size) {
+        return queryFactory
+                .selectFrom(answerCommentEntity)
+                .where(
+                        answerCommentEntity.answerEntity.id.eq(answerId),
+                        answerCommentEntity.createdAt.lt(commentCursor)
+                ).orderBy(answerCommentEntity.createdAt.desc())
+                .offset(0)
+                .limit(size)
+                .fetch()
+                .stream()
+                .map(AnswerCommentEntityMapper::toDomain)
+                .toList();
     }
 
     @Override
@@ -48,6 +75,35 @@ public class AnswerCommentRepositoryImpl implements AnswerCommentRepository {
     @Override
     public int countParentCommentByAnswerId(Long answerId) {
         return jpaAnswerCommentRepository.countParentCommentByAnswerId(answerId);
+    }
+
+    @Override
+    public List<AnswerCommentCountDTO> countCommentsByAnswerIds(List<Long> answerIds) {
+
+        return queryFactory
+                .select(Projections.constructor(
+                        AnswerCommentCountDTO.class,
+                        answerCommentEntity.answerEntity.id,
+                        answerCommentEntity.count()
+                ))
+                .from(answerCommentEntity)
+                .groupBy(answerCommentEntity.answerEntity.id)
+                .having(answerCommentEntity.answerEntity.id.in(answerIds))
+                .fetch();
+    }
+
+    @Override
+    public List<AnswerCommentCountDTO> countCommentsByAnswerCommentIds(List<Long> answerCommentIds) {
+        return queryFactory
+                .select(Projections.constructor(
+                        AnswerCommentCountDTO.class,
+                        answerCommentEntity.answerEntity.id,
+                        answerCommentEntity.count()
+                ))
+                .from(answerCommentEntity)
+                .groupBy(answerCommentEntity.id)
+                .having(answerCommentEntity.id.in(answerCommentIds))
+                .fetch();
     }
 
     @Override

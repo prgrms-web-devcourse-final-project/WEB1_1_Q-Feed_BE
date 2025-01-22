@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.tool.schema.TargetType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +51,7 @@ public class AnswerController {
     })
     public ResponseEntity<AnswerListGetApiResponse> getAnswerList(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @Parameter(description = "답변을 조회할 카테고리 ID. 없을 시 전체 카테고리 조회로 처리") @RequestParam(value = "category-id", required = false)Long categoryId,
+            @Parameter(description = "답변을 조회할 카테고리 ID. 없을 시 전체 카테고리 조회로 처리") @RequestParam(value = "category-id", required = false) Long categoryId,
             @Parameter(description = "커서로 사용할 마지막 글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String answerCursor,
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size
     ) {
@@ -153,7 +154,7 @@ public class AnswerController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "답변 상세를 조회할 답변 ID") @PathVariable("answer-id") Long answerId,
             @Parameter(description = "커서로 사용할 마지막 댓글의 시간", example = "2024-01-01T00:00:00") @RequestParam(required = false) String commentCursor,
-            @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "2") int size
+            @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size
     ) {
         String userId = userPrincipal.getId();
 //        String userId = "user_id1";

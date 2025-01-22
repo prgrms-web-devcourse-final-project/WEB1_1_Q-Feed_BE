@@ -1,9 +1,11 @@
 package com.wsws.moduleinfra.socialnetworkcontext.follow.repository;
 
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wsws.moduledomain.socialnetwork.follow.aggregate.Follow;
 import com.wsws.moduledomain.socialnetwork.follow.repo.FollowRepository;
 import com.wsws.moduleinfra.socialnetworkcontext.follow.entity.FollowEntity;
+import com.wsws.moduleinfra.socialnetworkcontext.follow.entity.QFollowEntity;
 import com.wsws.moduleinfra.socialnetworkcontext.follow.entity.mapper.FollowEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -11,16 +13,38 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static com.wsws.moduleinfra.socialnetworkcontext.follow.entity.QFollowEntity.followEntity;
+
 @Repository
 @RequiredArgsConstructor
 public class FollowRepositoryImpl implements FollowRepository {
 
     private final JpaFollowRepository jpaFollowRepository;
+    private final JPAQueryFactory queryFactory;
 
     @Override
     public Optional<Follow> findByFollowerIdAndFolloweeId(String followerId, String followeeId) {
         return jpaFollowRepository.findById_FollowerIdAndId_FolloweeId(followerId, followeeId)
                 .map(FollowEntityMapper::toFollow); // 엔티티를 도메인 객체로 변환
+    }
+
+    @Override
+    public List<Follow> findByFollowerId(String followerId) {
+        return jpaFollowRepository.findById_FollowerId(followerId).stream()
+                .map(FollowEntityMapper::toFollow)
+                .toList();
+    }
+
+    @Override
+    public List<Follow> findByFollowerIdAndFolloweeIds(String followerId, List<String> followeeIds) {
+        return queryFactory
+                .selectFrom(followEntity)
+                .where(
+                        followEntity.id.followerId.eq(followerId),
+                        followEntity.id.followeeId.in(followeeIds)
+                ).fetch().stream()
+                .map(FollowEntityMapper::toFollow)
+                .toList();
     }
 
     @Override

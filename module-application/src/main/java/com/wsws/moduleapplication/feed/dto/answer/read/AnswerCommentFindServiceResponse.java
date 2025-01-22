@@ -4,6 +4,7 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Builder
 public record AnswerCommentFindServiceResponse(
@@ -14,10 +15,13 @@ public record AnswerCommentFindServiceResponse(
         String content,
         int likeCount,
         LocalDateTime createdAt,
-        Boolean isLike,
-        Boolean isFollowing,
-        int childCommentCount,
+        boolean isLike,
+        boolean isFollowing,
+        AtomicInteger childCommentCount,
+        Long parentCommentId,
         List<AnswerCommentFindServiceResponse> children
 ) {
-
+    public void changeChildCommentCount(int value) {
+        this.childCommentCount.set(value);
+    }
 }

@@ -1,9 +1,13 @@
 package com.wsws.moduledomain.feed.comment.vo;
 
 import com.wsws.moduledomain.feed.like.LikeTargetId;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 public class AnswerCommentId extends LikeTargetId {
 
     private AnswerCommentId(Long value) {
@@ -13,4 +17,6 @@ public class AnswerCommentId extends LikeTargetId {
     public static AnswerCommentId of(Long id) {
         return new AnswerCommentId(id);
     }
+
+
 }

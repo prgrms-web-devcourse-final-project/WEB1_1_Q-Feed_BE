@@ -23,14 +23,19 @@ public interface JpaLikeUserRepository extends JpaRepository<LikeEntity, Long> {
     void deleteByTargetIdAndUserId(Long targetId, String userId);
 
     /**
-     * 특정 사용자가 누른 글
+     * 특정 사용자가 누른 좋아요 목록
      */
     List<LikeEntity> findByUserEntityId(String userId);
 
     /**
+     * 특정 답변들에 남겨진 좋아요 목록
+     */
+    List<LikeEntity> findByTargetIdInAndTargetTypeAndUserEntity_Id(List<Long> targetIds, TargetType targetType, String userId);
+
+    /**
      * 특정 사용자가 특정 글에 좋아요를 눌렀는지
      */
-    boolean existsByUserEntityIdAndTargetIdAndTargetType(String userId, Long targetId, TargetType targetType);
+    boolean existsByUserEntity_IdAndTargetIdAndTargetType(String userId, Long targetId, TargetType targetType);
 
     @Override
     void flush();

@@ -19,6 +19,7 @@ import com.wsws.moduledomain.feed.answer.Answer;
 import com.wsws.moduledomain.feed.answer.repo.AnswerRepository;
 import com.wsws.moduledomain.feed.like.Like;
 import com.wsws.moduledomain.feed.like.LikeRepository;
+import com.wsws.moduledomain.feed.like.LikeTargetId;
 import com.wsws.moduledomain.feed.like.TargetType;
 import com.wsws.moduledomain.feed.question.repo.QuestionRepository;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
@@ -190,7 +191,7 @@ public class AnswerService {
         Like like = Like.create(
                 null,
                 TargetType.valueOf(request.targetType()),
-                request.targetId(),
+                LikeTargetId.of(request.targetId()),
                 request.userId()
         );
 

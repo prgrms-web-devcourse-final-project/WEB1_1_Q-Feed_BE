@@ -15,9 +15,9 @@ public record AnswerFindServiceResponse(
         String content,
         LocalDateTime createdAt,
         int likeCount,
-        Boolean isLike,
-        Boolean isFollowing,
-        int commentCount,
+        boolean isLike,
+        boolean isFollowing,
+        long commentCount,
         List<AnswerCommentFindServiceResponse> comments
 ) {
 }
