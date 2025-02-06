@@ -59,18 +59,18 @@ public class ChatRoomService {
 
         List<ChatRoom> chatRooms = chatRoomRepository.findChatRooms(userId);
 
-        return chatRooms.stream().map(chatRoom -> {
-            // 상대방 사용자 가져오기
-            User otherUser = getOtherUser(chatRoom, userId);
+        // 상대방 사용자 정보
+        Map<Long, User> otherUserMap = getOtherUsersMap(chatRooms, userId);
 
-            // 마지막 메시지 가져오기
-            ChatMessage lastMessage = getLastMessage(chatRoom.getId());
+        // 각 채팅방에 대한 마지막 메시지
+        Map<Long, ChatMessage> lastMessageMap = getLastMessagesForChatRooms(chatRooms);
 
-            // 읽지 않은 메시지 개수 가져오기
-            long unreadCount = chatMessageRepository.countUnreadMessages(chatRoom.getId(), otherUser.getId().getValue());
+        // 읽지 않은 메시지 개수
+        Map<Long, Long> unreadCountMap = getUnreadCountsForChatRooms(chatRooms, userId);
 
-            return new ChatRoomServiceResponse(chatRoom, otherUser, lastMessage, unreadCount);
-        }).collect(Collectors.toList());
+        return chatRooms.stream().map(chatRoom -> new ChatRoomServiceResponse(
+                chatRoom, otherUserMap.get(chatRoom.getId()), lastMessageMap.get(chatRoom.getId()), unreadCountMap.get(chatRoom.getId())
+        )).collect(Collectors.toList());
     }
 
     //채팅방 찾기
