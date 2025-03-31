@@ -16,3 +16,19 @@ springdoc:
 server:
   port: 8080
   address: 0.0.0.0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics,prometheus"
+  metrics:
+    enable:
+      jvm: true
+  endpoint:
+    prometheus:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true

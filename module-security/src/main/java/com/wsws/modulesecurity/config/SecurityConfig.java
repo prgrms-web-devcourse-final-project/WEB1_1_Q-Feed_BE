@@ -62,6 +62,7 @@ public class SecurityConfig {
                                 "/v3/api-docs/**" // OpenAPI 명세 경로
                         ).permitAll() // Swagger 관련 경로 허용
                         .requestMatchers("/oauth/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated() // 인증 필요
 
                 )
