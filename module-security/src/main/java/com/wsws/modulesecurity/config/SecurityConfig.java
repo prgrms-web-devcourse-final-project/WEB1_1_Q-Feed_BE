@@ -56,6 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("/test2.html").permitAll()
                         .requestMatchers("/groups/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/test/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 전용 엔드포인트(나중에 구현)
                         .requestMatchers(
                                 "/swagger-ui/**", // Swagger UI 경로
