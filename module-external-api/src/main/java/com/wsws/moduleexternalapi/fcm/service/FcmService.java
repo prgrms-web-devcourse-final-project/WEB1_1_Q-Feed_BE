@@ -1,13 +1,16 @@
 package com.wsws.moduleexternalapi.fcm.service;
 
-import com.wsws.moduleexternalapi.fcm.dto.fcmRequestDto;
+import com.wsws.moduleexternalapi.fcm.dto.FcmMessageRequestDto;
+import com.wsws.moduleexternalapi.fcm.dto.FcmRequestDto;
 import com.wsws.moduleexternalapi.fcm.util.AccessTokenUtil;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
 import com.wsws.moduleinfra.FcmRedis;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,11 +22,15 @@ public class FcmService {
     private final RestTemplate restTemplate;
     private final FcmRedis fcmRedis;
 
-    @Async("taskExecutor")
-    public void fcmSend(String recipient, FcmType type, String sender) {
+
+
+    @RabbitListener(queues = "fcmQueue")
+    public void receiveMessage(@Payload FcmRequestDto fcmRequestDto) {
+        log.info("🔄 RabbitMQ에서 메시지 수신: {} 타입의 알림", fcmRequestDto.type());
+
         try {
             // Redis 키 생성
-            String fcmRedisKey = getFcmRedisKey(recipient);
+            String fcmRedisKey = getFcmRedisKey(fcmRequestDto.recipient());
             log.info("FCM Redis Key 생성: {}", fcmRedisKey);
 
             // Redis에서 FCM 토큰 조회
@@ -31,26 +38,28 @@ public class FcmService {
             log.info("FCM Token 조회 결과: {}", fcmToken);
 
             if (fcmToken != null && !fcmToken.isEmpty()) {
+                log.info("Fcm 토큰 있음");
                 // 제목과 본문 생성
-                String title = makeFcmTitle(type);
-                String body = makeFcmBody(type, sender);
+                String title = makeFcmTitle(fcmRequestDto.type());
+                String body = makeFcmBody(fcmRequestDto.type(), fcmRequestDto.sender());
 
-                fcmRequestDto requestDto = new fcmRequestDto(title, body);
+                FcmMessageRequestDto requestDto = new FcmMessageRequestDto(title, body);
 
                 // 메시지 생성
                 String message = makeMessage(fcmToken, requestDto);
 
                 // 메시지 전송
                 sendMessage(message);
+
             } else {
-                log.warn("FCM 토큰이 없습니다. recipient={}, fcmRedisKey={}", recipient, fcmRedisKey);
+                log.warn("FCM 토큰이 없습니다. recipient={}, fcmRedisKey={}", fcmRequestDto.recipient(), fcmRedisKey);
             }
         } catch (Exception e) {
-            log.error("FCM 전송 중 오류 발생: recipient={}, type={}, sender={}", recipient, type, sender, e);
+            log.error("FCM 전송 중 오류 발생: recipient={}, type={}, sender={}", fcmRequestDto.recipient(), fcmRequestDto.type(), fcmRequestDto.sender(), e);
         }
     }
 
-    private String makeMessage(String targetToken, fcmRequestDto fcmRequestDto) {
+    private String makeMessage(String targetToken, FcmMessageRequestDto fcmMessageRequestDto) {
         return """
                     {
                       "message": {
@@ -61,7 +70,7 @@ public class FcmService {
                         }
                       }
                     }
-                """.formatted(targetToken, fcmRequestDto.title(), fcmRequestDto.body());
+                """.formatted(targetToken, fcmMessageRequestDto.title(), fcmMessageRequestDto.body());
     }
 
     public void sendMessage(String message) {

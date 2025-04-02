@@ -7,6 +7,7 @@ dependencies {
     implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
     implementation 'org.springframework.ai:spring-ai-redis-store-spring-boot-starter'
     implementation 'redis.clients:jedis:5.1.0'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
 
     // Feign Client
