@@ -83,14 +83,19 @@ public class NotificationService {
         Long notificationId = notificationIdGenerator.getAndIncrement();
         String content = fcmService.makeFcmBody(fcmType, sender.getNickname().getValue());
 
-        // RabbitMQ에 FCM 메시지 추가
-        FcmRequestDto fcmRequestDto = new FcmRequestDto(
-                recipient.getId().getValue(),
-                fcmType,
-                sender.getId().getValue()
-        );
+        if(isMqType(fcmType)) {
+            FcmRequestDto fcmRequestDto = new FcmRequestDto(
+                    recipient.getId().getValue(),
+                    fcmType,
+                    sender.getId().getValue()
+            );
+            notificationProducer.sendNotification(fcmRequestDto);
+        }
 
-        notificationProducer.sendNotification(fcmRequestDto);
+        if (isRedisType(fcmType)) {
+            String RedisContent = fcmService.makeFcmBody(fcmType, sender.getNickname().getValue());
+            fcmRedis.pushNotification(recipient.getId().getValue(), RedisContent);
+        }
 
         if (shouldSkipNotificationStorage(fcmType)) {
             return; // CHAT 알림 저장 x
@@ -152,5 +157,12 @@ public class NotificationService {
         return false;
     }
 
+    private boolean isMqType(FcmType type) {
+        return type == FcmType.CHAT;
+    }
+
+    private boolean isRedisType(FcmType type) {
+        return type == FcmType.ANSWER_COMMENT || type == FcmType.ANSWER_LIKE || type == FcmType.Q_SPACE_POST_COMMENT || type == FcmType.Q_SPACE_POST_LIKE || type == FcmType.FOLLOW;
+    }
 
 }

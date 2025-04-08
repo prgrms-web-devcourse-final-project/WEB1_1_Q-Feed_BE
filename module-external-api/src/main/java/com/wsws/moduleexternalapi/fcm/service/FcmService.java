@@ -8,7 +8,6 @@ import com.wsws.moduleinfra.FcmRedis;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.*;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
@@ -118,6 +117,7 @@ public class FcmService {
             case Q_SPACE_POST_LIKE -> "Qspace 멤버 " + sender + "님이 회원님의 게시물을 좋아합니다.";
             case Q_SPACE_COMMENT_LIKE -> "Qspace 멤버 " + sender + "님이 회원님의 댓글을 좋아합니다.";
             case CHAT -> sender + "님이 회원님에게 새로운 메시지를 보냈습니다.";
+            case GENERAL -> "알림이 도착했습니다.";
         };
     }
 
@@ -131,6 +131,25 @@ public class FcmService {
             case Q_SPACE_POST_LIKE -> "🔔Qspace 게시물 좋아요 알림";
             case Q_SPACE_COMMENT_LIKE -> "🔔Qspace 댓글 좋아요 알림";
             case CHAT -> "🔔채팅 알림";
-        };
+            case GENERAL -> "🔔알림 모아보기";        };
     }
+
+    public void sendFcm(String userId, String body, FcmType type) {
+
+        try {
+            String fcmToken = fcmRedis.getFcmToken(getFcmRedisKey(userId));
+            if (fcmToken == null || fcmToken.isBlank()) {
+                return;
+            }
+
+            String title = makeFcmTitle(type);
+            FcmMessageRequestDto dto = new FcmMessageRequestDto(title, body);
+            String message = makeMessage(fcmToken, dto);
+
+            sendMessage(message);
+        } catch (Exception e) {
+            log.error("알림 전송 오류: userId={}, error={}", userId, e.getMessage(), e);
+        }
+    }
+
 }
