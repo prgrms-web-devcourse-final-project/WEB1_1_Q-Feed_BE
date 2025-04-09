@@ -3,6 +3,7 @@ package com.wsws.moduleapplication.notification.service;
 import com.wsws.moduleapplication.notification.dto.SaveFcmTokenRequest;
 import com.wsws.moduleapplication.notification.dto.NotificationServiceResponse;
 import com.wsws.moduleapplication.notification.exception.*;
+import com.wsws.moduleapplication.notification.producer.NotificationProducer;
 import com.wsws.moduleapplication.usercontext.user.exception.UserNotFoundException;
 import com.wsws.moduledomain.notification.Notification;
 import com.wsws.moduledomain.notification.dto.NotificationDto;
@@ -10,6 +11,7 @@ import com.wsws.moduledomain.notification.repo.NotificationRepository;
 import com.wsws.moduledomain.usercontext.user.aggregate.User;
 import com.wsws.moduledomain.usercontext.user.repo.UserRepository;
 import com.wsws.moduledomain.usercontext.user.vo.UserId;
+import com.wsws.moduleexternalapi.fcm.dto.FcmRequestDto;
 import com.wsws.moduleexternalapi.fcm.service.FcmService;
 import com.wsws.moduleinfra.FcmRedis;
 import com.wsws.moduleexternalapi.fcm.util.FcmType;
@@ -34,6 +36,7 @@ public class NotificationService {
     private final FcmRedis fcmRedis;
 
     private final AtomicLong notificationIdGenerator = new AtomicLong(1);
+    private final NotificationProducer notificationProducer;
 
     @Transactional
     public List<NotificationServiceResponse> getNotifications(String recipientId) {
@@ -80,15 +83,22 @@ public class NotificationService {
         Long notificationId = notificationIdGenerator.getAndIncrement();
         String content = fcmService.makeFcmBody(fcmType, sender.getNickname().getValue());
 
-        // FCM 전송
-        fcmService.fcmSend(
-                recipient.getId().getValue(),
-                fcmType,
-                sender.getNickname().getValue()
-        );
+        if(isMqType(fcmType)) {
+            FcmRequestDto fcmRequestDto = new FcmRequestDto(
+                    recipient.getId().getValue(),
+                    fcmType,
+                    sender.getId().getValue()
+            );
+            notificationProducer.sendNotification(fcmRequestDto);
+        }
+
+        if (isRedisType(fcmType)) {
+            String RedisContent = fcmService.makeFcmBody(fcmType, sender.getNickname().getValue());
+            fcmRedis.pushNotification(recipient.getId().getValue(), RedisContent);
+        }
 
         if (shouldSkipNotificationStorage(fcmType)) {
-            return; // CHAT는 알림 저장 x
+            return; // CHAT 알림 저장 x
         }
 
         // 알림 저장
@@ -147,5 +157,12 @@ public class NotificationService {
         return false;
     }
 
+    private boolean isMqType(FcmType type) {
+        return type == FcmType.CHAT;
+    }
+
+    private boolean isRedisType(FcmType type) {
+        return type == FcmType.ANSWER_COMMENT || type == FcmType.ANSWER_LIKE || type == FcmType.Q_SPACE_POST_COMMENT || type == FcmType.Q_SPACE_POST_LIKE || type == FcmType.FOLLOW;
+    }
 
 }

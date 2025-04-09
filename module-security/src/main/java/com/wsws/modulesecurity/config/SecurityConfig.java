@@ -56,12 +56,14 @@ public class SecurityConfig {
                         .requestMatchers("/test2.html").permitAll()
                         .requestMatchers("/groups/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/test/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 전용 엔드포인트(나중에 구현)
                         .requestMatchers(
                                 "/swagger-ui/**", // Swagger UI 경로
                                 "/v3/api-docs/**" // OpenAPI 명세 경로
                         ).permitAll() // Swagger 관련 경로 허용
                         .requestMatchers("/oauth/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated() // 인증 필요
 
                 )
