@@ -13,6 +13,7 @@ import com.wsws.moduledomain.cache.CacheManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,7 +37,11 @@ public class FollowService {
 
         // Follow 엔티티 생성 및 저장
         Follow follow = Follow.create(followerId, followeeId);
-        followRepository.save(follow);
+        try{
+            followRepository.save(follow);
+        }catch(DataIntegrityViolationException e){
+            throw AlreadyFollowedException.EXCEPTION;
+        }
 
         // 캐시 무효화
         eventPublisher.publishEvent(new FollowCreatedEvent(followerId, followeeId));
