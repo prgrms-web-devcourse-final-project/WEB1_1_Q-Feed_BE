@@ -64,7 +64,8 @@ public class RecommendationService {
 
         //우선 순위 큐로 자료구조 개선
         PriorityQueue<Recommendation> pq = new PriorityQueue<>(
-                Comparator.comparingLong(Recommendation::getFollowerCount).reversed()
+                limit,
+                Comparator.comparingLong(Recommendation::getFollowerCount)
         );
 
         for (User user : users) {
@@ -75,14 +76,18 @@ public class RecommendationService {
                     followerCounts.getOrDefault(user.getId().getValue(), 0L)
             );
 
-            pq.offer(recommendation);
+            if(pq.size() < limit){
+                pq.offer(recommendation);
+            }else if(recommendation.getFollowerCount() > pq.peek().getFollowerCount()){
+                pq.poll();
+                pq.offer(recommendation);
+            }
         }
 
         // limit개만큼만 추출
-        List<Recommendation> recommendations = new ArrayList<>();
-        for (int i = 0; i < limit && !pq.isEmpty(); i++) {
-            recommendations.add(pq.poll()); // 내림차순 정렬된 순서로 추출
-        }
+        List<Recommendation> recommendations = new ArrayList<>(pq);
+        recommendations.sort(Comparator.comparingLong(Recommendation::getFollowerCount).reversed());
+
 
 
         return UserRecommendationMapper.toDtoList(recommendations);
